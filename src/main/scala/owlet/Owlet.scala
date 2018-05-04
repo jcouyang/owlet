@@ -1,16 +1,19 @@
 package owlet
 
-import monix.reactive.Observable
-import outwatch.dom._
+import outwatch.dom.{  _ }
 import outwatch.dom.dsl._
-import scala.concurrent.duration._
 import monix.execution.Scheduler.Implicits.global
+import outwatch.Handler._
+// import cats.syntax.apply._
 object Owlet {
-  def main(args: scala.Array[String]): Unit = {
-    val seconds: Observable[Int] = Observable.interval(1.second)
-      .map(_+1).map(_.toInt)
 
-    val root = div("Seconds elapsed: ", child <-- seconds)
-    OutWatch.renderInto("#app", root) unsafeRunSync ()
+  case class OComponent[A](handler: Handler[A], node:VNode)
+
+  def main(args: scala.Array[String]): Unit = {
+    val source = create[String]
+    val inputE = source.map(handler => OComponent(handler,input(tpe := "text", name := "hehe", onInput.value --> handler)))
+
+    val d = inputE.flatMap(i=> div(i.node, child <-- i.handler))
+    OutWatch.renderInto("#app", d) unsafeRunSync ()
   }
 }
