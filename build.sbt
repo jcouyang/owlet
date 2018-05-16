@@ -1,4 +1,4 @@
-enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+enablePlugins(ScalaJSPlugin)
 
 name := "Owlet"
 
@@ -14,8 +14,7 @@ scalacOptions in ThisBuild ++= Seq(
   "-feature",             // warn about misused language features
   "-language:higherKinds",// allow higher kinded types without `import scala.language.higherKinds`
   "-Xlint",               // enable handy linter warnings
-  "-Xfatal-warnings",     // turn compiler warnings into errors
-  "-language:implicitConversions",
+  // "-Xfatal-warnings",     // turn compiler warnings into errors
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
 
@@ -23,7 +22,9 @@ scalacOptions in ThisBuild ++= Seq(
 requiresDOM in Test := true
 
 libraryDependencies ++= Seq(
-  "io.github.outwatch" %%% "outwatch" % "1.0.0-RC2",
+  "org.typelevel" %%% "cats-core" % "1.0.1",
+  "org.typelevel" %%% "cats-free" % "1.0.1",
+  "org.scala-js" %%% "scalajs-dom" % "0.9.2",
   "io.monix" %%% "monix" % "3.0.0-RC1",
   "org.scalatest" %%% "scalatest" % "3.0.3" % Test
 )
