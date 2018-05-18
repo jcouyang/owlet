@@ -14,7 +14,7 @@ import cats.instances.list._
 import cats.syntax.functor._
 import cats.syntax.applicative._
 import cats.syntax.traverse._
-
+import Function.const
 object Main {
 
   case class Owlet[A](nodes:List[Node], signal: Observable[A]) {
@@ -40,7 +40,11 @@ object Main {
   }
 
   // Input
-  def string(n: String, default: String = "") = {
+  def string(default:String):Owlet[String] = {
+    string("", default)
+  }
+
+  def string(n: String, default: String): Owlet[String] = {
     val state = Var(default)
     val input = createInput(n, "text", default, e => state := e.target.asInstanceOf[html.Input].value)
     Owlet(List(input), state)
@@ -101,7 +105,8 @@ object Main {
     val el = document.createElement("button").asInstanceOf[html.Button]
     el.appendChild(document.createTextNode(name))
     val sink = Var(default)
-    el.onclick = _ => sink := pressed
+    el.onmousedown = _ => sink := pressed
+    el.onmouseup = _ => sink := default
     Owlet(List(el), sink)
   }
   /**
@@ -163,6 +168,15 @@ object Main {
     {
       val b = button("increament", 0, 1)
       renderAppend(b.fold(0)(_+_), "#example-6")
+    }
+
+    // Adding items
+    {
+      val emptyList = const(List[String]()) _
+      val addItem = (s: String) => List(s)
+      val actions = button("add",emptyList, addItem) <*> string("add item", "Orange")
+      val list = actions.fold(List[String]())(_ ::: _)
+      renderAppend(list, "#example-7")
     }
   }
 }
