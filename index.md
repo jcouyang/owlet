@@ -10,20 +10,16 @@
 ## Example 3: Traverse
 <div id="example-3" ></div>
 
-## Example 4: More calculations
+## Example 5: Select box
 
 <div id="example-4" ></div>
 
-## Example 5: Select box
+## Example 6: Checkboxes
 
 <div id="example-5" ></div>
 
-## Example 6: Checkboxes
-
-<div id="example-6" ></div>
-
 ## Example 7: Buttons
 
-<div id="example-7" ></div>
+<div id="example-6" ></div>
 
 <script src="target/scala-2.12/owlet-fastopt.js"></script>

@@ -17,7 +17,11 @@ import cats.syntax.traverse._
 
 object Main {
 
-  case class Owlet[A](nodes:List[Node], signal: Observable[A])
+  case class Owlet[A](nodes:List[Node], signal: Observable[A]) {
+    def fold[S](seed: =>S)(op:(S,A)=>S) = {
+      Owlet(nodes, signal.scan(seed)(op))
+    }
+  }
 
   implicit val functorOwlet = new Functor[Owlet] {
     def map[A,B](fa: Owlet[A])(f: A=>B) = {
@@ -79,8 +83,8 @@ object Main {
     source.foreach(options => {
       el.innerHTML = options.map{ (kv:(String, String)) =>
         val op = document.createElement("option").asInstanceOf[html.Option]
-        op.text = kv._2
-        op.value = kv._1
+        op.text = kv._1
+        op.value = kv._2
         op.defaultSelected = (kv._1 == default)
         op.outerHTML
       }.mkString
@@ -95,8 +99,9 @@ object Main {
   */
   def button[A](name: String, default: A, pressed: A) = {
     val el = document.createElement("button").asInstanceOf[html.Button]
+    el.appendChild(document.createTextNode(name))
     val sink = Var(default)
-    el.onclick = Function.const(sink := pressed)
+    el.onclick = _ => sink := pressed
     Owlet(List(el), sink)
   }
   /**
@@ -116,21 +121,48 @@ object Main {
 
   def main(args: scala.Array[String]): Unit = {
     // Applicative
-    val baseInput = number("Base", 2.0)
-    val exponentInput = number("Exponent", 10.0)
-    val pow = (baseInput,exponentInput).mapN(math.pow)
-    renderAppend(pow, "#example-1")
-
+    {
+      val baseInput = number("Base", 2.0)
+      val exponentInput = number("Exponent", 10.0)
+      val pow = (baseInput,exponentInput).mapN(math.pow)
+      renderAppend(pow, "#example-1")
+    }
     // Monoid
-    val helloText = string("hello", "Hello")
-    val worldText = string("world", "World")
-    renderAppend(
-      helloText |+| " ".pure[Owlet] |+| worldText,
-      "#example-2")
+    {
+      val helloText = string("hello", "Hello")
+      val worldText = string("world", "World")
+      renderAppend(
+        helloText |+| " ".pure[Owlet] |+| worldText,
+        "#example-2")
+    }
 
     // Traverse
-    val ui3 = List(2, 13, 27, 42).traverse(int("n", _)).map(a => a.foldLeft(0)(_+_))
-    renderAppend(ui3, "#example-3")
+    {
+      val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(a => a.foldLeft(0)(_+_))
+      renderAppend(sum, "#example-3")
+    }
 
+    // Select Box
+    {
+      val greeting = Map(
+        "Chinese" -> "你好",
+        "English" -> "Hello",
+        "French" -> "Salut"
+      )
+      val selectBox = select("pierer", Var(greeting) , "你好")
+      val hello = string("name", "Jichao")
+      renderAppend(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4")
+    }
+
+    // Checkbox
+    {
+
+    }
+
+    // Buttons
+    {
+      val b = button("increament", 0, 1)
+      renderAppend(b.fold(0)(_+_), "#example-6")
+    }
   }
 }
