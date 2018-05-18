@@ -27,5 +27,8 @@
 
 <div id="example-7" ></div>
 
+## Example 8: Multiple buttons
+
+<div id="example-8" ></div>
 
 <script src="target/scala-2.12/owlet-fastopt.js"></script>

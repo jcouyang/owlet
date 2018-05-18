@@ -1,6 +1,6 @@
 package owlet
 
-import cats.{ Applicative, Monoid }
+import cats.{ Applicative, Monoid, MonoidK }
 import cats.syntax.monoid._
 import cats.{ Functor }
 import monix.execution.Scheduler.Implicits.global
@@ -14,6 +14,7 @@ import cats.instances.list._
 import cats.syntax.functor._
 import cats.syntax.applicative._
 import cats.syntax.traverse._
+import cats.syntax.semigroupk._
 import Function.const
 object Main {
 
@@ -32,6 +33,11 @@ object Main {
   implicit val applicativeOwlet = new Applicative[Owlet] {
     def ap[A, B](ff: Owlet[A => B])(fa: Owlet[A]): Owlet[B] = Owlet( ff.nodes ++ fa.nodes, Observable.combineLatestMap2(ff.signal,fa.signal)(_(_)))
     def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
+  }
+
+  implicit val monoidKOwlet = new MonoidK[Owlet] {
+    def empty[A]: Owlet[A] = Owlet(List[Node](), Observable.empty)
+    def combineK[A](x: Owlet[A],y: Owlet[A]): Owlet[A] = Owlet(x.nodes ++ y.nodes, Observable.merge(x.signal, y.signal))
   }
 
   implicit def monoidOwlet[A:Monoid] = new Monoid[Owlet[A]] {
@@ -177,6 +183,17 @@ object Main {
       val actions = button("add",emptyList, addItem) <*> string("add item", "Orange")
       val list = actions.fold(List[String]())(_ ::: _)
       renderAppend(list, "#example-7")
+    }
+
+    // Multiple Buttons
+    {
+      val intId = identity: Int => Int
+      val inc = button("+ 1", intId, (x:Int) => x + 1)
+      val dec = button("- 1", intId, (x:Int) => x - 1)
+      val neg = button("+/-", intId ,(x:Int) => -x)
+      val reset = button("reset", intId, (x:Int) => 0)
+      val buttons = inc <+> dec <+> neg <+> reset
+      renderAppend(buttons.fold(0)((acc:Int, f:Int=>Int) => f(acc)), "#example-8")
     }
   }
 }
