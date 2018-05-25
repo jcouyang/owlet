@@ -1,29 +1,23 @@
-package owlet
+package us.oyanglul
 
 import cats.{ Applicative, Monoid, MonoidK }
-import cats.syntax.monoid._
 import cats.{ Functor }
+import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
-import cats.syntax.apply._
 import monix.reactive.Observable
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import scala.util.Try
-import cats.instances.string._
-import cats.instances.list._
-import cats.syntax.functor._
-import cats.syntax.applicative._
 import cats.syntax.traverse._
-import cats.syntax.semigroupk._
-import Function.const
-object Main {
+import cats.instances.list._
 
-  case class Owlet[A](nodes:List[Node], signal: Observable[A]) {
-    def fold[S](seed: =>S)(op:(S,A)=>S) = {
-      Owlet(nodes, signal.scan(seed)(op))
-    }
+case class Owlet[A](nodes:List[Node], signal: Observable[A]) {
+  def fold[S](seed: =>S)(op:(S,A)=>S) = {
+    Owlet(nodes, signal.scan(seed)(op))
   }
+}
 
+object Owlet {
   implicit val functorOwlet = new Functor[Owlet] {
     def map[A,B](fa: Owlet[A])(f: A=>B) = {
       Owlet(fa.nodes, fa.signal.map(f))
@@ -44,9 +38,11 @@ object Main {
     def combine(a: Owlet[A], b:Owlet[A]):Owlet[A] = Owlet(a.nodes ++ b.nodes, Observable.combineLatestMap2(a.signal, b.signal)(_ |+| _))
     def empty = Owlet(List[Node](), Observable.empty)
   }
+}
 
+object DOM {
   // Input
-  def string(default:String):Owlet[String] = {
+  def string(default: String):Owlet[String] = {
     string("", default)
   }
 
@@ -115,6 +111,50 @@ object Main {
     el.onmouseup = _ => sink := default
     Owlet(List(el), sink)
   }
+
+  def ul[A](items: Observable[List[A]], createEl: A => Owlet[A]) = {
+    val sink = Var(List[A]())
+    val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
+    items.foreach{item=>
+      while(ul.lastChild != null) {
+        ul.removeChild(ul.lastChild)
+      }
+      val owlets = item.map{i =>
+        val li = document.createElement("li").asInstanceOf[html.LI]
+        val owlet = createEl(i)
+        owlet.nodes.foreach(li.appendChild(_))
+        ul.appendChild(li)
+        owlet
+      }
+      owlets.sequence.signal.map(sink := _)
+    }
+    Owlet(List(ul), sink)
+  }
+
+  def list[A](items:Owlet[List[Owlet[A]]]) = {
+    val sink = Var(List[A]())
+    val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
+    items.signal.foreach{owlets=>
+      while(ul.lastChild != null) {
+        ul.removeChild(ul.lastChild)
+      }
+      owlets.foreach{owlet =>
+        val li = document.createElement("li").asInstanceOf[html.LI]
+        owlet.nodes.foreach(li.appendChild(_))
+        ul.appendChild(li)
+      }
+      owlets.sequence.signal.map(sink:=_)
+    }
+    Owlet(List(ul), sink)
+  }
+
+  def fx[A,B] (formula:List[A] => B, input:List[Owlet[A]]): Owlet[B] = {
+    val div:html.Div = document.createElement("div").asInstanceOf[html.Div]
+    val sink = input.sequence.signal.map(formula)
+    sink.foreach(a=>div.textContent = a.toString)
+    Owlet(List(div), sink)
+  }
+
   /**
   * Output Owlet Component
   */
@@ -125,75 +165,13 @@ object Main {
     input.nodes :+ div
   }
 
-  def renderAppend[A](owlet: Owlet[A], selector: String) = {
-    output(owlet)
+  def render[A](owlet: Owlet[A], selector: String) = {
+    owlet.nodes
       .foreach(document.querySelector(selector).appendChild(_))
   }
 
-  def main(args: scala.Array[String]): Unit = {
-    // Applicative
-    {
-      val baseInput = number("Base", 2.0)
-      val exponentInput = number("Exponent", 10.0)
-      val pow = (baseInput,exponentInput).mapN(math.pow)
-      renderAppend(pow, "#example-1")
-    }
-    // Monoid
-    {
-      val helloText = string("hello", "Hello")
-      val worldText = string("world", "World")
-      renderAppend(
-        helloText |+| " ".pure[Owlet] |+| worldText,
-        "#example-2")
-    }
-
-    // Traverse
-    {
-      val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(a => a.foldLeft(0)(_+_))
-      renderAppend(sum, "#example-3")
-    }
-
-    // Select Box
-    {
-      val greeting = Map(
-        "Chinese" -> "你好",
-        "English" -> "Hello",
-        "French" -> "Salut"
-      )
-      val selectBox = select("pierer", Var(greeting) , "你好")
-      val hello = string("name", "Jichao")
-      renderAppend(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4")
-    }
-
-    // Checkbox
-    {
-
-    }
-
-    // Buttons
-    {
-      val b = button("increament", 0, 1)
-      renderAppend(b.fold(0)(_+_), "#example-6")
-    }
-
-    // Adding items
-    {
-      val emptyList = const(List[String]()) _
-      val addItem = (s: String) => List(s)
-      val actions = button("add",emptyList, addItem) <*> string("add item", "Orange")
-      val list = actions.fold(List[String]())(_ ::: _)
-      renderAppend(list, "#example-7")
-    }
-
-    // Multiple Buttons
-    {
-      val intId = identity: Int => Int
-      val inc = button("+ 1", intId, (x:Int) => x + 1)
-      val dec = button("- 1", intId, (x:Int) => x - 1)
-      val neg = button("+/-", intId ,(x:Int) => -x)
-      val reset = button("reset", intId, (x:Int) => 0)
-      val buttons = inc <+> dec <+> neg <+> reset
-      renderAppend(buttons.fold(0)((acc:Int, f:Int=>Int) => f(acc)), "#example-8")
-    }
+  def renderAppend[A](owlet: Owlet[A], selector: String) = {
+    output(owlet)
+      .foreach(document.querySelector(selector).appendChild(_))
   }
 }
