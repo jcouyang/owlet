@@ -85,10 +85,9 @@ object Main {
       val emptyList = const(List[Owlet[Int]]()) _
       val addItem = (s: Int) => List(int("new item", s))
       val actions = button("add",emptyList, addItem) <*> int("add item", 0)
-      val inputs = actions.fold(List[Owlet[Int]]())(_ ::: _)
-
-
-      render(actions *> list(inputs), "#example-9")
+      val inputs = list(actions.fold(List[Owlet[Int]]())(_ ::: _))
+      val sum = fx((a:List[List[Int]])=>a.flatten.foldLeft(0)(_+_), List(inputs))
+    render(actions *> inputs *> sum, "#example-9")
 
     }
 

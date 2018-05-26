@@ -143,7 +143,7 @@ object DOM {
         owlet.nodes.foreach(li.appendChild(_))
         ul.appendChild(li)
       }
-      owlets.sequence.signal.map(sink:=_)
+      owlets.sequence.signal.foreach(sink:=_)
     }
     Owlet(List(ul), sink)
   }

@@ -31,4 +31,8 @@
 
 <div id="example-8" ></div>
 
+## Example 9: Resizable lists
+
+<div id="example-9"></div>
+
 <script src="target/scala-2.12/owlet-fastopt.js"></script>
