@@ -18,9 +18,6 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
 
-
-requiresDOM in Test := true
-
 libraryDependencies ++= Seq(
   "org.typelevel" %%% "cats-core" % "1.0.1",
   "org.typelevel" %%% "cats-free" % "1.0.1",
@@ -28,5 +25,22 @@ libraryDependencies ++= Seq(
   "io.monix" %%% "monix" % "3.0.0-RC1",
   "org.scalatest" %%% "scalatest" % "3.0.3" % Test
 )
+
+lazy val docs = project.enablePlugins(MicrositesPlugin)
+  .settings(
+    micrositeName := "Owlet",
+    micrositeDescription := "Lightweight, modular, composable UI library for Scala",
+    micrositeAuthor := "Jichao Ouyang",
+    micrositeHomepage := "https://oyanglul.us/owlet",
+    micrositeOrganizationHomepage := "https://oyanglul.us",
+    micrositeTwitter := "@oyanglulu",
+    micrositeGithubOwner := "jcouyang",
+    micrositeGithubRepo := "owlet",
+    micrositeDocumentationUrl := "/api",
+    micrositeGitterChannel := true,
+    micrositeGitterChannelUrl := "jcouyang/owlet"
+  )
+
 scalaJSUseMainModuleInitializer := true
+
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
