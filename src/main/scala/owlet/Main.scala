@@ -1,5 +1,6 @@
-package us.oyanglul
+package us.oyanglul.owletexample
 
+import us.oyanglul.owlet._
 import cats.instances.string._
 import cats.instances.list._
 import cats.syntax.functor._

@@ -2,10 +2,10 @@ enablePlugins(ScalaJSPlugin)
 
 name := "Owlet"
 
-version := "0.1.0"
+version := "0.1.0-SNAPSHOT"
 
 organization := "us.oyanglul"
-
+useGpg := true
 scalaVersion in ThisBuild := "2.12.6"
 scalacOptions in ThisBuild ++= Seq(
   "-encoding", "UTF-8",   // source files are in UTF-8

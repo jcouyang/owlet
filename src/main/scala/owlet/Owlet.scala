@@ -1,4 +1,4 @@
-package us.oyanglul
+package us.oyanglul.owlet
 
 import cats.{ Applicative, Monoid, MonoidK }
 import cats.{ Functor }
