@@ -29,6 +29,7 @@ libraryDependencies ++= Seq(
 lazy val docs = project.enablePlugins(MicrositesPlugin)
   .settings(
     micrositeName := "Owlet",
+    micrositeBaseUrl := "/owlet",
     micrositeDescription := "Lightweight, modular, composable UI library for Scala",
     micrositeAuthor := "Jichao Ouyang",
     micrositeHomepage := "https://oyanglul.us/owlet",
@@ -36,7 +37,7 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
     micrositeTwitter := "@oyanglulu",
     micrositeGithubOwner := "jcouyang",
     micrositeGithubRepo := "owlet",
-    micrositeDocumentationUrl := "/api",
+    micrositeDocumentationUrl := "owlet/api",
     micrositeGitterChannel := true,
     micrositeGitterChannelUrl := "jcouyang/owlet"
   )

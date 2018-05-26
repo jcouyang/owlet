@@ -46,4 +46,4 @@ position: 3
 
 <div id="example-10"></div>
 
-<script src="owlet-fastopt.js"></script>
+<script src="demo/owlet-opt.js"></script>
