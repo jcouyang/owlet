@@ -1,11 +1,3 @@
----
-layout: home
-technologies:
- - first: ["Scala", "Owlet components are completely written in Scala"]
- - second: ["Cats", "Owlet implements Cats typeclasses so you will get awesome cats syntax"]
- - third: ["Monix", "Owlet takes advantage from high performance Reactive lib Monix to build reactive UI component"]
----
-
 # Owlet
 
 Owlet is a Typed Spreadsheet UI library for ScalaJS. It is built on top of [Monix](https://monix.io/) and [Typelevel Cats](https://typelevel.org/cats/)' Applicative syntax to combine predefined input fields to a reactive user interface, just like what you would done in spreadsheet. Owlet is inspired by the PureScript library [Flare](https://github.com/sharkdp/purescript-flare).
