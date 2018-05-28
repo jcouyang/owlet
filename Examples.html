@@ -2,16 +2,37 @@
 
 <h2 id="example-1-two-number-inputs">Example 1: Two number inputs</h2>
 
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">baseInput</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"Base"</span><span class="o">,</span> <span class="mf">2.0</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">exponentInput</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"Exponent"</span><span class="o">,</span> <span class="mf">10.0</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">pow</span> <span class="k">=</span> <span class="o">(</span><span class="n">baseInput</span><span class="o">,</span> <span class="n">exponentInput</span><span class="o">)</span> <span class="n">mapN</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span>
+</code></pre></div></div>
 <div id="example-1"></div>
 
 <h2 id="example-2-semigroup-instance">Example 2: Semigroup instance</h2>
 
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">helloText</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"hello"</span><span class="o">,</span> <span class="s">"Hello"</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">worldText</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"world"</span><span class="o">,</span> <span class="s">"World"</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">example2</span> <span class="k">=</span> <span class="n">helloText</span> <span class="o">|+|</span> <span class="s">" "</span><span class="o">.</span><span class="n">pure</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">]</span> <span class="o">|+|</span> <span class="n">worldText</span>
+</code></pre></div></div>
 <div id="example-2"></div>
 
 <h2 id="example-3-traverse">Example 3: Traverse</h2>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">13</span><span class="o">,</span> <span class="mi">27</span><span class="o">,</span> <span class="mi">42</span><span class="o">).</span><span class="n">traverse</span><span class="o">(</span><span class="n">int</span><span class="o">(</span><span class="s">"n"</span><span class="o">,</span> <span class="k">_</span><span class="o">)).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
+</code></pre></div></div>
 <div id="example-3"></div>
 
 <h2 id="example-4-select-box">Example 4: Select box</h2>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
+  <span class="s">"Chinese"</span> <span class="o">-&gt;</span> <span class="s">"你好"</span><span class="o">,</span>
+  <span class="s">"English"</span> <span class="o">-&gt;</span> <span class="s">"Hello"</span><span class="o">,</span>
+  <span class="s">"French"</span> <span class="o">-&gt;</span> <span class="s">"Salut"</span>
+<span class="o">)</span>
+<span class="k">val</span> <span class="n">selectBox</span> <span class="k">=</span> <span class="n">select</span><span class="o">(</span><span class="s">"pierer"</span><span class="o">,</span> <span class="nc">Var</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span> <span class="o">,</span> <span class="s">"你好"</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">hello</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"Jichao"</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">example4</span> <span class="k">=</span> <span class="n">selectBox</span> <span class="o">|+|</span> <span class="s">" "</span><span class="o">.</span><span class="n">pure</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">]</span> <span class="o">|+|</span> <span class="n">hello</span><span class="o">,</span> <span class="s">"#example-4"</span>
+</code></pre></div></div>
 
 <div id="example-4"></div>
 
@@ -38,6 +59,10 @@
 <h2 id="example-10-spreadsheet-like">Example 10: Spreadsheet like</h2>
 
 <div id="example-10"></div>
+
+<h2 id="example-11-scala-tag">Example 11: Scala Tag</h2>
+
+<div id="example-11"></div>
 
 <script src="demo/owlet-opt.js"></script>
 
