@@ -6,6 +6,15 @@ version := "0.1.0-SNAPSHOT"
 
 organization := "us.oyanglul"
 useGpg := true
+publishMavenStyle := true
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+
 scalaVersion in ThisBuild := "2.12.6"
 scalacOptions in ThisBuild ++= Seq(
   "-encoding", "UTF-8",   // source files are in UTF-8
@@ -43,5 +52,7 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
   )
 
 scalaJSUseMainModuleInitializer := true
+
+target in Compile in doc := baseDirectory.value / "docs" / "src" / "main" / "tut" / "api"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")

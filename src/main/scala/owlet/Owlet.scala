@@ -41,20 +41,16 @@ object Owlet {
 }
 
 object DOM {
-  // Input
-  def string(default: String):Owlet[String] = {
-    string("", default)
-  }
-
-  def string(n: String, default: String): Owlet[String] = {
+  // ==Input==
+  def string(name: String = "_", default: String): Owlet[String] = {
     val state = Var(default)
-    val input = createInput(n, "text", default, e => state := e.target.asInstanceOf[html.Input].value)
+    val input = createInput(name, "text", default, e => state := e.target.asInstanceOf[html.Input].value)
     Owlet(List(input), state)
   }
 
-  def number(n: String, default: Double = 0d) = {
+  def number(name: String = "_", default: Double):Owlet[Double] = {
     val state = Var(default)
-    val input = createInput(n, "number", default, e => {
+    val input = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble).foreach(state := _)
     })
@@ -62,20 +58,20 @@ object DOM {
     Owlet(List(input), state)
   }
 
-  def int(n: String, default: Int = 0) = {
+  def int(name: String = "_", default: Int): Owlet[Int] = {
     val state = Var(default)
-    val input = createInput(n, "number", default, e => {
+    val input = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble.toInt).foreach(state := _)
     })
-
     Owlet(List(input), state)
   }
 
-  def createInput[A](n: String, t: String, default: A, transform: Event=>Unit) = {
+  private def createInput[A](n: String, t: String, default: A, transform: Event=>Unit, className:String="_") = {
     val input:html.Input = document.createElement("input").asInstanceOf[html.Input]
     input.`type` = t
     input.name = n
+    input.className = "owlet-input-" + className
     input.defaultValue = default.toString
     input.oninput = e => transform(e)
     input
@@ -84,7 +80,7 @@ object DOM {
   /**
   * Select
   */
-  def select(name: String, source: Observable[Map[String, String]], default: String):Owlet[String] = {
+  def select(name: String = "_", source: Observable[Map[String, String]], default: String):Owlet[String] = {
     val el = document.createElement("select").asInstanceOf[html.Select]
     source.foreach(options => {
       el.innerHTML = options.map{ (kv:(String, String)) =>
@@ -103,7 +99,7 @@ object DOM {
   /**
   * button emit `default` value immediatly and emit `pressed` value every time it's clicked
   */
-  def button[A](name: String, default: A, pressed: A) = {
+  def button[A](name: String = "_", default: A, pressed: A) = {
     val el = document.createElement("button").asInstanceOf[html.Button]
     el.appendChild(document.createTextNode(name))
     val sink = Var(default)
@@ -112,25 +108,32 @@ object DOM {
     Owlet(List(el), sink)
   }
 
-  def ul[A](items: Observable[List[A]], createEl: A => Owlet[A]) = {
-    val sink = Var(List[A]())
-    val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
-    items.foreach{item=>
-      while(ul.lastChild != null) {
-        ul.removeChild(ul.lastChild)
-      }
-      val owlets = item.map{i =>
-        val li = document.createElement("li").asInstanceOf[html.LI]
-        val owlet = createEl(i)
-        owlet.nodes.foreach(li.appendChild(_))
-        ul.appendChild(li)
-        owlet
-      }
-      owlets.sequence.signal.map(sink := _)
-    }
-    Owlet(List(ul), sink)
+
+  /**
+  * Container
+  *
+  * wrap nodes in `Owlet` into container element `div`, `label` etc
+  * style of div can reactive from a stream of `className`
+  */
+
+  def div[A](inner: Owlet[A], className: Observable[String], id: String): Owlet[A] = {
+    val el = document.createElement("div").asInstanceOf[html.Div]
+    el.id = id
+    className.foreach(c=>el.className=c.mkString(" "))
+    inner.nodes.foreach(el.appendChild(_))
+    Owlet(List(el), inner.signal)
   }
 
+  def label[A](inner: Owlet[A], name: String): Owlet[A] = {
+    val el = document.createElement("label").asInstanceOf[html.Label]
+    el.htmlFor = "owlet-input-" + name
+    inner.nodes.foreach(el.appendChild(_))
+    Owlet(List(el), inner.signal)
+  }
+
+  /** ==Output==
+  *
+  */
   def list[A](items:Owlet[List[Owlet[A]]]) = {
     val sink = Var(List[A]())
     val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
@@ -148,6 +151,9 @@ object DOM {
     Owlet(List(ul), sink)
   }
 
+  /** Spreadsheet like fx
+  * create a new Owlet with existing Owlets with a formula
+  */
   def fx[A,B] (formula:List[A] => B, input:List[Owlet[A]]): Owlet[B] = {
     val div:html.Div = document.createElement("div").asInstanceOf[html.Div]
     val sink = input.sequence.signal.map(formula)
@@ -155,9 +161,6 @@ object DOM {
     Owlet(List(div), sink)
   }
 
-  /**
-  * Output Owlet Component
-  */
   def output[A](input: Owlet[A], classNames: Observable[List[String]] = Var(Nil)) ={
     val div = document.createElement("div").asInstanceOf[html.Div]
     classNames.foreach(c=>div.className = c.mkString(" "))
@@ -165,6 +168,9 @@ object DOM {
     input.nodes :+ div
   }
 
+  /**
+  * Render
+  */
   def render[A](owlet: Owlet[A], selector: String) = {
     owlet.nodes
       .foreach(document.querySelector(selector).appendChild(_))

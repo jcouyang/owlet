@@ -9,16 +9,41 @@ position: 3
 
 ## Example 1: Two number inputs
 
+```scala
+val baseInput = number("Base", 2.0)
+val exponentInput = number("Exponent", 10.0)
+val pow = (baseInput, exponentInput) mapN math.pow
+```
 <div id="example-1" ></div>
 
 ## Example 2: Semigroup instance
 
+```scala
+val helloText = string("hello", "Hello")
+val worldText = string("world", "World")
+val example2 = helloText |+| " ".pure[Owlet] |+| worldText
+```
 <div id="example-2" ></div>
 
 ## Example 3: Traverse
+
+```scala
+val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(_.sum)
+```
 <div id="example-3" ></div>
 
 ## Example 4: Select box
+
+```scala
+val greeting = Map(
+  "Chinese" -> "你好",
+  "English" -> "Hello",
+  "French" -> "Salut"
+)
+val selectBox = select("pierer", Var(greeting) , "你好")
+val hello = string("name", "Jichao")
+val example4 = selectBox |+| " ".pure[Owlet] |+| hello, "#example-4"
+```
 
 <div id="example-4" ></div>
 

@@ -34,7 +34,7 @@ object Main {
 
     // Traverse
     {
-      val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(a => a.foldLeft(0)(_+_))
+      val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(_.sum)
       renderAppend(sum, "#example-3")
     }
 
@@ -87,7 +87,7 @@ object Main {
       val addItem = (s: Int) => List(int("new item", s))
       val actions = button("add",emptyList, addItem) <*> int("add item", 0)
       val inputs = list(actions.fold(List[Owlet[Int]]())(_ ::: _))
-      val sum = fx((a:List[List[Int]])=>a.flatten.foldLeft(0)(_+_), List(inputs))
+      val sum = fx((a:List[List[Int]])=>a.flatten.sum, List(inputs))
     render(actions *> inputs *> sum, "#example-9")
 
     }
@@ -97,8 +97,8 @@ object Main {
       val a1 = number("a1",1)
       val a2 = number("a2", 2)
       val a3 = number("a3", 3)
-      val sum = fx(((a:List[Double]) => a.foldLeft(0d)(_+_)), List(a1,a2,a3))
-      val product = fx(((a:List[Double]) => a.foldLeft(1d)(_*_)), List(a1,a2,a3))
+      val sum = fx((a:List[Double]) => a.sum, List(a1,a2,a3))
+      val product = fx(((a:List[Double]) => a.product), List(a1,a2,a3))
       render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
     }
   }
