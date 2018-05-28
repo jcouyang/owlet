@@ -59,5 +59,5 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
   )
 
 target in Compile in doc := baseDirectory.value / "docs" / "src" / "main" / "tut" / "api"
-
+scalafmtOnCompile in ThisBuild := true
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
