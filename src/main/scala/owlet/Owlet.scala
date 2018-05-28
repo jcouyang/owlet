@@ -58,12 +58,36 @@ object DOM {
     Owlet(List(input), state)
   }
 
+  def numberSlider(name: String = "_", min:Double, max:Double, default: Double): Owlet[Double] = {
+    val state = Var(default)
+    val input = createInput(name, "range", default, e => {
+      val value = e.target.asInstanceOf[html.Input].value
+      Try(value.toDouble.toInt).foreach(state := _)
+    })
+    input.step = "any"
+    input.min = min.toString
+    input.max = max.toString
+    Owlet(List(input), state)
+  }
+
   def int(name: String = "_", default: Int): Owlet[Int] = {
     val state = Var(default)
     val input = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble.toInt).foreach(state := _)
     })
+    Owlet(List(input), state)
+  }
+
+  def intSlider(name: String = "_", min:Int, max:Int, default: Int): Owlet[Int] = {
+    val state = Var(default)
+    val input = createInput(name, "range", default, e => {
+      val value = e.target.asInstanceOf[html.Input].value
+      Try(value.toDouble.toInt).foreach(state := _)
+    })
+    input.step = "1"
+    input.min = min.toString
+    input.max = max.toString
     Owlet(List(input), state)
   }
 
@@ -116,7 +140,7 @@ object DOM {
   * style of div can reactive from a stream of `className`
   */
 
-  def div[A](inner: Owlet[A], className: Observable[String], id: String): Owlet[A] = {
+  def div[A](inner: Owlet[A], className: Observable[String] = Observable.empty, id: String = ""): Owlet[A] = {
     val el = document.createElement("div").asInstanceOf[html.Div]
     el.id = id
     className.foreach(c=>el.className=c.mkString(" "))
@@ -127,6 +151,7 @@ object DOM {
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
     val el = document.createElement("label").asInstanceOf[html.Label]
     el.htmlFor = "owlet-input-" + name
+    el.appendChild(document.createTextNode(name))
     inner.nodes.foreach(el.appendChild(_))
     Owlet(List(el), inner.signal)
   }
@@ -164,6 +189,7 @@ object DOM {
   def output[A](input: Owlet[A], classNames: Observable[List[String]] = Var(Nil)) ={
     val div = document.createElement("div").asInstanceOf[html.Div]
     classNames.foreach(c=>div.className = c.mkString(" "))
+    div.className+=" owlet-output"
     input.signal.foreach(v => div.innerHTML = v.toString)
     input.nodes :+ div
   }
@@ -176,7 +202,7 @@ object DOM {
       .foreach(document.querySelector(selector).appendChild(_))
   }
 
-  def renderAppend[A](owlet: Owlet[A], selector: String) = {
+  def renderOutput[A](owlet: Owlet[A], selector: String) = {
     output(owlet)
       .foreach(document.querySelector(selector).appendChild(_))
   }

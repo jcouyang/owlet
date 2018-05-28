@@ -1,19 +1,4 @@
-enablePlugins(ScalaJSPlugin)
-
-name := "Owlet"
-
-version := "0.1.0-SNAPSHOT"
-
-organization := "us.oyanglul"
-useGpg := true
-publishMavenStyle := true
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+organization in ThisBuild := "us.oyanglul"
 
 scalaVersion in ThisBuild := "2.12.6"
 scalacOptions in ThisBuild ++= Seq(
@@ -27,13 +12,35 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
 
-libraryDependencies ++= Seq(
-  "org.typelevel" %%% "cats-core" % "1.0.1",
-  "org.typelevel" %%% "cats-free" % "1.0.1",
-  "org.scala-js" %%% "scalajs-dom" % "0.9.2",
-  "io.monix" %%% "monix" % "3.0.0-RC1",
-  "org.scalatest" %%% "scalatest" % "3.0.3" % Test
-)
+lazy val owlet = project.in(file("."))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "Owlet",
+    version := "0.1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % "1.0.1",
+      "org.typelevel" %%% "cats-free" % "1.0.1",
+      "org.scala-js" %%% "scalajs-dom" % "0.9.2",
+      "io.monix" %%% "monix" % "3.0.0-RC1",
+      "org.scalatest" %%% "scalatest" % "3.0.3" % Test
+    ),
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
+    useGpg := true,
+    publishMavenStyle := true
+  )
+
+lazy val example = project.enablePlugins(ScalaJSPlugin).settings(
+  scalaJSUseMainModuleInitializer := true,
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "scalatags" % "0.6.7"
+    )
+).dependsOn(owlet)
 
 lazy val docs = project.enablePlugins(MicrositesPlugin)
   .settings(
@@ -50,8 +57,6 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
     micrositeGitterChannel := true,
     micrositeGitterChannelUrl := "jcouyang/owlet"
   )
-
-scalaJSUseMainModuleInitializer := true
 
 target in Compile in doc := baseDirectory.value / "docs" / "src" / "main" / "tut" / "api"
 

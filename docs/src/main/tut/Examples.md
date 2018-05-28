@@ -71,4 +71,8 @@ val example4 = selectBox |+| " ".pure[Owlet] |+| hello, "#example-4"
 
 <div id="example-10"></div>
 
+## Example 11: Scala Tag
+
+<div id="example-11"></div>
+
 <script src="demo/owlet-opt.js"></script>

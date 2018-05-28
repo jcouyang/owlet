@@ -13,7 +13,6 @@ import monix.reactive.subjects.Var
 import Function.const
 import DOM._
 import monix.execution.Scheduler.Implicits.global
-
 object Main {
   def main(args: scala.Array[String]): Unit = {
     // Applicative
@@ -21,13 +20,13 @@ object Main {
       val baseInput = number("Base", 2.0)
       val exponentInput = number("Exponent", 10.0)
       val pow = (baseInput,exponentInput).mapN(math.pow)
-      renderAppend(pow, "#example-1")
+      renderOutput(pow, "#example-1")
     }
     // Monoid
     {
       val helloText = string("hello", "Hello")
       val worldText = string("world", "World")
-      renderAppend(
+      renderOutput(
         helloText |+| " ".pure[Owlet] |+| worldText,
         "#example-2")
     }
@@ -35,7 +34,7 @@ object Main {
     // Traverse
     {
       val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(_.sum)
-      renderAppend(sum, "#example-3")
+      renderOutput(sum, "#example-3")
     }
 
     // Select Box
@@ -45,9 +44,9 @@ object Main {
         "English" -> "Hello",
         "French" -> "Salut"
       )
-      val selectBox = select("pierer", Var(greeting) , "你好")
+      val selectBox = label(select("pierer", Var(greeting) , "你好"), "Language")
       val hello = string("name", "Jichao")
-      renderAppend(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4")
+      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4")
     }
 
     // Checkbox
@@ -58,7 +57,7 @@ object Main {
     // Buttons
     {
       val b = button("increament", 0, 1)
-      renderAppend(b.fold(0)(_+_), "#example-6")
+      renderOutput(b.fold(0)(_+_), "#example-6")
     }
 
     // Adding items
@@ -67,7 +66,7 @@ object Main {
       val addItem = (s: String) => List(s)
       val actions = button("add",emptyList, addItem) <*> string("add item", "Orange")
       val list = actions.fold(List[String]())(_ ::: _)
-      renderAppend(list, "#example-7")
+      renderOutput(list, "#example-7")
     }
 
     // Multiple Buttons
@@ -78,7 +77,7 @@ object Main {
       val neg = button("+/-", intId ,(x:Int) => -x)
       val reset = button("reset", intId, (x:Int) => 0)
       val buttons = inc <+> dec <+> neg <+> reset
-      renderAppend(buttons.fold(0)((acc:Int, f:Int=>Int) => f(acc)), "#example-8")
+      renderOutput(buttons.fold(0)((acc:Int, f:Int=>Int) => f(acc)), "#example-8")
     }
 
     // List
@@ -100,6 +99,20 @@ object Main {
       val sum = fx((a:List[Double]) => a.sum, List(a1,a2,a3))
       val product = fx(((a:List[Double]) => a.product), List(a1,a2,a3))
       render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
+    }
+
+    // Mustash
+    {
+      val col = intSlider("col", 1, 20, 4)
+      val row = intSlider("row", 1,20,4)
+      import scalatags.Text.all._
+      renderOutput((col,row).mapN{(c, r) =>
+        table((1 to r).map( ri =>
+          tr((1 to c).map(ci =>
+            td(s"$ri.$ci")
+          ))
+        )).render
+      }, "#example-11")
     }
   }
 }
