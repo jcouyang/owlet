@@ -15,6 +15,9 @@ case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }
+  def filter(b: A => Boolean) = {
+    Owlet(nodes, signal.filter(b))
+  }
 }
 
 object Owlet {
@@ -51,7 +54,7 @@ object Owlet {
 
 object DOM {
   // ==Input==
-  def string(name: String = "_", default: String): Owlet[String] = {
+  def string(name: String, default: String): Owlet[String] = {
     val state = Var(default)
     val input = createInput(
       name,
@@ -62,7 +65,7 @@ object DOM {
     Owlet(List(input), state)
   }
 
-  def number(name: String = "_", default: Double): Owlet[Double] = {
+  def number(name: String, default: Double): Owlet[Double] = {
     val state = Var(default)
     val input = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
@@ -73,7 +76,7 @@ object DOM {
   }
 
   def numberSlider(
-      name: String = "_",
+      name: String,
       min: Double,
       max: Double,
       default: Double
@@ -89,7 +92,7 @@ object DOM {
     Owlet(List(input), state)
   }
 
-  def int(name: String = "_", default: Int): Owlet[Int] = {
+  def int(name: String, default: Int): Owlet[Int] = {
     val state = Var(default)
     val input = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
@@ -98,19 +101,19 @@ object DOM {
     Owlet(List(input), state)
   }
 
-  def boolean(name: String = "_", default: Boolean): Owlet[Boolean] = {
+  def boolean(name: String, default: Boolean): Owlet[Boolean] = {
     val sink = Var(default)
     val input = document.createElement("input").asInstanceOf[html.Input]
     input.`type` = "checkbox"
     input.name = name
-    input.className = "owlet-input-" + name
+    input.className = "owlet-input-" + normalize(name)
     input.checked = default
     input.onchange = e => sink := e.target.asInstanceOf[html.Input].checked
     Owlet(List(input), sink)
   }
 
   def intSlider(
-      name: String = "_",
+      name: String,
       min: Int,
       max: Int,
       default: Int
@@ -131,13 +134,12 @@ object DOM {
       t: String,
       default: A,
       transform: Event => Unit,
-      className: String = "_"
   ) = {
     val input: html.Input =
       document.createElement("input").asInstanceOf[html.Input]
     input.`type` = t
     input.name = n
-    input.className = "owlet-input-" + className
+    input.className = "owlet-input " + normalize(n)
     input.defaultValue = default.toString
     input.oninput = e => transform(e)
     input
@@ -147,7 +149,7 @@ object DOM {
     * Select
     */
   def select(
-      name: String = "_",
+      name: String,
       source: Observable[Map[String, String]],
       default: String
   ): Owlet[String] = {
@@ -169,7 +171,7 @@ object DOM {
   /**
     * button emit `default` value immediatly and emit `pressed` value every time it's clicked
     */
-  def button[A](name: String = "_", default: A, pressed: A) = {
+  def button[A](name: String, default: A, pressed: A) = {
     val el = document.createElement("button").asInstanceOf[html.Button]
     el.appendChild(document.createTextNode(name))
     val sink = Var(default)
@@ -192,7 +194,7 @@ object DOM {
     val el = document.createElement("div").asInstanceOf[html.Div]
     el.id = id
     className.foreach(c => el.className = c.mkString(" "))
-    inner.nodes.foreach(el.appendChild(_))
+    inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
   }
 
@@ -200,7 +202,7 @@ object DOM {
     val el = document.createElement("label").asInstanceOf[html.Label]
     el.htmlFor = "owlet-input-" + name
     el.appendChild(document.createTextNode(name))
-    inner.nodes.foreach(el.appendChild(_))
+    inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
   }
 
@@ -216,7 +218,40 @@ object DOM {
       }
       owlets.foreach { owlet =>
         val li = document.createElement("li").asInstanceOf[html.LI]
-        owlet.nodes.foreach(li.appendChild(_))
+        owlet.nodes.foreach(li.appendChild)
+        ul.appendChild(li)
+      }
+      owlets.sequence.signal.foreach(sink := _)
+    }
+    Owlet(List(ul), sink)
+  }
+
+  def removableList[A](
+      items: Observable[List[Owlet[A]]],
+      actions: Var[List[Owlet[String]] => List[Owlet[String]]]
+  ): Owlet[List[A]] = {
+    val sink = Var(List[A]())
+    val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
+    items.foreach { owlets =>
+      println(owlets)
+      while (ul.lastChild != null) {
+        ul.removeChild(ul.lastChild)
+      }
+      owlets.foreach { owlet =>
+        val li = document.createElement("li").asInstanceOf[html.LI]
+        owlet.nodes.foreach { node =>
+          val el = document.createElement("div").asInstanceOf[html.Div]
+          el.appendChild(node)
+          val removeButton =
+            document.createElement("button").asInstanceOf[html.Button]
+          removeButton.appendChild(document.createTextNode("x"))
+          removeButton.onclick = _ => {
+            actions := (todos => todos diff List(owlet))
+            ul.removeChild(li)
+          }
+          el.appendChild(removeButton)
+          li.appendChild(el)
+        }
         ul.appendChild(li)
       }
       owlets.sequence.signal.foreach(sink := _)
@@ -250,11 +285,13 @@ object DOM {
     */
   def render[A](owlet: Owlet[A], selector: String) = {
     owlet.nodes
-      .foreach(document.querySelector(selector).appendChild(_))
+      .foreach(document.querySelector(selector).appendChild)
   }
 
   def renderOutput[A](owlet: Owlet[A], selector: String) = {
     output(owlet)
-      .foreach(document.querySelector(selector).appendChild(_))
+      .foreach(document.querySelector(selector).appendChild)
   }
+
+  private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase
 }

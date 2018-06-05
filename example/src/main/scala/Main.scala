@@ -108,7 +108,7 @@ object Main {
       render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
     }
 
-    // Mustash
+    // Scala Tags
     {
       val col = intSlider("col", 1, 20, 8)
       val row = intSlider("row", 1, 20, 8)
