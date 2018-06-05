@@ -38,30 +38,71 @@
 
 <h2 id="example-5-checkboxes">Example 5: Checkboxes</h2>
 
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span><span class="n">boolean</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="kc">false</span><span class="o">),</span> <span class="n">boolean</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="kc">true</span><span class="o">)).</span><span class="n">mapN</span><span class="o">(</span><span class="k">_</span> <span class="o">&amp;&amp;</span> <span class="k">_</span><span class="o">),</span>
+</code></pre></div></div>
+
 <div id="example-5"></div>
 
 <h2 id="example-6-buttons">Example 6: Buttons</h2>
 
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">button</span><span class="o">(</span><span class="s">"increament"</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">).</span><span class="n">fold</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
+</code></pre></div></div>
+
 <div id="example-6"></div>
 
 <h2 id="example-7-adding-items-to-a-list">Example 7: Adding items to a list</h2>
-
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>val emptyList = const(List[String]()) _
+val addItem = (s: String) =&gt; List(s)
+val actions = button("add", emptyList, addItem) &lt;*&gt;
+              string("add item","Orange")
+val list = actions.fold(List[String]())(_ ::: _)
+</code></pre></div></div>
 <div id="example-7"></div>
 
 <h2 id="example-8-multiple-buttons">Example 8: Multiple buttons</h2>
-
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">val</span> <span class="n">intId</span> <span class="k">=</span> <span class="n">identity</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span>
+<span class="k">val</span> <span class="n">inc</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"+ 1"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">dec</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"- 1"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">neg</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"+/-"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="o">-</span><span class="n">x</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">reset</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"reset"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="mi">0</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">buttons</span> <span class="k">=</span> <span class="n">inc</span> <span class="o">&lt;+&gt;</span> <span class="n">dec</span> <span class="o">&lt;+&gt;</span> <span class="n">neg</span> <span class="o">&lt;+&gt;</span> <span class="n">reset</span>
+<span class="n">buttons</span><span class="o">.</span><span class="n">fold</span><span class="o">(</span><span class="mi">0</span><span class="o">)((</span><span class="n">acc</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">f</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="o">(</span><span class="n">acc</span><span class="o">))</span>
+<span class="o">)</span>
+</code></pre></div></div>
 <div id="example-8"></div>
 
-<h2 id="example-9-resizable-lists">Example 9: Resizable lists</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  val emptyList = const(List[Owlet[Int]]()) _
+val addItem = (s: Int) =&gt; List(int("new item", s))
+val actions = button("add", emptyList, addItem) &lt;*&gt; int("add item", 0)
+val inputs = list(actions.fold(List[Owlet[Int]]())(_ ::: _))
+val sum = fx((a: List[List[Int]]) =&gt; a.flatten.sum, List(inputs))
+render(actions *&gt; inputs *&gt; sum, "#example-9")
+</code></pre></div></div>
 
+<h2 id="example-9-resizable-lists">Example 9: Resizable lists</h2>
 <div id="example-9"></div>
 
 <h2 id="example-10-spreadsheet-like">Example 10: Spreadsheet like</h2>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">a1</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a1"</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">a2</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a2"</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">a3</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a3"</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">fx</span><span class="o">((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">sum</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">product</span> <span class="k">=</span> <span class="n">fx</span><span class="o">(((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">product</span><span class="o">),</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">))</span>
+<span class="n">render</span><span class="o">(</span><span class="n">a1</span> <span class="o">*&gt;</span> <span class="n">a2</span> <span class="o">*&gt;</span> <span class="n">a3</span> <span class="o">*&gt;</span> <span class="n">sum</span> <span class="o">*&gt;</span> <span class="n">product</span><span class="o">,</span> <span class="s">"#example-10"</span><span class="o">)</span>
+</code></pre></div></div>
 
 <div id="example-10"></div>
 
 <h2 id="example-11-scala-tag">Example 11: Scala Tag</h2>
 
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">col</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"col"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">row</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"row"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
+<span class="k">import</span> <span class="nn">scalatags.Text.all._</span>
+<span class="n">renderOutput</span><span class="o">((</span><span class="n">col</span><span class="o">,</span> <span class="n">row</span><span class="o">).</span><span class="n">mapN</span> <span class="o">{</span> <span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span> <span class="k">=&gt;</span>
+  <span class="n">table</span><span class="o">((</span><span class="mi">1</span> <span class="n">to</span> <span class="n">r</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">ri</span> <span class="k">=&gt;</span> <span class="n">tr</span><span class="o">((</span><span class="mi">1</span> <span class="n">to</span> <span class="n">c</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">ci</span> <span class="k">=&gt;</span> <span class="n">td</span><span class="o">(</span><span class="n">s</span><span class="s">"$ri.$ci"</span><span class="o">))))).</span><span class="n">render</span>
+<span class="o">},</span> <span class="s">"#example-11"</span><span class="o">)</span>
+</code></pre></div></div>
 <div id="example-11"></div>
 
 <script src="demo/owlet-opt.js"></script>
