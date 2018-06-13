@@ -121,20 +121,26 @@ val list = actions.fold(List[String]())(_ ::: _)
 
 <h2 id="example-10-spreadsheet-like">Example 10: Spreadsheet like</h2>
 
-<p>This</p>
+<p>In spreadsheet it’s very easy to do this:</p>
+
+<p><img src="https://www.evernote.com/l/ABcu84jUnGdFsaYpZSTMP1pLLIZRjBeo-ngB/image.png" alt="" /></p>
+
+<p>and we can do exactly the same thing programmatically</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">a1</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a1"</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">a2</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a2"</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">a3</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a3"</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">fx</span><span class="o">((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">sum</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">))</span>
-<span class="k">val</span> <span class="n">product</span> <span class="k">=</span> <span class="n">fx</span><span class="o">(((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">product</span><span class="o">),</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">product</span> <span class="k">=</span> <span class="n">fx</span><span class="o">(((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">product</span><span class="o">),</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">,</span> <span class="n">sum</span><span class="o">))</span>
 <span class="n">render</span><span class="o">(</span><span class="n">a1</span> <span class="o">*&gt;</span> <span class="n">a2</span> <span class="o">*&gt;</span> <span class="n">a3</span> <span class="o">*&gt;</span> <span class="n">sum</span> <span class="o">*&gt;</span> <span class="n">product</span><span class="o">,</span> <span class="s">"#example-10"</span><span class="o">)</span>
 </code></pre></div></div>
 
 <div id="example-10"></div>
 
 <h2 id="example-11-scala-tag">Example 11: Scala Tag</h2>
-<p>hook up</p>
+
+<p>easy to hook up with any template engine like Scala Tag reactively render complex UI</p>
+
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">col</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"col"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">row</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"row"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
 <span class="k">import</span> <span class="nn">scalatags.Text.all._</span>
