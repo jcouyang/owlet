@@ -4312,6 +4312,7 @@ $c_Lus_oyanglul_owlet_DOM$.prototype.normalize__p1__T__T = (function(s) {
   return $as_T(thiz.toLowerCase())
 });
 $c_Lus_oyanglul_owlet_DOM$.prototype.render__Lus_oyanglul_owlet_Owlet__T__V = (function(owlet, selector) {
+  owlet.signal$1.subscribe__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable($m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler());
   var this$1 = owlet.nodes$1;
   var eta$0$1 = $m_Lorg_scalajs_dom_package$().document__Lorg_scalajs_dom_raw_HTMLDocument().querySelector(selector);
   var these = this$1;
@@ -4410,58 +4411,58 @@ $c_Lus_oyanglul_owlettodomvc_Main$.prototype.init___ = (function() {
   return this
 });
 $c_Lus_oyanglul_owlettodomvc_Main$.prototype.main__AT__V = (function(args) {
-  var initial = $m_sci_Nil$();
-  var s = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
-  var todos = new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler(initial, s);
-  var initial$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+  var initial = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x$2) {
       var x = $as_sci_List(x$2);
       return x
     })
   })(this));
-  var s$1 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
-  var actions = new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler(initial$1, s$1);
-  var f$1 = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function(this$2$1, todos$1) {
-    return (function(todo$2, f$2) {
-      var todo = $as_sci_List(todo$2);
-      var f = $as_F1(f$2);
-      var next = $as_sci_List(f.apply__O__O(todo));
-      todos$1.$$colon$eq__O__Lmonix_execution_Ack(next);
-      return next
+  var s = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
+  var actions = new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler(initial, s);
+  var seed = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$2$1) {
+    return (function() {
+      return $m_sci_Nil$()
     })
-  })(this, todos));
-  var listOfTodos = new $c_Lmonix_reactive_internal_builders_CombineLatest2Observable().init___Lmonix_reactive_Observable__Lmonix_reactive_Observable__F2(todos, actions, f$1);
-  var notAddItem = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1) {
+  })(this));
+  var op = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function(this$3) {
+    return (function(owlets$2, f$2) {
+      var owlets = $as_sci_List(owlets$2);
+      var f = $as_F1(f$2);
+      return $as_sci_List(f.apply__O__O(owlets))
+    })
+  })(this));
+  var listOfTodos = new $c_Lmonix_reactive_internal_operators_ScanObservable().init___Lmonix_reactive_Observable__F0__F2(actions, seed, op);
+  var notAddItem = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4) {
     return (function(y$2) {
       var x$1 = $m_sci_Nil$();
       return x$1
     })
   })(this));
-  var addItem = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4$1) {
+  var addItem = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$5$1) {
     return (function(s$2) {
-      var s$3 = $as_T(s$2);
+      var s$1 = $as_T(s$2);
       $m_sci_List$();
-      var xs = new $c_sjs_js_WrappedArray().init___sjs_js_Array([$m_Lus_oyanglul_owlet_DOM$().string__T__T__Lus_oyanglul_owlet_Owlet("todo-item", s$3)]);
-      var this$6 = $m_sci_List$();
-      var cbf = this$6.ReusableCBFInstance$2;
+      var xs = new $c_sjs_js_WrappedArray().init___sjs_js_Array([$m_Lus_oyanglul_owlet_DOM$().string__T__T__Lus_oyanglul_owlet_Owlet("todo-item", s$1)]);
+      var this$7 = $m_sci_List$();
+      var cbf = this$7.ReusableCBFInstance$2;
       return $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs, cbf))
     })
   })(this));
   var jsx$2 = $m_Lus_oyanglul_owlet_DOM$();
   var jsx$1 = $m_Lus_oyanglul_owlet_DOM$().string__T__T__Lus_oyanglul_owlet_Owlet("new-todo", "");
-  var s$4 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
-  var newTodo = jsx$2.div__Lus_oyanglul_owlet_Owlet__Lmonix_reactive_Observable__T__Lus_oyanglul_owlet_Owlet(jsx$1, new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler("header", s$4), "");
-  var this$11 = $m_Lcats_implicits$();
-  var this$8 = $m_Lcats_implicits$();
+  var s$3 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
+  var newTodo = jsx$2.div__Lus_oyanglul_owlet_Owlet__Lmonix_reactive_Observable__T__Lus_oyanglul_owlet_Owlet(jsx$1, new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler("header", s$3), "");
+  var this$12 = $m_Lcats_implicits$();
+  var this$9 = $m_Lcats_implicits$();
   var fa = $m_Lus_oyanglul_owlet_DOM$().button__T__O__O__Lus_oyanglul_owlet_Owlet("add", notAddItem, addItem);
   var F = $m_Lus_oyanglul_owlet_Owlet$().applicativeOwlet$1;
-  var this$9 = new $c_Lcats_syntax_ApplySyntax$$anon$1().init___Lcats_syntax_ApplySyntax__O__Lcats_Apply(this$8, fa, F);
-  var this$10 = this$9.typeClassInstance$1;
-  var ff = this$9.self$1;
-  var target = this$10.ap__O__O__O(ff, newTodo);
+  var this$10 = new $c_Lcats_syntax_ApplySyntax$$anon$1().init___Lcats_syntax_ApplySyntax__O__Lcats_Apply(this$9, fa, F);
+  var this$11 = this$10.typeClassInstance$1;
+  var ff = this$10.self$1;
+  var target = this$11.ap__O__O__O(ff, newTodo);
   var tc = $m_Lus_oyanglul_owlet_Owlet$().applicativeOwlet$1;
-  var this$12 = new $c_Lcats_Functor$ToFunctorOps$$anon$4().init___Lcats_Functor$ToFunctorOps__O__Lcats_Functor(this$11, target, tc);
-  var f$3 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$5$1, actions$1) {
+  var this$13 = new $c_Lcats_Functor$ToFunctorOps$$anon$4().init___Lcats_Functor$ToFunctorOps__O__Lcats_Functor(this$12, target, tc);
+  var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$6$1, actions$1) {
     return (function(t$2) {
       var t = $as_sci_List(t$2);
       return actions$1.$$colon$eq__O__Lmonix_execution_Ack(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1, t$1) {
@@ -4469,25 +4470,18 @@ $c_Lus_oyanglul_owlettodomvc_Main$.prototype.main__AT__V = (function(args) {
           var a = $as_sci_List(a$2);
           return t$1.$$colon$colon$colon__sci_List__sci_List(a)
         })
-      })(this$5$1, t)))
+      })(this$6$1, t)))
     })
   })(this, actions));
-  var addNewTodo = $as_Lus_oyanglul_owlet_Owlet(this$12.typeClassInstance$1.map__O__F1__O(this$12.self$1, f$3));
-  addNewTodo.signal$1.foreach__F1__Lmonix_execution_Scheduler__Lmonix_execution_CancelableFuture(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$6$1) {
-    return (function(x$3$2) {
-      var this$14 = $m_s_Console$();
-      var this$15 = $as_Ljava_io_PrintStream(this$14.outVar$2.v$1);
-      this$15.java$lang$JSConsoleBasedPrintStream$$printString__T__V((x$3$2 + "\n"))
-    })
-  })(this)), $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler());
+  var addNewTodo = $as_Lus_oyanglul_owlet_Owlet(this$13.typeClassInstance$1.map__O__F1__O(this$13.self$1, f$1));
   var todoUl = $m_Lus_oyanglul_owlet_DOM$().removableList__Lmonix_reactive_Observable__Lmonix_reactive_subjects_Var__Lus_oyanglul_owlet_Owlet(listOfTodos, actions);
   var jsx$3 = $m_Lus_oyanglul_owlet_DOM$();
-  var this$16 = $m_Lcats_implicits$();
+  var this$14 = $m_Lcats_implicits$();
   var F$1 = $m_Lus_oyanglul_owlet_Owlet$().applicativeOwlet$1;
-  var this$17 = new $c_Lcats_syntax_ApplySyntax$$anon$1().init___Lcats_syntax_ApplySyntax__O__Lcats_Apply(this$16, addNewTodo, F$1);
-  var this$18 = this$17.typeClassInstance$1;
-  var fa$1 = this$17.self$1;
-  jsx$3.render__Lus_oyanglul_owlet_Owlet__T__V($as_Lus_oyanglul_owlet_Owlet($f_Lcats_Apply__productR__O__O__O(this$18, fa$1, todoUl)), "#application-container")
+  var this$15 = new $c_Lcats_syntax_ApplySyntax$$anon$1().init___Lcats_syntax_ApplySyntax__O__Lcats_Apply(this$14, addNewTodo, F$1);
+  var this$16 = this$15.typeClassInstance$1;
+  var fa$1 = this$15.self$1;
+  jsx$3.render__Lus_oyanglul_owlet_Owlet__T__V($as_Lus_oyanglul_owlet_Owlet($f_Lcats_Apply__productR__O__O__O(this$16, fa$1, todoUl)), "#application-container")
 });
 var $d_Lus_oyanglul_owlettodomvc_Main$ = new $TypeData().initClass({
   Lus_oyanglul_owlettodomvc_Main$: 0
@@ -10242,9 +10236,34 @@ function $h_Lmonix_reactive_Observable() {
   /*<skip>*/
 }
 $h_Lmonix_reactive_Observable.prototype = $c_Lmonix_reactive_Observable.prototype;
+$c_Lmonix_reactive_Observable.prototype.subscribe__F1__F1__F0__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable = (function(nextFn, errorFn, completedFn, s) {
+  return this.subscribe__Lmonix_reactive_observers_Subscriber__Lmonix_execution_Cancelable(new $c_Lmonix_reactive_Observable$$anon$4().init___Lmonix_reactive_Observable__F1__F1__F0__Lmonix_execution_Scheduler(this, nextFn, errorFn, completedFn, s))
+});
 $c_Lmonix_reactive_Observable.prototype.map__F1__Lmonix_reactive_Observable = (function(f) {
   var operator = new $c_Lmonix_reactive_internal_operators_MapOperator().init___F1(f);
   return new $c_Lmonix_reactive_internal_operators_LiftByOperatorObservable().init___Lmonix_reactive_Observable__F1(this, operator)
+});
+$c_Lmonix_reactive_Observable.prototype.subscribe__F1__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable = (function(nextFn, s) {
+  return this.subscribe__F1__F1__F0__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable(nextFn, new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, s$1) {
+    return (function(error$2) {
+      var error = $as_jl_Throwable(error$2);
+      s$1.reportFailure__jl_Throwable__V(error)
+    })
+  })(this, s)), new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$2) {
+    return (function() {
+      return (void 0)
+    })
+  })(this)), s)
+});
+$c_Lmonix_reactive_Observable.prototype.subscribe__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable = (function(s) {
+  return this.subscribe__F1__Lmonix_execution_Scheduler__Lmonix_execution_Cancelable(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+    return (function(x$1$2) {
+      return $m_Lmonix_execution_Ack$Continue$()
+    })
+  })(this)), s)
+});
+$c_Lmonix_reactive_Observable.prototype.subscribe__Lmonix_reactive_observers_Subscriber__Lmonix_execution_Cancelable = (function(subscriber) {
+  return this.unsafeSubscribeFn__Lmonix_reactive_observers_Subscriber__Lmonix_execution_Cancelable($m_Lmonix_reactive_observers_SafeSubscriber$().apply__Lmonix_reactive_observers_Subscriber__Lmonix_reactive_observers_SafeSubscriber(subscriber))
 });
 $c_Lmonix_reactive_Observable.prototype.foreach__F1__Lmonix_execution_Scheduler__Lmonix_execution_CancelableFuture = (function(cb, s) {
   var p = new $c_s_concurrent_impl_Promise$DefaultPromise().init___();
@@ -10331,6 +10350,44 @@ $c_Lmonix_reactive_OverflowStrategy.prototype.init___ = (function() {
   this.isSynchronous$1 = false;
   return this
 });
+/** @constructor */
+function $c_Lmonix_reactive_observers_SafeSubscriber$() {
+  $c_O.call(this)
+}
+$c_Lmonix_reactive_observers_SafeSubscriber$.prototype = new $h_O();
+$c_Lmonix_reactive_observers_SafeSubscriber$.prototype.constructor = $c_Lmonix_reactive_observers_SafeSubscriber$;
+/** @constructor */
+function $h_Lmonix_reactive_observers_SafeSubscriber$() {
+  /*<skip>*/
+}
+$h_Lmonix_reactive_observers_SafeSubscriber$.prototype = $c_Lmonix_reactive_observers_SafeSubscriber$.prototype;
+$c_Lmonix_reactive_observers_SafeSubscriber$.prototype.init___ = (function() {
+  return this
+});
+$c_Lmonix_reactive_observers_SafeSubscriber$.prototype.apply__Lmonix_reactive_observers_Subscriber__Lmonix_reactive_observers_SafeSubscriber = (function(subscriber) {
+  if ($is_Lmonix_reactive_observers_SafeSubscriber(subscriber)) {
+    var x2 = $as_Lmonix_reactive_observers_SafeSubscriber(subscriber);
+    return x2
+  } else {
+    return new $c_Lmonix_reactive_observers_SafeSubscriber().init___Lmonix_reactive_observers_Subscriber(subscriber)
+  }
+});
+var $d_Lmonix_reactive_observers_SafeSubscriber$ = new $TypeData().initClass({
+  Lmonix_reactive_observers_SafeSubscriber$: 0
+}, false, "monix.reactive.observers.SafeSubscriber$", {
+  Lmonix_reactive_observers_SafeSubscriber$: 1,
+  O: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lmonix_reactive_observers_SafeSubscriber$.prototype.$classData = $d_Lmonix_reactive_observers_SafeSubscriber$;
+var $n_Lmonix_reactive_observers_SafeSubscriber$ = (void 0);
+function $m_Lmonix_reactive_observers_SafeSubscriber$() {
+  if ((!$n_Lmonix_reactive_observers_SafeSubscriber$)) {
+    $n_Lmonix_reactive_observers_SafeSubscriber$ = new $c_Lmonix_reactive_observers_SafeSubscriber$().init___()
+  };
+  return $n_Lmonix_reactive_observers_SafeSubscriber$
+}
 function $is_Lmonix_reactive_observers_Subscriber(obj) {
   return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lmonix_reactive_observers_Subscriber)))
 }
@@ -15783,6 +15840,59 @@ var $d_Lmonix_reactive_internal_operators_LiftByOperatorObservable = new $TypeDa
 });
 $c_Lmonix_reactive_internal_operators_LiftByOperatorObservable.prototype.$classData = $d_Lmonix_reactive_internal_operators_LiftByOperatorObservable;
 /** @constructor */
+function $c_Lmonix_reactive_internal_operators_ScanObservable() {
+  $c_Lmonix_reactive_Observable.call(this);
+  this.source$2 = null;
+  this.initial$2 = null;
+  this.monix$reactive$internal$operators$ScanObservable$$f$f = null
+}
+$c_Lmonix_reactive_internal_operators_ScanObservable.prototype = new $h_Lmonix_reactive_Observable();
+$c_Lmonix_reactive_internal_operators_ScanObservable.prototype.constructor = $c_Lmonix_reactive_internal_operators_ScanObservable;
+/** @constructor */
+function $h_Lmonix_reactive_internal_operators_ScanObservable() {
+  /*<skip>*/
+}
+$h_Lmonix_reactive_internal_operators_ScanObservable.prototype = $c_Lmonix_reactive_internal_operators_ScanObservable.prototype;
+$c_Lmonix_reactive_internal_operators_ScanObservable.prototype.init___Lmonix_reactive_Observable__F0__F2 = (function(source, initial, f) {
+  this.source$2 = source;
+  this.initial$2 = initial;
+  this.monix$reactive$internal$operators$ScanObservable$$f$f = f;
+  return this
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable.prototype.unsafeSubscribeFn__Lmonix_reactive_observers_Subscriber__Lmonix_execution_Cancelable = (function(out) {
+  var streamErrors = true;
+  try {
+    var initialState = this.initial$2.apply__O();
+    streamErrors = false;
+    return this.source$2.unsafeSubscribeFn__Lmonix_reactive_observers_Subscriber__Lmonix_execution_Cancelable(new $c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1().init___Lmonix_reactive_internal_operators_ScanObservable__Lmonix_reactive_observers_Subscriber__O(this, out, initialState))
+  } catch (e) {
+    var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+    if ((e$2 !== null)) {
+      var o11 = $m_Lmonix_execution_misc_NonFatal$().unapply__jl_Throwable__s_Option(e$2);
+      if ((!o11.isEmpty__Z())) {
+        var ex = $as_jl_Throwable(o11.get__O());
+        if (streamErrors) {
+          out.onError__jl_Throwable__V(ex);
+          return $m_Lmonix_execution_Cancelable$().empty$1
+        }
+      };
+      throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+    } else {
+      throw e
+    }
+  }
+});
+var $d_Lmonix_reactive_internal_operators_ScanObservable = new $TypeData().initClass({
+  Lmonix_reactive_internal_operators_ScanObservable: 0
+}, false, "monix.reactive.internal.operators.ScanObservable", {
+  Lmonix_reactive_internal_operators_ScanObservable: 1,
+  Lmonix_reactive_Observable: 1,
+  O: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable.prototype.$classData = $d_Lmonix_reactive_internal_operators_ScanObservable;
+/** @constructor */
 function $c_Lmonix_reactive_subjects_Var() {
   $c_Lmonix_reactive_Observable.call(this);
   this.value$2 = null;
@@ -17991,6 +18101,52 @@ var $d_Lmonix_execution_cancelables_CompositeCancelable = new $TypeData().initCl
 });
 $c_Lmonix_execution_cancelables_CompositeCancelable.prototype.$classData = $d_Lmonix_execution_cancelables_CompositeCancelable;
 /** @constructor */
+function $c_Lmonix_reactive_Observable$$anon$4() {
+  $c_O.call(this);
+  this.scheduler$1 = null;
+  this.nextFn$1$1 = null;
+  this.errorFn$1$1 = null;
+  this.completedFn$1$1 = null
+}
+$c_Lmonix_reactive_Observable$$anon$4.prototype = new $h_O();
+$c_Lmonix_reactive_Observable$$anon$4.prototype.constructor = $c_Lmonix_reactive_Observable$$anon$4;
+/** @constructor */
+function $h_Lmonix_reactive_Observable$$anon$4() {
+  /*<skip>*/
+}
+$h_Lmonix_reactive_Observable$$anon$4.prototype = $c_Lmonix_reactive_Observable$$anon$4.prototype;
+$c_Lmonix_reactive_Observable$$anon$4.prototype.scheduler__Lmonix_execution_Scheduler = (function() {
+  return this.scheduler$1
+});
+$c_Lmonix_reactive_Observable$$anon$4.prototype.onNext__O__s_concurrent_Future = (function(elem) {
+  return $as_s_concurrent_Future(this.nextFn$1$1.apply__O__O(elem))
+});
+$c_Lmonix_reactive_Observable$$anon$4.prototype.init___Lmonix_reactive_Observable__F1__F1__F0__Lmonix_execution_Scheduler = (function($$outer, nextFn$1, errorFn$1, completedFn$1, s$1) {
+  this.nextFn$1$1 = nextFn$1;
+  this.errorFn$1$1 = errorFn$1;
+  this.completedFn$1$1 = completedFn$1;
+  this.scheduler$1 = s$1;
+  return this
+});
+$c_Lmonix_reactive_Observable$$anon$4.prototype.onComplete__V = (function() {
+  var this$1 = this.completedFn$1$1;
+  this$1.apply__O()
+});
+$c_Lmonix_reactive_Observable$$anon$4.prototype.onError__jl_Throwable__V = (function(ex) {
+  this.errorFn$1$1.apply__O__O(ex)
+});
+var $d_Lmonix_reactive_Observable$$anon$4 = new $TypeData().initClass({
+  Lmonix_reactive_Observable$$anon$4: 0
+}, false, "monix.reactive.Observable$$anon$4", {
+  Lmonix_reactive_Observable$$anon$4: 1,
+  O: 1,
+  Lmonix_reactive_observers_Subscriber: 1,
+  Lmonix_reactive_Observer: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lmonix_reactive_Observable$$anon$4.prototype.$classData = $d_Lmonix_reactive_Observable$$anon$4;
+/** @constructor */
 function $c_Lmonix_reactive_internal_builders_CombineLatest2Observable$$anon$1() {
   $c_O.call(this);
   this.scheduler$1 = null;
@@ -18370,6 +18526,83 @@ var $d_Lmonix_reactive_internal_operators_MapOperator$$anon$1 = new $TypeData().
 });
 $c_Lmonix_reactive_internal_operators_MapOperator$$anon$1.prototype.$classData = $d_Lmonix_reactive_internal_operators_MapOperator$$anon$1;
 /** @constructor */
+function $c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1() {
+  $c_O.call(this);
+  this.scheduler$1 = null;
+  this.isDone$1 = false;
+  this.state$1 = null;
+  this.$$outer$1 = null;
+  this.out$1$1 = null
+}
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype = new $h_O();
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.constructor = $c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1;
+/** @constructor */
+function $h_Lmonix_reactive_internal_operators_ScanObservable$$anon$1() {
+  /*<skip>*/
+}
+$h_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype = $c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype;
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.scheduler__Lmonix_execution_Scheduler = (function() {
+  return this.scheduler$1
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.onNext__O__s_concurrent_Future = (function(elem) {
+  var streamError = true;
+  try {
+    this.state$1 = this.$$outer$1.monix$reactive$internal$operators$ScanObservable$$f$f.apply__O__O__O(this.state$1, elem);
+    streamError = false;
+    return this.out$1$1.onNext__O__s_concurrent_Future(this.state$1)
+  } catch (e) {
+    var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+    if ((e$2 !== null)) {
+      var o11 = $m_Lmonix_execution_misc_NonFatal$().unapply__jl_Throwable__s_Option(e$2);
+      if ((!o11.isEmpty__Z())) {
+        var ex = $as_jl_Throwable(o11.get__O());
+        if (streamError) {
+          this.onError__jl_Throwable__V(ex);
+          return $m_Lmonix_execution_Ack$Stop$()
+        }
+      };
+      throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+    } else {
+      throw e
+    }
+  }
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.onComplete__V = (function() {
+  if ((!this.isDone$1)) {
+    this.isDone$1 = true;
+    this.out$1$1.onComplete__V()
+  }
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.onError__jl_Throwable__V = (function(ex) {
+  if ((!this.isDone$1)) {
+    this.isDone$1 = true;
+    this.out$1$1.onError__jl_Throwable__V(ex)
+  }
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.init___Lmonix_reactive_internal_operators_ScanObservable__Lmonix_reactive_observers_Subscriber__O = (function($$outer, out$1, initialState$1) {
+  if (($$outer === null)) {
+    throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(null)
+  } else {
+    this.$$outer$1 = $$outer
+  };
+  this.out$1$1 = out$1;
+  this.scheduler$1 = out$1.scheduler__Lmonix_execution_Scheduler();
+  this.isDone$1 = false;
+  this.state$1 = initialState$1;
+  return this
+});
+var $d_Lmonix_reactive_internal_operators_ScanObservable$$anon$1 = new $TypeData().initClass({
+  Lmonix_reactive_internal_operators_ScanObservable$$anon$1: 0
+}, false, "monix.reactive.internal.operators.ScanObservable$$anon$1", {
+  Lmonix_reactive_internal_operators_ScanObservable$$anon$1: 1,
+  O: 1,
+  Lmonix_reactive_observers_Subscriber: 1,
+  Lmonix_reactive_Observer: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lmonix_reactive_internal_operators_ScanObservable$$anon$1.prototype.$classData = $d_Lmonix_reactive_internal_operators_ScanObservable$$anon$1;
+/** @constructor */
 function $c_Lmonix_reactive_observers_BufferedSubscriber$() {
   $c_O.call(this)
 }
@@ -18668,6 +18901,170 @@ var $d_Lmonix_reactive_observers_ConnectableSubscriber$$anon$1 = new $TypeData()
   Ljava_io_Serializable: 1
 });
 $c_Lmonix_reactive_observers_ConnectableSubscriber$$anon$1.prototype.$classData = $d_Lmonix_reactive_observers_ConnectableSubscriber$$anon$1;
+/** @constructor */
+function $c_Lmonix_reactive_observers_SafeSubscriber() {
+  $c_O.call(this);
+  this.subscriber$1 = null;
+  this.scheduler$1 = null;
+  this.isDone$1 = false;
+  this.ack$1 = null
+}
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype = new $h_O();
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.constructor = $c_Lmonix_reactive_observers_SafeSubscriber;
+/** @constructor */
+function $h_Lmonix_reactive_observers_SafeSubscriber() {
+  /*<skip>*/
+}
+$h_Lmonix_reactive_observers_SafeSubscriber.prototype = $c_Lmonix_reactive_observers_SafeSubscriber.prototype;
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.signalError__p1__jl_Throwable__V = (function(ex) {
+  if ((!this.isDone$1)) {
+    this.isDone$1 = true;
+    try {
+      this.subscriber$1.onError__jl_Throwable__V(ex)
+    } catch (e) {
+      var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+      if ((e$2 !== null)) {
+        if ($m_Lmonix_execution_misc_NonFatal$().apply__jl_Throwable__Z(e$2)) {
+          this.scheduler$1.reportFailure__jl_Throwable__V(e$2)
+        } else {
+          throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+        }
+      } else {
+        throw e
+      }
+    }
+  }
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.flattenAndCatchFailures__p1__s_concurrent_Future__s_concurrent_Future = (function(ack) {
+  if ((ack === $m_Lmonix_execution_Ack$Continue$())) {
+    return $m_Lmonix_execution_Ack$Continue$()
+  } else if (ack.isCompleted__Z()) {
+    return this.handleFailure__p1__s_util_Try__Lmonix_execution_Ack($as_s_util_Try(ack.value__s_Option().get__O()))
+  } else {
+    var p = new $c_s_concurrent_impl_Promise$DefaultPromise().init___();
+    ack.onComplete__F1__s_concurrent_ExecutionContext__V(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, p$1) {
+      return (function(result$2) {
+        var result = $as_s_util_Try(result$2);
+        var value = $this.handleFailure__p1__s_util_Try__Lmonix_execution_Ack(result);
+        return $f_s_concurrent_Promise__success__O__s_concurrent_Promise(p$1, value)
+      })
+    })(this, p)), this.scheduler$1);
+    return p
+  }
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.scheduler__Lmonix_execution_Scheduler = (function() {
+  return this.scheduler$1
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.init___Lmonix_reactive_observers_Subscriber = (function(subscriber) {
+  this.subscriber$1 = subscriber;
+  this.scheduler$1 = subscriber.scheduler__Lmonix_execution_Scheduler();
+  this.isDone$1 = false;
+  this.ack$1 = $m_Lmonix_execution_Ack$Continue$();
+  return this
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.onNext__O__s_concurrent_Future = (function(elem) {
+  if ((!this.isDone$1)) {
+    this.ack$1 = this.liftedTree1$1__p1__O__s_concurrent_Future(elem);
+    return this.ack$1
+  } else {
+    return $m_Lmonix_execution_Ack$Stop$()
+  }
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.liftedTree1$1__p1__O__s_concurrent_Future = (function(elem$1) {
+  try {
+    return this.flattenAndCatchFailures__p1__s_concurrent_Future__s_concurrent_Future(this.subscriber$1.onNext__O__s_concurrent_Future(elem$1))
+  } catch (e) {
+    var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+    if ((e$2 !== null)) {
+      if ($m_Lmonix_execution_misc_NonFatal$().apply__jl_Throwable__Z(e$2)) {
+        this.onError__jl_Throwable__V(e$2);
+        return $m_Lmonix_execution_Ack$Stop$()
+      } else {
+        throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+      }
+    } else {
+      throw e
+    }
+  }
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.handleFailure__p1__s_util_Try__Lmonix_execution_Ack = (function(value) {
+  try {
+    var ack = $as_Lmonix_execution_Ack(value.get__O());
+    if ((ack === $m_Lmonix_execution_Ack$Stop$())) {
+      this.isDone$1 = true
+    };
+    return ack
+  } catch (e) {
+    var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+    if ((e$2 !== null)) {
+      if ($m_Lmonix_execution_misc_NonFatal$().apply__jl_Throwable__Z(e$2)) {
+        this.signalError__p1__jl_Throwable__V($as_jl_Throwable(value.failed__s_util_Try().get__O()));
+        return $m_Lmonix_execution_Ack$Stop$()
+      } else {
+        throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+      }
+    } else {
+      throw e
+    }
+  }
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.onComplete__V = (function() {
+  var jsx$1 = $m_Lmonix_execution_Ack$AckExtensions$();
+  var source = this.ack$1;
+  jsx$1.syncOnContinue$extension__s_concurrent_Future__F0__Lmonix_execution_UncaughtExceptionReporter__s_concurrent_Future(source, new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function($this) {
+    return (function() {
+      if ((!$this.isDone$1)) {
+        $this.isDone$1 = true;
+        try {
+          $this.subscriber$1.onComplete__V()
+        } catch (e) {
+          var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
+          if ((e$2 !== null)) {
+            if ($m_Lmonix_execution_misc_NonFatal$().apply__jl_Throwable__Z(e$2)) {
+              $this.scheduler$1.reportFailure__jl_Throwable__V(e$2)
+            } else {
+              throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
+            }
+          } else {
+            throw e
+          }
+        }
+      }
+    })
+  })(this)), this.scheduler$1)
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.onError__jl_Throwable__V = (function(ex) {
+  var jsx$1 = $m_Lmonix_execution_Ack$AckExtensions$();
+  var source = this.ack$1;
+  jsx$1.syncOnContinue$extension__s_concurrent_Future__F0__Lmonix_execution_UncaughtExceptionReporter__s_concurrent_Future(source, new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function($this, ex$1) {
+    return (function() {
+      $this.signalError__p1__jl_Throwable__V(ex$1)
+    })
+  })(this, ex)), this.scheduler$1)
+});
+function $is_Lmonix_reactive_observers_SafeSubscriber(obj) {
+  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lmonix_reactive_observers_SafeSubscriber)))
+}
+function $as_Lmonix_reactive_observers_SafeSubscriber(obj) {
+  return (($is_Lmonix_reactive_observers_SafeSubscriber(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "monix.reactive.observers.SafeSubscriber"))
+}
+function $isArrayOf_Lmonix_reactive_observers_SafeSubscriber(obj, depth) {
+  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.Lmonix_reactive_observers_SafeSubscriber)))
+}
+function $asArrayOf_Lmonix_reactive_observers_SafeSubscriber(obj, depth) {
+  return (($isArrayOf_Lmonix_reactive_observers_SafeSubscriber(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lmonix.reactive.observers.SafeSubscriber;", depth))
+}
+var $d_Lmonix_reactive_observers_SafeSubscriber = new $TypeData().initClass({
+  Lmonix_reactive_observers_SafeSubscriber: 0
+}, false, "monix.reactive.observers.SafeSubscriber", {
+  Lmonix_reactive_observers_SafeSubscriber: 1,
+  O: 1,
+  Lmonix_reactive_observers_Subscriber: 1,
+  Lmonix_reactive_Observer: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lmonix_reactive_observers_SafeSubscriber.prototype.$classData = $d_Lmonix_reactive_observers_SafeSubscriber;
 /** @constructor */
 function $c_Lmonix_reactive_observers_Subscriber$Implementation() {
   $c_O.call(this);
@@ -22913,6 +23310,9 @@ $c_s_util_Failure.prototype.init___jl_Throwable = (function(exception) {
   this.exception$2 = exception;
   return this
 });
+$c_s_util_Failure.prototype.failed__s_util_Try = (function() {
+  return new $c_s_util_Success().init___O(this.exception$2)
+});
 $c_s_util_Failure.prototype.hashCode__I = (function() {
   var this$2 = $m_s_util_hashing_MurmurHash3$();
   return this$2.productHash__s_Product__I__I(this, (-889275714))
@@ -23149,6 +23549,9 @@ $c_s_util_Success.prototype.toString__T = (function() {
 $c_s_util_Success.prototype.init___O = (function(value) {
   this.value$2 = value;
   return this
+});
+$c_s_util_Success.prototype.failed__s_util_Try = (function() {
+  return new $c_s_util_Failure().init___jl_Throwable(new $c_jl_UnsupportedOperationException().init___T("Success.failed"))
 });
 $c_s_util_Success.prototype.hashCode__I = (function() {
   var this$2 = $m_s_util_hashing_MurmurHash3$();

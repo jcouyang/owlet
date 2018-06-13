@@ -2,6 +2,10 @@
 
 <h2 id="example-1-two-number-inputs">Example 1: Two number inputs</h2>
 
+<p><code class="highlighter-rouge">Owlet[_]</code> is instance of typeclass <a href="https://typelevel.org/cats/typeclasses/applicative.html">Applicative</a></p>
+
+<p>So you can use <code class="highlighter-rouge">.mapN</code> which is syntax for typeclass <code class="highlighter-rouge">Apply</code></p>
+
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">baseInput</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"Base"</span><span class="o">,</span> <span class="mf">2.0</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">exponentInput</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"Exponent"</span><span class="o">,</span> <span class="mf">10.0</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">pow</span> <span class="k">=</span> <span class="o">(</span><span class="n">baseInput</span><span class="o">,</span> <span class="n">exponentInput</span><span class="o">)</span> <span class="n">mapN</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span>
@@ -9,6 +13,10 @@
 <div id="example-1"></div>
 
 <h2 id="example-2-semigroup-instance">Example 2: Semigroup instance</h2>
+
+<p><code class="highlighter-rouge">Owlet[_]</code> is also an instance of typeclass <a href="https://typelevel.org/cats/typeclasses/monoid.html">Monoid</a></p>
+
+<p>Here is a simple example of how to concat two string components:</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">helloText</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"hello"</span><span class="o">,</span> <span class="s">"Hello"</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">worldText</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"world"</span><span class="o">,</span> <span class="s">"World"</span><span class="o">)</span>
@@ -18,12 +26,17 @@
 
 <h2 id="example-3-traverse">Example 3: Traverse</h2>
 
+<p><code class="highlighter-rouge">Owlet[_]</code> is an instance of typeclass <a href="https://typelevel.org/cats/typeclasses/traverse.html">Traverse</a></p>
+
+<p>which will help you create a <code class="highlighter-rouge">Owlet[List[A]]</code> from from <code class="highlighter-rouge">List[A]</code></p>
+
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">13</span><span class="o">,</span> <span class="mi">27</span><span class="o">,</span> <span class="mi">42</span><span class="o">).</span><span class="n">traverse</span><span class="o">(</span><span class="n">int</span><span class="o">(</span><span class="s">"n"</span><span class="o">,</span> <span class="k">_</span><span class="o">)).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
 </code></pre></div></div>
 <div id="example-3"></div>
 
 <h2 id="example-4-select-box">Example 4: Select box</h2>
 
+<p>Select box is just like a Map of data</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
   <span class="s">"Chinese"</span> <span class="o">-&gt;</span> <span class="s">"你好"</span><span class="o">,</span>
   <span class="s">"English"</span> <span class="o">-&gt;</span> <span class="s">"Hello"</span><span class="o">,</span>
@@ -38,6 +51,8 @@
 
 <h2 id="example-5-checkboxes">Example 5: Checkboxes</h2>
 
+<p><code class="highlighter-rouge">boolean</code> will be render as <code class="highlighter-rouge">checkbox</code></p>
+
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span><span class="n">boolean</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="kc">false</span><span class="o">),</span> <span class="n">boolean</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="kc">true</span><span class="o">)).</span><span class="n">mapN</span><span class="o">(</span><span class="k">_</span> <span class="o">&amp;&amp;</span> <span class="k">_</span><span class="o">),</span>
 </code></pre></div></div>
 
@@ -45,12 +60,17 @@
 
 <h2 id="example-6-buttons">Example 6: Buttons</h2>
 
+<p>There are two effects from a <code class="highlighter-rouge">button</code>, button down will emit a value and button up will emit another</p>
+
+<p>and you can simply <code class="highlighter-rouge">fold</code> those values into one</p>
+
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">button</span><span class="o">(</span><span class="s">"increament"</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">).</span><span class="n">fold</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
 </code></pre></div></div>
 
 <div id="example-6"></div>
 
 <h2 id="example-7-adding-items-to-a-list">Example 7: Adding items to a list</h2>
+<p>with <code class="highlighter-rouge">button</code>, it’s easy to build a increamental list</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>val emptyList = const(List[String]()) _
 val addItem = (s: String) =&gt; List(s)
 val actions = button("add", emptyList, addItem) &lt;*&gt;
@@ -60,7 +80,11 @@ val list = actions.fold(List[String]())(_ ::: _)
 <div id="example-7"></div>
 
 <h2 id="example-8-multiple-buttons">Example 8: Multiple buttons</h2>
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">val</span> <span class="n">intId</span> <span class="k">=</span> <span class="n">identity</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span>
+
+<p><code class="highlighter-rouge">Owlet[_]</code>  is an instance of <a href="https://typelevel.org/cats/typeclasses/monoidk.html">MonoidK</a> as well</p>
+
+<p>with MonoidK method <code class="highlighter-rouge">&lt;+&gt;</code>, we can easily fold multi actions(like Elm) on our init value:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">intId</span> <span class="k">=</span> <span class="n">identity</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span>
 <span class="k">val</span> <span class="n">inc</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"+ 1"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">dec</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"- 1"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">neg</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"+/-"</span><span class="o">,</span> <span class="n">intId</span><span class="o">,</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="o">-</span><span class="n">x</span><span class="o">)</span>
@@ -68,21 +92,37 @@ val list = actions.fold(List[String]())(_ ::: _)
 <span class="k">val</span> <span class="n">buttons</span> <span class="k">=</span> <span class="n">inc</span> <span class="o">&lt;+&gt;</span> <span class="n">dec</span> <span class="o">&lt;+&gt;</span> <span class="n">neg</span> <span class="o">&lt;+&gt;</span> <span class="n">reset</span>
 <span class="n">buttons</span><span class="o">.</span><span class="n">fold</span><span class="o">(</span><span class="mi">0</span><span class="o">)((</span><span class="n">acc</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">f</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="o">(</span><span class="n">acc</span><span class="o">))</span>
 <span class="o">)</span>
-</code></pre></div></div>
-<div id="example-8"></div>
+<span class="o">``**</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">id</span><span class="o">=</span><span class="s">"example-8"</span> <span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  val emptyList = const(List[Owlet[Int]]()) _
-val addItem = (s: Int) =&gt; List(int("new item", s))
-val actions = button("add", emptyList, addItem) &lt;*&gt; int("add item", 0)
-val inputs = list(actions.fold(List[Owlet[Int]]())(_ ::: _))
-val sum = fx((a: List[List[Int]]) =&gt; a.flatten.sum, List(inputs))
-render(actions *&gt; inputs *&gt; sum, "#example-9")
+<span class="o">#</span><span class="k">#</span> <span class="nc">Example</span> <span class="mi">9</span><span class="k">:</span> <span class="kt">Resizable</span> <span class="kt">lists</span>
+
+<span class="nc">Imaging</span> <span class="n">how</span> <span class="n">many</span> <span class="n">line</span> <span class="n">of</span> <span class="n">code</span> <span class="n">you</span> <span class="n">need</span> <span class="n">to</span> <span class="n">implement</span> <span class="n">a</span> <span class="n">todo</span> <span class="n">list</span><span class="o">?</span>
+
+<span class="o">**</span><span class="nc">JUST</span> <span class="mi">10</span><span class="o">**</span>
+
+<span class="o">```</span> <span class="n">scala</span>
+<span class="k">val</span> <span class="n">actions</span> <span class="k">=</span> <span class="nc">Var</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span><span class="k">:</span> <span class="kt">Var</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=&gt;</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]]</span>
+<span class="k">val</span> <span class="n">listOfTodos</span> <span class="k">=</span>
+  <span class="n">actions</span><span class="o">.</span><span class="n">scan</span><span class="o">(</span><span class="nc">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]())((</span><span class="n">owlets</span><span class="o">,</span> <span class="n">f</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="o">(</span><span class="n">owlets</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">notAddItem</span> <span class="k">=</span> <span class="n">const</span><span class="o">(</span><span class="nc">Nil</span><span class="o">)</span> <span class="k">_</span>
+<span class="k">val</span> <span class="n">addItem</span> <span class="k">=</span> <span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">List</span><span class="o">(</span><span class="n">string</span><span class="o">(</span><span class="s">"todo-item"</span><span class="o">,</span> <span class="n">s</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">newTodo</span> <span class="k">=</span> <span class="n">div</span><span class="o">(</span><span class="n">string</span><span class="o">(</span><span class="s">"new-todo"</span><span class="o">,</span> <span class="s">""</span><span class="o">),</span> <span class="nc">Var</span><span class="o">(</span><span class="s">"header"</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">addNewTodo</span> <span class="k">=</span>
+  <span class="o">(</span><span class="n">button</span><span class="o">(</span><span class="s">"add"</span><span class="o">,</span> <span class="n">notAddItem</span><span class="o">,</span> <span class="n">addItem</span><span class="o">)</span> <span class="o">&lt;*&gt;</span> <span class="n">newTodo</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">t</span> <span class="k">=&gt;</span> <span class="n">actions</span> <span class="o">:=</span> <span class="o">(</span><span class="n">a</span> <span class="k">=&gt;</span> <span class="n">a</span> <span class="o">:::</span> <span class="n">t</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">todoUl</span><span class="k">:</span> <span class="kt">Owlet</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="n">removableList</span><span class="o">(</span><span class="n">listOfTodos</span><span class="o">,</span> <span class="n">actions</span><span class="o">)</span>
+<span class="n">render</span><span class="o">(</span><span class="n">addNewTodo</span> <span class="o">*&gt;</span> <span class="n">todoUl</span><span class="o">,</span> <span class="s">"#example-9"</span><span class="o">)</span>
 </code></pre></div></div>
 
-<h2 id="example-9-resizable-lists">Example 9: Resizable lists</h2>
 <div id="example-9"></div>
 
 <h2 id="example-10-spreadsheet-like">Example 10: Spreadsheet like</h2>
+
+<p>This</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">a1</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a1"</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">a2</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a2"</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
@@ -95,7 +135,7 @@ render(actions *&gt; inputs *&gt; sum, "#example-9")
 <div id="example-10"></div>
 
 <h2 id="example-11-scala-tag">Example 11: Scala Tag</h2>
-
+<p>hook up</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">col</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"col"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">row</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"row"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
 <span class="k">import</span> <span class="nn">scalatags.Text.all._</span>
