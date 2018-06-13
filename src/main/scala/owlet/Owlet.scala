@@ -284,6 +284,7 @@ object DOM {
     * Render
     */
   def render[A](owlet: Owlet[A], selector: String) = {
+    owlet.signal.subscribe
     owlet.nodes
       .foreach(document.querySelector(selector).appendChild)
   }

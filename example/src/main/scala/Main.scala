@@ -87,15 +87,24 @@ object Main {
       )
     }
 
-    // List
+    // Todo List
     {
-      val emptyList = const(List[Owlet[Int]]()) _
-      val addItem = (s: Int) => List(int("new item", s))
-      val actions = button("add", emptyList, addItem) <*> int("add item", 0)
-      val inputs = list(actions.fold(List[Owlet[Int]]())(_ ::: _))
-      val sum = fx((a: List[List[Int]]) => a.flatten.sum, List(inputs))
-      render(actions *> inputs *> sum, "#example-9")
+      val actions = Var(identity): Var[
+        List[Owlet[String]] => List[Owlet[String]]
+      ]
+      val listOfTodos =
+        actions.scan(List[Owlet[String]]())((owlets, f) => f(owlets))
 
+      val notAddItem = const(Nil) _
+      val addItem = (s: String) => List(string("todo-item", s))
+
+      val newTodo = div(string("new-todo", ""), Var("header"))
+      val addNewTodo =
+        (button("add", notAddItem, addItem) <*> newTodo)
+          .map(t => actions := (a => a ::: t))
+
+      val todoUl: Owlet[List[String]] = removableList(listOfTodos, actions)
+      render(addNewTodo *> todoUl, "#example-9")
     }
 
     // Spreadsheet like

@@ -1,3 +1,5 @@
+docs: examples
+	sbt docs/publishMicrosite
 
 examples: docs/src/main/tut/todomvc/app.js docs/src/main/tut/demo/owlet-opt.js
 
