@@ -92,17 +92,16 @@ val list = actions.fold(List[String]())(_ ::: _)
 <span class="k">val</span> <span class="n">buttons</span> <span class="k">=</span> <span class="n">inc</span> <span class="o">&lt;+&gt;</span> <span class="n">dec</span> <span class="o">&lt;+&gt;</span> <span class="n">neg</span> <span class="o">&lt;+&gt;</span> <span class="n">reset</span>
 <span class="n">buttons</span><span class="o">.</span><span class="n">fold</span><span class="o">(</span><span class="mi">0</span><span class="o">)((</span><span class="n">acc</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">f</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="o">(</span><span class="n">acc</span><span class="o">))</span>
 <span class="o">)</span>
-<span class="o">``**</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">id</span><span class="o">=</span><span class="s">"example-8"</span> <span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<div id="example-8"></div>
 
-<span class="o">#</span><span class="k">#</span> <span class="nc">Example</span> <span class="mi">9</span><span class="k">:</span> <span class="kt">Resizable</span> <span class="kt">lists</span>
+<h2 id="example-9-resizable-lists">Example 9: Resizable lists</h2>
 
-<span class="nc">Imaging</span> <span class="n">how</span> <span class="n">many</span> <span class="n">line</span> <span class="n">of</span> <span class="n">code</span> <span class="n">you</span> <span class="n">need</span> <span class="n">to</span> <span class="n">implement</span> <span class="n">a</span> <span class="n">todo</span> <span class="n">list</span><span class="o">?</span>
+<p>Imaging how many line of code you need to implement a todo list?</p>
 
-<span class="o">**</span><span class="nc">JUST</span> <span class="mi">10</span><span class="o">**</span>
+<p><strong>JUST 10!!!</strong></p>
 
-<span class="o">```</span> <span class="n">scala</span>
-<span class="k">val</span> <span class="n">actions</span> <span class="k">=</span> <span class="nc">Var</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span><span class="k">:</span> <span class="kt">Var</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=&gt;</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]]</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">actions</span> <span class="k">=</span> <span class="nc">Var</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span><span class="k">:</span> <span class="kt">Var</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=&gt;</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]]</span>
 <span class="k">val</span> <span class="n">listOfTodos</span> <span class="k">=</span>
   <span class="n">actions</span><span class="o">.</span><span class="n">scan</span><span class="o">(</span><span class="nc">List</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]]())((</span><span class="n">owlets</span><span class="o">,</span> <span class="n">f</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="o">(</span><span class="n">owlets</span><span class="o">))</span>
 
