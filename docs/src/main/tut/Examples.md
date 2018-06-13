@@ -107,14 +107,14 @@ val reset = button("reset", intId, (x: Int) => 0)
 val buttons = inc <+> dec <+> neg <+> reset
 buttons.fold(0)((acc: Int, f: Int => Int) => f(acc))
 )
-``**
+```
 <div id="example-8" ></div>
 
 ## Example 9: Resizable lists
 
 Imaging how many line of code you need to implement a todo list?
 
-**JUST 10**
+**JUST 10!!!**
 
 ``` scala
 val actions = Var(identity): Var[List[Owlet[String]] => List[Owlet[String]]]
