@@ -113,7 +113,7 @@ object Main {
       val a2 = number("a2", 2)
       val a3 = number("a3", 3)
       val sum = fx((a: List[Double]) => a.sum, List(a1, a2, a3))
-      val product = fx(((a: List[Double]) => a.product), List(a1, a2, a3))
+      val product = fx(((a: List[Double]) => a.product), List(a1, a2, a3, sum))
       render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
     }
 

@@ -50,7 +50,7 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
   .settings(
     micrositeName := "Owlet",
     micrositeBaseUrl := "/owlet",
-    micrositeDescription := "Lightweight, modular, composable UI library for Scala",
+    micrositeDescription := "Typed Spreadsheet UI library for ScalaJS",
     micrositeAuthor := "Jichao Ouyang",
     micrositeHomepage := "https://oyanglul.us/owlet",
     micrositeOrganizationHomepage := "https://oyanglul.us",

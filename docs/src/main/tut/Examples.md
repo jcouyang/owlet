@@ -137,21 +137,27 @@ render(addNewTodo *> todoUl, "#example-9")
 
 ## Example 10: Spreadsheet like
 
-This
+In spreadsheet it's very easy to do this:
+
+![](https://www.evernote.com/l/ABcu84jUnGdFsaYpZSTMP1pLLIZRjBeo-ngB/image.png)
+
+and we can do exactly the same thing programmatically
 
 ```scala
 val a1 = number("a1", 1)
 val a2 = number("a2", 2)
 val a3 = number("a3", 3)
 val sum = fx((a: List[Double]) => a.sum, List(a1, a2, a3))
-val product = fx(((a: List[Double]) => a.product), List(a1, a2, a3))
+val product = fx(((a: List[Double]) => a.product), List(a1, a2, a3, sum))
 render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
 ```
 
 <div id="example-10"></div>
 
 ## Example 11: Scala Tag
-hook up
+
+easy to hook up with any template engine like Scala Tag reactively render complex UI
+
 ```scala
 val col = intSlider("col", 1, 20, 8)
 val row = intSlider("row", 1, 20, 8)
