@@ -3575,7 +3575,7 @@ $c_Lus_oyanglul_owletexample_Main$.prototype.main__AT__V = (function(args) {
     })
   })(this));
   $m_sci_List$();
-  var xs$4 = new $c_sjs_js_WrappedArray().init___sjs_js_Array([a1, a2, a3]);
+  var xs$4 = new $c_sjs_js_WrappedArray().init___sjs_js_Array([a1, a2, a3, sum$2]);
   var this$63 = $m_sci_List$();
   var cbf$4 = this$63.ReusableCBFInstance$2;
   var product = jsx$12.fx__F1__sci_List__Lus_oyanglul_owlet_Owlet(jsx$11, $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs$4, cbf$4)));
