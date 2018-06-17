@@ -112,7 +112,7 @@ buttons.fold(0)((acc: Int, f: Int => Int) => f(acc))
 
 ## Example 9: Resizable lists
 
-Imaging how many line of code you need to implement a todo list?
+Imagine how many lines of code you need to implement a todo list?
 
 **JUST 10!!!**
 
