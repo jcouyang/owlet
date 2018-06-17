@@ -22,8 +22,11 @@ lazy val owlet = project.in(file("."))
       "org.typelevel" %%% "cats-free" % "1.0.1",
       "org.scala-js" %%% "scalajs-dom" % "0.9.2",
       "io.monix" %%% "monix" % "3.0.0-RC1",
-      "org.scalatest" %%% "scalatest" % "3.0.3" % Test
+      "org.scalatest" %%% "scalatest" % "3.0.3" % Test,
+      "org.typelevel" %%% "cats-laws" % "1.0.1" % Test,
+      "org.typelevel" %%% "cats-testkit" % "1.0.1"% Test
     ),
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
     publishTo := {
       val nexus = "https://oss.sonatype.org/"
       if (isSnapshot.value)

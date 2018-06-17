@@ -1,27 +1,19 @@
+package us.oyanglul.owlet
 
-package owlet
+import cats._
+import cats.tests.CatsSuite
+import cats.laws.discipline.FunctorTests
+import org.scalacheck._
+import Arbitrary.arbitrary
+import DOM._
+class OwletSpec extends CatsSuite {
 
-import org.scalatest._
-import org.scalajs.dom._
-import outwatch.dom._
+  implicit def eqOwlet[A: Eq]: Eq[Owlet[A]] = Eq.fromUniversalEquals
 
-class OwletSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
-
-  override def beforeEach(): Unit = {
-    val root = document.createElement("div")
-    root.id = "app"
-    document.body.appendChild(root)
-  }
-
-  override def afterEach(): Unit = {
-    document.body.innerHTML = ""
-  }
-
-  "You" should "probably add some tests" in {
-
-    val message = "Hello World!"
-    OutWatch.render("#app", h1(message))
-
-    document.body.innerHTML.contains(message) shouldBe true
-  }
+  implicit def arbOwletInt: Arbitrary[Owlet[Int]] =
+    Arbitrary((for {
+      e <- arbitrary[Int]
+      s <- arbitrary[String]
+    } yield int(s, e)))
+  checkAll("Owlet.FunctorLaws", FunctorTests[Owlet].functor[Int, Int, Int])
 }
