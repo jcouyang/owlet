@@ -200,7 +200,6 @@ object DOM {
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
     val el = document.createElement("label").asInstanceOf[html.Label]
-    el.htmlFor = "owlet-input-" + name
     el.appendChild(document.createTextNode(name))
     inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
