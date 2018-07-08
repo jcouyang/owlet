@@ -189,10 +189,10 @@ object DOM {
   def div[A](
       inner: Owlet[A],
       className: Observable[String] = Observable.empty,
-      id: String = ""
+      id: Option[String] = None
   ): Owlet[A] = {
     val el = document.createElement("div").asInstanceOf[html.Div]
-    el.id = id
+    id.map(el.id=_)
     className.foreach(c => el.className = c.mkString(" "))
     inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
