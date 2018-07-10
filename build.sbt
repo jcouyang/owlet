@@ -34,7 +34,6 @@ lazy val owlet = project.in(file("."))
       else
         Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     },
-    pgpSecretRing := pgpPublicRing.value,
     publishMavenStyle := true
   )
 

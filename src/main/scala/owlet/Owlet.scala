@@ -192,7 +192,7 @@ object DOM {
       id: Option[String] = None
   ): Owlet[A] = {
     val el = document.createElement("div").asInstanceOf[html.Div]
-    id.map(el.id=_)
+    id.map(el.id = _)
     className.foreach(c => el.className = c.mkString(" "))
     inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
