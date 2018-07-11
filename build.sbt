@@ -59,7 +59,7 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
     micrositeTwitter := "@oyanglulu",
     micrositeGithubOwner := "jcouyang",
     micrositeGithubRepo := "owlet",
-    micrositeDocumentationUrl := "owlet/api",
+    micrositeDocumentationUrl := "api",
     micrositeGitterChannel := true,
     micrositeGitterChannelUrl := "jcouyang/owlet"
   )
