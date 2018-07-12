@@ -188,7 +188,7 @@ object DOM {
     */
   def div[A](
       inner: Owlet[A],
-      className: Observable[String] = Observable.empty,
+      className: Observable[Seq[String]] = Observable.empty,
       id: Option[String] = None
   ): Owlet[A] = {
     val el = document.createElement("div").asInstanceOf[html.Div]
@@ -270,7 +270,7 @@ object DOM {
 
   def output[A](
       input: Owlet[A],
-      classNames: Observable[List[String]] = Var(Nil)
+      classNames: Observable[Seq[String]] = Var(Nil)
   ) = {
     val div = document.createElement("div").asInstanceOf[html.Div]
     classNames.foreach(c => div.className = c.mkString(" "))
