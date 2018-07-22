@@ -21,7 +21,30 @@ case class Owlet[A](nodes: Observable[List[Node]], signal: Observable[A]) {
     Owlet(nodes, signal.filter(b))
   }
 }
+object Monad {
+  implicit def monadOwlet(
+      implicit ft: Functor[Owlet],
+      app: Applicative[Owlet]
+  ) = new Monad[Owlet] {
+    def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
+      val owletOwlet: Owlet[Owlet[B]] = ft.map(fa)(f)
+      Owlet(
+        owletOwlet.signal.flatMap(_.nodes),
+        owletOwlet.signal.flatMap(_.signal)
+      )
+    }
 
+    def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
+      f(a) match {
+        case Owlet(node, signal) =>
+          Owlet(node, signal.flatMap {
+            case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
+            case Right(b)   => Observable.pure(b)
+          })
+      }
+    def pure[A](a: A) = app.pure(a)
+  }
+}
 object Owlet {
   implicit val functorOwlet = new Functor[Owlet] {
     def map[A, B](fa: Owlet[A])(f: A => B) = {
@@ -37,29 +60,6 @@ object Owlet {
       )
     def pure[A](a: A) = Owlet(Observable.pure(Nil), Observable.pure[A](a))
   }
-
-  // implicit def monadOwlet(
-  //     implicit ft: Functor[Owlet],
-  //     app: Applicative[Owlet]
-  // ) = new Monad[Owlet] {
-  //   def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-  //     val owletOwlet: Owlet[Owlet[B]] = ft.map(fa)(f)
-  //     Owlet(
-  //       owletOwlet.signal.flatMap(_.nodes),
-  //       owletOwlet.signal.flatMap(_.signal)
-  //     )
-  //   }
-
-  //   def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
-  //     f(a) match {
-  //       case Owlet(node, signal) =>
-  //         Owlet(node, signal.flatMap {
-  //           case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
-  //           case Right(b)   => Observable.pure(b)
-  //         })
-  //     }
-  //   def pure[A](a: A) = app.pure(a)
-  // }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
     def empty[A]: Owlet[A] =

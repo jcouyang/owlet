@@ -128,18 +128,19 @@ object Main {
       }, "#example-11")
     }
 
-    // {
-    //   val greeting = Map(
-    //     "Chinese" -> "你好",
-    //     "English" -> "Hello",
-    //     "French" -> "Salut"
-    //   )
-    //   val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
-    //   val hello = selectBox.flatMap {
-    //     case "你好" => string("name", "继超")
-    //     case _    => string("name", "Jichao")
-    //   }
-    //   renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12")
-    // }
+    {
+      import Monad._
+      val greeting = Map(
+        "Chinese" -> "你好",
+        "English" -> "Hello",
+        "French" -> "Salut"
+      )
+      val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
+      val hello = selectBox.flatMap {
+        case "你好" => string("name", "继超")
+        case _    => string("name", "Jichao")
+      }
+      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12")
+    }
   }
 }
