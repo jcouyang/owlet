@@ -160,9 +160,6 @@ object DOM {
 
   private def cleanAppend[A](inner: Owlet[A], outer: Node) = {
     inner.nodes.foreach { n =>
-      println("----------------")
-      println(n)
-      println(outer)
       while (outer.lastChild != null) {
         outer.removeChild(outer.lastChild)
       }
@@ -268,7 +265,6 @@ object DOM {
     val sink = Var(List[A]())
     val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
     items.foreach { owlets =>
-      println(owlets)
       while (ul.lastChild != null) {
         ul.removeChild(ul.lastChild)
       }
@@ -323,7 +319,7 @@ object DOM {
     * Render
     */
   def render[A](owlet: Owlet[A], selector: String) = {
-    owlet.signal.subscribe(a => Future { println(a); Ack.Continue })
+    owlet.signal.subscribe
     owlet.nodes.subscribe
     cleanAppend(owlet, document.querySelector(selector))
   }
