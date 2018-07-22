@@ -1,7 +1,6 @@
 package us.oyanglul.owlet
 
-import cats.{Applicative, Monoid, MonoidK}
-import cats.{Functor}
+import cats.{Applicative, Monoid, MonoidK, Monad, Functor}
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -34,6 +33,19 @@ object Owlet {
         Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
       )
     def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
+  }
+
+  implicit def monadOwlet(implicit app: Applicative[Owlet]) = new Monad[Owlet] {
+    def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
+      val owletOwlet: Owlet[Owlet[B]] = map(fa)(f)
+      Owlet(owletOwlet.nodes, owletOwlet.signal.flatMap(_.signal))
+    }
+    def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
+      f(a) match {
+        case Owlet(node, signal) =>
+          Owlet(node, Observable.tailRecM(a)(a => f(a).signal))
+      }
+    def pure[A](a: A) = app.pure(a)
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
