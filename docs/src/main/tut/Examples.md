@@ -168,4 +168,8 @@ renderOutput((col, row).mapN { (c, r) =>
 ```
 <div id="example-11"></div>
 
+
+## Example 12: Monad
+<div id="example-12"></div>
+
 <script src="demo/owlet-opt.js"></script>

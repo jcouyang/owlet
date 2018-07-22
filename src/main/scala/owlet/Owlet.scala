@@ -3,14 +3,17 @@ package us.oyanglul.owlet
 import cats.{Applicative, Monoid, MonoidK, Monad, Functor}
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
+import monix.execution.Ack
 import monix.reactive.Observable
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
+import scala.concurrent.Future
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
+import cats.syntax.apply._
 
-case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
+case class Owlet[A](nodes: Observable[List[Node]], signal: Observable[A]) {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }
@@ -29,38 +32,52 @@ object Owlet {
   implicit val applicativeOwlet = new Applicative[Owlet] {
     def ap[A, B](ff: Owlet[A => B])(fa: Owlet[A]): Owlet[B] =
       Owlet(
-        ff.nodes ++ fa.nodes,
+        Observable.combineLatestMap2(ff.nodes, fa.nodes)(_ |+| _),
         Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
       )
-    def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
+    def pure[A](a: A) = Owlet(Observable.pure(Nil), Observable.pure[A](a))
   }
 
-  implicit def monadOwlet(implicit app: Applicative[Owlet]) = new Monad[Owlet] {
-    def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      val owletOwlet: Owlet[Owlet[B]] = map(fa)(f)
-      Owlet(owletOwlet.nodes, owletOwlet.signal.flatMap(_.signal))
-    }
-    def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
-      f(a) match {
-        case Owlet(node, signal) =>
-          Owlet(node, Observable.tailRecM(a)(a => f(a).signal))
-      }
-    def pure[A](a: A) = app.pure(a)
-  }
+  // implicit def monadOwlet(
+  //     implicit ft: Functor[Owlet],
+  //     app: Applicative[Owlet]
+  // ) = new Monad[Owlet] {
+  //   def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
+  //     val owletOwlet: Owlet[Owlet[B]] = ft.map(fa)(f)
+  //     Owlet(
+  //       owletOwlet.signal.flatMap(_.nodes),
+  //       owletOwlet.signal.flatMap(_.signal)
+  //     )
+  //   }
+
+  //   def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
+  //     f(a) match {
+  //       case Owlet(node, signal) =>
+  //         Owlet(node, signal.flatMap {
+  //           case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
+  //           case Right(b)   => Observable.pure(b)
+  //         })
+  //     }
+  //   def pure[A](a: A) = app.pure(a)
+  // }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
-    def empty[A]: Owlet[A] = Owlet(List[Node](), Observable.empty)
+    def empty[A]: Owlet[A] =
+      Owlet(Observable.empty, Observable.empty)
     def combineK[A](x: Owlet[A], y: Owlet[A]): Owlet[A] =
-      Owlet(x.nodes ++ y.nodes, Observable.merge(x.signal, y.signal))
+      Owlet(
+        Observable.combineLatestMap2(x.nodes, y.nodes)(_ |+| _),
+        Observable.merge(x.signal, y.signal)
+      )
   }
 
   implicit def monoidOwlet[A: Monoid] = new Monoid[Owlet[A]] {
     def combine(a: Owlet[A], b: Owlet[A]): Owlet[A] =
       Owlet(
-        a.nodes ++ b.nodes,
+        Observable.combineLatestMap2(a.nodes, b.nodes)(_ |+| _),
         Observable.combineLatestMap2(a.signal, b.signal)(_ |+| _)
       )
-    def empty = Owlet(List[Node](), Observable.empty)
+    def empty = Owlet(Observable.empty, Observable.empty)
   }
 }
 
@@ -74,7 +91,7 @@ object DOM {
       default,
       e => state := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(List(input), state)
+    Owlet(Observable(List(input)), state)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
@@ -84,7 +101,7 @@ object DOM {
       Try(value.toDouble).foreach(state := _)
     })
     input.step = "any"
-    Owlet(List(input), state)
+    Owlet(Observable(List(input)), state)
   }
 
   def numberSlider(
@@ -101,7 +118,7 @@ object DOM {
     input.step = "any"
     input.min = min.toString
     input.max = max.toString
-    Owlet(List(input), state)
+    Owlet(Observable(List(input)), state)
   }
 
   def int(name: String, default: Int): Owlet[Int] = {
@@ -110,7 +127,7 @@ object DOM {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble.toInt).foreach(state := _)
     })
-    Owlet(List(input), state)
+    Owlet(Observable(List(input)), state)
   }
 
   def boolean(name: String, default: Boolean): Owlet[Boolean] = {
@@ -121,7 +138,7 @@ object DOM {
     input.className = "owlet-input-" + normalize(name)
     input.checked = default
     input.onchange = e => sink := e.target.asInstanceOf[html.Input].checked
-    Owlet(List(input), sink)
+    Owlet(Observable(List(input)), sink)
   }
 
   def intSlider(
@@ -138,9 +155,20 @@ object DOM {
     input.step = "1"
     input.min = min.toString
     input.max = max.toString
-    Owlet(List(input), state)
+    Owlet(Observable(List(input)), state)
   }
 
+  private def cleanAppend[A](inner: Owlet[A], outer: Node) = {
+    inner.nodes.foreach { n =>
+      println("----------------")
+      println(n)
+      println(outer)
+      while (outer.lastChild != null) {
+        outer.removeChild(outer.lastChild)
+      }
+      n.foreach(outer.appendChild)
+    }
+  }
   private def createInput[A](
       n: String,
       t: String,
@@ -177,7 +205,7 @@ object DOM {
     })
     val sink = Var(default)
     el.onchange = e => sink := e.target.asInstanceOf[html.Select].value
-    Owlet(List(el), sink)
+    Owlet(Observable.pure(List(el)), sink)
   }
 
   /**
@@ -189,7 +217,7 @@ object DOM {
     val sink = Var(default)
     el.onmousedown = _ => sink := pressed
     el.onmouseup = _ => sink := default
-    Owlet(List(el), sink)
+    Owlet(Observable.pure(List(el)), sink)
   }
 
   /**
@@ -206,15 +234,15 @@ object DOM {
     val el = document.createElement("div").asInstanceOf[html.Div]
     id.map(el.id = _)
     className.foreach(c => el.className = c.mkString(" "))
-    inner.nodes.foreach(el.appendChild)
-    Owlet(List(el), inner.signal)
+    cleanAppend(inner, el)
+    Owlet(Observable.pure(List(el)), inner.signal)
   }
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
     val el = document.createElement("label").asInstanceOf[html.Label]
     el.appendChild(document.createTextNode(name))
-    inner.nodes.foreach(el.appendChild)
-    Owlet(List(el), inner.signal)
+    cleanAppend(inner, el)
+    Owlet(Observable.pure(List(el)), inner.signal)
   }
 
   /** ==Output==
@@ -227,14 +255,10 @@ object DOM {
       while (ul.lastChild != null) {
         ul.removeChild(ul.lastChild)
       }
-      owlets.foreach { owlet =>
-        val li = document.createElement("li").asInstanceOf[html.LI]
-        owlet.nodes.foreach(li.appendChild)
-        ul.appendChild(li)
-      }
+      owlets.foreach(cleanAppend(_, ul))
       owlets.sequence.signal.foreach(sink := _)
     }
-    Owlet(List(ul), sink)
+    Owlet(Observable.pure(List(ul)), sink)
   }
 
   def removableList[A](
@@ -250,24 +274,26 @@ object DOM {
       }
       owlets.foreach { owlet =>
         val li = document.createElement("li").asInstanceOf[html.LI]
-        owlet.nodes.foreach { node =>
-          val el = document.createElement("div").asInstanceOf[html.Div]
-          el.appendChild(node)
-          val removeButton =
-            document.createElement("button").asInstanceOf[html.Button]
-          removeButton.appendChild(document.createTextNode("x"))
-          removeButton.onclick = _ => {
-            actions := (todos => todos diff List(owlet))
-            ul.removeChild(li)
+        owlet.nodes.foreach {
+          _.foreach { node =>
+            val el = document.createElement("div").asInstanceOf[html.Div]
+            el.appendChild(node)
+            val removeButton =
+              document.createElement("button").asInstanceOf[html.Button]
+            removeButton.appendChild(document.createTextNode("x"))
+            removeButton.onclick = _ => {
+              actions := (todos => todos diff List(owlet))
+              ul.removeChild(li)
+            }
+            el.appendChild(removeButton)
+            li.appendChild(el)
           }
-          el.appendChild(removeButton)
-          li.appendChild(el)
         }
         ul.appendChild(li)
       }
       owlets.sequence.signal.foreach(sink := _)
     }
-    Owlet(List(ul), sink)
+    Owlet(Observable.pure(List(ul)), sink)
   }
 
   /** Spreadsheet like fx
@@ -277,7 +303,7 @@ object DOM {
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
     val sink = input.sequence.signal.map(formula)
     sink.foreach(a => div.textContent = a.toString)
-    Owlet(List(div), sink)
+    Owlet(Observable.pure(List(div)), sink)
   }
 
   def output[A](
@@ -287,22 +313,23 @@ object DOM {
     val div = document.createElement("div").asInstanceOf[html.Div]
     classNames.foreach(c => div.className = c.mkString(" "))
     div.className += " owlet-output"
-    input.signal.foreach(v => div.innerHTML = v.toString)
-    input.nodes :+ div
+    Owlet(input.signal.map { e =>
+      div.innerHTML = e.toString
+      List(div)
+    }, input.signal)
   }
 
   /**
     * Render
     */
   def render[A](owlet: Owlet[A], selector: String) = {
-    owlet.signal.subscribe
-    owlet.nodes
-      .foreach(document.querySelector(selector).appendChild)
+    owlet.signal.subscribe(a => Future { println(a); Ack.Continue })
+    owlet.nodes.subscribe
+    cleanAppend(owlet, document.querySelector(selector))
   }
 
   def renderOutput[A](owlet: Owlet[A], selector: String) = {
-    output(owlet)
-      .foreach(document.querySelector(selector).appendChild)
+    render(owlet *> output(owlet), selector)
   }
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase

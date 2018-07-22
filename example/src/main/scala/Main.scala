@@ -9,6 +9,7 @@ import cats.syntax.applicative._
 import cats.syntax.traverse._
 import cats.syntax.semigroupk._
 import cats.syntax.apply._
+import cats.syntax.flatMap._
 import monix.reactive.subjects.Var
 import Function.const
 import DOM._
@@ -98,7 +99,7 @@ object Main {
       val notAddItem = const(Nil) _
       val addItem = (s: String) => List(string("todo-item", s))
 
-      val newTodo = div(string("new-todo", ""), Var("header"))
+      val newTodo = div(string("new-todo", ""), Var(List("header")))
       val addNewTodo =
         (button("add", notAddItem, addItem) <*> newTodo)
           .map(t => actions := (a => a ::: t))
@@ -126,5 +127,19 @@ object Main {
         table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
       }, "#example-11")
     }
+
+    // {
+    //   val greeting = Map(
+    //     "Chinese" -> "你好",
+    //     "English" -> "Hello",
+    //     "French" -> "Salut"
+    //   )
+    //   val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
+    //   val hello = selectBox.flatMap {
+    //     case "你好" => string("name", "继超")
+    //     case _    => string("name", "Jichao")
+    //   }
+    //   renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12")
+    // }
   }
 }
