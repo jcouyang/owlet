@@ -1,13 +1,11 @@
 package us.oyanglul.owlet
 
-import cats.{Applicative, Monoid, MonoidK, Monad, Functor}
+import cats.{Applicative, Monoid, MonoidK, Functor, Monad}
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
-import monix.execution.Ack
 import monix.reactive.Observable
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
-import scala.concurrent.Future
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
@@ -21,28 +19,27 @@ case class Owlet[A](nodes: Observable[List[Node]], signal: Observable[A]) {
     Owlet(nodes, signal.filter(b))
   }
 }
-object Monad {
-  implicit def monadOwlet(
-      implicit ft: Functor[Owlet],
-      app: Applicative[Owlet]
-  ) = new Monad[Owlet] {
+object Monadic {
+  implicit def monadOwlet = new Monad[Owlet] {
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      val owletOwlet: Owlet[Owlet[B]] = ft.map(fa)(f)
       Owlet(
-        owletOwlet.signal.flatMap(_.nodes),
-        owletOwlet.signal.flatMap(_.signal)
+        Observable.combineLatestMap2(
+          fa.nodes,
+          fa.signal.mergeMap(s => f(s).nodes)
+        )(_ |+| _),
+        fa.signal.mergeMap(s => f(s).signal)
       )
     }
 
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
       f(a) match {
         case Owlet(node, signal) =>
-          Owlet(node, signal.flatMap {
+          Owlet(node, signal.mergeMap {
             case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
             case Right(b)   => Observable.pure(b)
           })
       }
-    def pure[A](a: A) = app.pure(a)
+    def pure[A](a: A) = Owlet(Observable.pure(Nil), Observable.pure[A](a))
   }
 }
 object Owlet {
