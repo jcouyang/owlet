@@ -234,8 +234,13 @@ object DOM {
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
     val el = document.createElement("label").asInstanceOf[html.Label]
-    el.appendChild(document.createTextNode(name))
-    cleanAppend(inner, el)
+    inner.nodes.foreach { n =>
+      while (el.lastChild != null) {
+        el.removeChild(el.lastChild)
+      }
+      el.appendChild(document.createTextNode(name))
+      n.foreach(el.appendChild)
+    }
     Owlet(Observable.pure(List(el)), inner.signal)
   }
 
