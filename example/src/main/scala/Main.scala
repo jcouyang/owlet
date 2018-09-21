@@ -144,9 +144,10 @@ object Main {
         name <- if (selected == "你好") string("name", "继超")
         else string("name", "Jichao")
         _ = println(name)
-      } yield (selected + space + name)
+      } yield name
 
-      renderOutput(el, "#example-12")
+      val output = (selectBox |+| el).map(string("sdf", _))
+      render(selectBox *> el *> output, "#example-12")
     }
   }
 }

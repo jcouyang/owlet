@@ -22,7 +22,7 @@ val pow = (baseInput, exponentInput) mapN math.pow
 
 ## Example 2: Semigroup instance
 
-`Owlet[_]` is also an instance of typeclass [Monoid](https://typelevel.org/cats/typeclasses/monoid.html)
+`Owlet[A]` is also an instance of typeclass [Monoid](https://typelevel.org/cats/typeclasses/monoid.html)
 
 Here is a simple example of how to concat two string components:
 

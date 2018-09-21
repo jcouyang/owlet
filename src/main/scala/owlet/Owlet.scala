@@ -23,10 +23,10 @@ object Monadic {
   implicit def monadOwlet = new Monad[Owlet] {
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
       Owlet(
-        Observable.combineLatestMap2(
-          fa.nodes,
-          fa.signal.mergeMap(s => f(s).nodes)
-        )(_ |+| _),
+        fa.nodes.mergeMap(
+          nodes =>
+            fa.signal.flatMap(s => f(s).nodes).map(child => nodes |+| child)
+        ),
         fa.signal.mergeMap(s => f(s).signal)
       )
     }
@@ -257,7 +257,7 @@ object DOM {
 
   def removableList[A](
       items: Observable[List[Owlet[A]]],
-      actions: Var[List[Owlet[String]] => List[Owlet[String]]]
+      actions: Var[List[Owlet[A]] => List[Owlet[A]]]
   ): Owlet[List[A]] = {
     val sink = Var(List[A]())
     val ul: html.UList = document.createElement("ul").asInstanceOf[html.UList]
