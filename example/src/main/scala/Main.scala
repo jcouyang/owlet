@@ -88,6 +88,14 @@ object Main {
       )
     }
 
+    // List
+    {
+      val numOfItem = int("noi", 3)
+      val items = numOfItem
+        .map(no => (0 to no).toList.map(i => string("inner", i.toString)))
+      renderOutput(numOfItem *> list(items), "#example-13")
+    }
+
     // Todo List
     {
       val actions = Var(identity): Var[

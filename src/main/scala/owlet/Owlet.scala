@@ -249,7 +249,13 @@ object DOM {
       while (ul.lastChild != null) {
         ul.removeChild(ul.lastChild)
       }
-      owlets.foreach(cleanAppend(_, ul))
+      owlets.foreach { owlet =>
+        val li = document.createElement("li").asInstanceOf[html.LI]
+        owlet.nodes.foreach { nodes =>
+          nodes.foreach(li.appendChild)
+          ul.appendChild(li)
+        }
+      }
       owlets.sequence.signal.foreach(sink := _)
     }
     Owlet(Observable.pure(List(ul)), sink)
