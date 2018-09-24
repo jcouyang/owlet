@@ -16,7 +16,23 @@ lazy val owlet = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "Owlet",
-    version := "0.1.0-SNAPSHOT",
+    version := "0.1.5",
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/jcouyang/owlet"),
+        "scm:git@github.com:jcouyang/owlet.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id    = "jcouyang",
+        name  = "Jichao Ouyang",
+        email = "oyanglulu@gmail.com",
+        url   = url("https://oyanglul.us")
+      )
+    ),
+    licenses := List("MIT" -> new URL("https://opensource.org/licenses/MIT")),
+    homepage := Some(url("https://oyanglul.us/owlet")),
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "1.0.1",
       "org.typelevel" %%% "cats-free" % "1.0.1",
