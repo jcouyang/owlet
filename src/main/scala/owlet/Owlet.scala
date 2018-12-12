@@ -1,6 +1,6 @@
 package us.oyanglul.owlet
 
-import cats.{Applicative, Monoid, MonoidK, Functor}
+import cats.{Applicative, Comonad, Functor, Monoid, MonoidK}
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -24,6 +24,14 @@ object Owlet {
     def map[A, B](fa: Owlet[A])(f: A => B) = {
       Owlet(fa.nodes, fa.signal.map(f))
     }
+  }
+
+  implicit val comonadOwlet = new Comonad[Owlet] {
+    def extract[A](x: Owlet[A]): A =
+      x.nodes.head.asInstanceOf[html.Input].value.asInstanceOf[A]
+    def map[A, B](fa: Owlet[A])(f: A => B) = functorOwlet.map(fa)(f)
+    def coflatMap[A, B](fa: Owlet[A])(f: (Owlet[A]) => B): Owlet[B] =
+      Owlet(fa.nodes, Observable.pure[B](f(fa)))
   }
 
   implicit val applicativeOwlet = new Applicative[Owlet] {
