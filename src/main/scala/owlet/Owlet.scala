@@ -1,6 +1,6 @@
 package us.oyanglul.owlet
 
-import cats.{Applicative, Monoid, MonoidK, Functor, Monad}
+import cats.{Applicative, Monoid, MonoidK, Functor}
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -18,29 +18,7 @@ case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
     Owlet(nodes, signal.filter(b))
   }
 }
-object Monadic {
-  implicit def monadOwlet = new Monad[Owlet] {
-    def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      Owlet(
-        fa.nodes.mergeMap(
-          nodes =>
-            fa.signal.flatMap(s => f(s).nodes).map(child => nodes |+| child)
-        ),
-        fa.signal.mergeMap(s => f(s).signal)
-      )
-    }
 
-    def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
-      f(a) match {
-        case Owlet(node, signal) =>
-          Owlet(node, signal.mergeMap {
-            case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
-            case Right(b)   => Observable.pure(b)
-          })
-      }
-    def pure[A](a: A) = Owlet(Observable.pure(Nil), Observable.pure[A](a))
-  }
-}
 object Owlet {
   implicit val functorOwlet = new Functor[Owlet] {
     def map[A, B](fa: Owlet[A])(f: A => B) = {

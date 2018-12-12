@@ -106,7 +106,7 @@ object Main {
       val notAddItem = const(Nil) _
       val addItem = (s: String) => List(string("todo-item", s))
 
-      val newTodo = div(string("new-todo", ""), Var("header"))
+      val newTodo = div(string("new-todo", ""), Var(List("header")))
       val addNewTodo =
         (button("add", notAddItem, addItem) <*> newTodo)
           .map(t => actions := (a => a ::: t))
