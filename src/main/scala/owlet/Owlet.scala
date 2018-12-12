@@ -9,9 +9,8 @@ import monix.reactive.subjects.Var
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
-import cats.syntax.apply._
 
-case class Owlet[A](nodes: Observable[List[Node]], signal: Observable[A]) {
+case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }
@@ -52,29 +51,25 @@ object Owlet {
   implicit val applicativeOwlet = new Applicative[Owlet] {
     def ap[A, B](ff: Owlet[A => B])(fa: Owlet[A]): Owlet[B] =
       Owlet(
-        Observable.combineLatestMap2(ff.nodes, fa.nodes)(_ |+| _),
+        ff.nodes ++ fa.nodes,
         Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
       )
-    def pure[A](a: A) = Owlet(Observable.pure(Nil), Observable.pure[A](a))
+    def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
-    def empty[A]: Owlet[A] =
-      Owlet(Observable.empty, Observable.empty)
+    def empty[A]: Owlet[A] = Owlet(List[Node](), Observable.empty)
     def combineK[A](x: Owlet[A], y: Owlet[A]): Owlet[A] =
-      Owlet(
-        Observable.combineLatestMap2(x.nodes, y.nodes)(_ |+| _),
-        Observable.merge(x.signal, y.signal)
-      )
+      Owlet(x.nodes ++ y.nodes, Observable.merge(x.signal, y.signal))
   }
 
   implicit def monoidOwlet[A: Monoid] = new Monoid[Owlet[A]] {
     def combine(a: Owlet[A], b: Owlet[A]): Owlet[A] =
       Owlet(
-        Observable.combineLatestMap2(a.nodes, b.nodes)(_ |+| _),
+        a.nodes ++ b.nodes,
         Observable.combineLatestMap2(a.signal, b.signal)(_ |+| _)
       )
-    def empty = Owlet(Observable.empty, Observable.empty)
+    def empty = Owlet(List[Node](), Observable.empty)
   }
 }
 
@@ -88,7 +83,7 @@ object DOM {
       default,
       e => state := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(Observable(List(input)), state)
+    Owlet(List(input), state)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
@@ -98,7 +93,7 @@ object DOM {
       Try(value.toDouble).foreach(state := _)
     })
     input.step = "any"
-    Owlet(Observable(List(input)), state)
+    Owlet(List(input), state)
   }
 
   def numberSlider(
@@ -115,7 +110,7 @@ object DOM {
     input.step = "any"
     input.min = min.toString
     input.max = max.toString
-    Owlet(Observable(List(input)), state)
+    Owlet(List(input), state)
   }
 
   def int(name: String, default: Int): Owlet[Int] = {
@@ -124,7 +119,7 @@ object DOM {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble.toInt).foreach(state := _)
     })
-    Owlet(Observable(List(input)), state)
+    Owlet(List(input), state)
   }
 
   def boolean(name: String, default: Boolean): Owlet[Boolean] = {
@@ -135,7 +130,7 @@ object DOM {
     input.className = "owlet-input-" + normalize(name)
     input.checked = default
     input.onchange = e => sink := e.target.asInstanceOf[html.Input].checked
-    Owlet(Observable(List(input)), sink)
+    Owlet(List(input), sink)
   }
 
   def intSlider(
@@ -152,17 +147,9 @@ object DOM {
     input.step = "1"
     input.min = min.toString
     input.max = max.toString
-    Owlet(Observable(List(input)), state)
+    Owlet(List(input), state)
   }
 
-  private def cleanAppend[A](inner: Owlet[A], outer: Node) = {
-    inner.nodes.foreach { n =>
-      while (outer.lastChild != null) {
-        outer.removeChild(outer.lastChild)
-      }
-      n.foreach(outer.appendChild)
-    }
-  }
   private def createInput[A](
       n: String,
       t: String,
@@ -199,7 +186,7 @@ object DOM {
     })
     val sink = Var(default)
     el.onchange = e => sink := e.target.asInstanceOf[html.Select].value
-    Owlet(Observable.pure(List(el)), sink)
+    Owlet(List(el), sink)
   }
 
   /**
@@ -211,7 +198,7 @@ object DOM {
     val sink = Var(default)
     el.onmousedown = _ => sink := pressed
     el.onmouseup = _ => sink := default
-    Owlet(Observable.pure(List(el)), sink)
+    Owlet(List(el), sink)
   }
 
   /**
@@ -228,20 +215,15 @@ object DOM {
     val el = document.createElement("div").asInstanceOf[html.Div]
     id.map(el.id = _)
     className.foreach(c => el.className = c.mkString(" "))
-    cleanAppend(inner, el)
-    Owlet(Observable.pure(List(el)), inner.signal)
+    inner.nodes.foreach(el.appendChild)
+    Owlet(List(el), inner.signal)
   }
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
     val el = document.createElement("label").asInstanceOf[html.Label]
-    inner.nodes.foreach { n =>
-      while (el.lastChild != null) {
-        el.removeChild(el.lastChild)
-      }
-      el.appendChild(document.createTextNode(name))
-      n.foreach(el.appendChild)
-    }
-    Owlet(Observable.pure(List(el)), inner.signal)
+    el.appendChild(document.createTextNode(name))
+    inner.nodes.foreach(el.appendChild)
+    Owlet(List(el), inner.signal)
   }
 
   /** ==Output==
@@ -256,14 +238,12 @@ object DOM {
       }
       owlets.foreach { owlet =>
         val li = document.createElement("li").asInstanceOf[html.LI]
-        owlet.nodes.foreach { nodes =>
-          nodes.foreach(li.appendChild)
-          ul.appendChild(li)
-        }
+        owlet.nodes.foreach(li.appendChild)
+        ul.appendChild(li)
       }
       owlets.sequence.signal.foreach(sink := _)
     }
-    Owlet(Observable.pure(List(ul)), sink)
+    Owlet(List(ul), sink)
   }
 
   def removableList[A](
@@ -278,26 +258,24 @@ object DOM {
       }
       owlets.foreach { owlet =>
         val li = document.createElement("li").asInstanceOf[html.LI]
-        owlet.nodes.foreach {
-          _.foreach { node =>
-            val el = document.createElement("div").asInstanceOf[html.Div]
-            el.appendChild(node)
-            val removeButton =
-              document.createElement("button").asInstanceOf[html.Button]
-            removeButton.appendChild(document.createTextNode("x"))
-            removeButton.onclick = _ => {
-              actions := (todos => todos diff List(owlet))
-              ul.removeChild(li)
-            }
-            el.appendChild(removeButton)
-            li.appendChild(el)
+        owlet.nodes.foreach { node =>
+          val el = document.createElement("div").asInstanceOf[html.Div]
+          el.appendChild(node)
+          val removeButton =
+            document.createElement("button").asInstanceOf[html.Button]
+          removeButton.appendChild(document.createTextNode("x"))
+          removeButton.onclick = _ => {
+            actions := (todos => todos diff List(owlet))
+            ul.removeChild(li)
           }
+          el.appendChild(removeButton)
+          li.appendChild(el)
         }
         ul.appendChild(li)
       }
       owlets.sequence.signal.foreach(sink := _)
     }
-    Owlet(Observable.pure(List(ul)), sink)
+    Owlet(List(ul), sink)
   }
 
   /** Spreadsheet like fx
@@ -307,7 +285,7 @@ object DOM {
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
     val sink = input.sequence.signal.map(formula)
     sink.foreach(a => div.textContent = a.toString)
-    Owlet(Observable.pure(List(div)), sink)
+    Owlet(List(div), sink)
   }
 
   def output[A](
@@ -317,10 +295,8 @@ object DOM {
     val div = document.createElement("div").asInstanceOf[html.Div]
     classNames.foreach(c => div.className = c.mkString(" "))
     div.className += " owlet-output"
-    Owlet(input.signal.map { e =>
-      div.innerHTML = e.toString
-      List(div)
-    }, input.signal)
+    input.signal.foreach(v => div.innerHTML = v.toString)
+    input.nodes :+ div
   }
 
   /**
@@ -328,12 +304,13 @@ object DOM {
     */
   def render[A](owlet: Owlet[A], selector: String) = {
     owlet.signal.subscribe
-    owlet.nodes.subscribe
-    cleanAppend(owlet, document.querySelector(selector))
+    owlet.nodes
+      .foreach(document.querySelector(selector).appendChild)
   }
 
   def renderOutput[A](owlet: Owlet[A], selector: String) = {
-    render(owlet *> output(owlet), selector)
+    output(owlet)
+      .foreach(document.querySelector(selector).appendChild)
   }
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase

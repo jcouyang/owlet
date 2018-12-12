@@ -9,7 +9,6 @@ import cats.syntax.applicative._
 import cats.syntax.traverse._
 import cats.syntax.semigroupk._
 import cats.syntax.apply._
-import cats.syntax.flatMap._
 import monix.reactive.subjects.Var
 import Function.const
 import DOM._
@@ -107,7 +106,7 @@ object Main {
       val notAddItem = const(Nil) _
       val addItem = (s: String) => List(string("todo-item", s))
 
-      val newTodo = div(string("new-todo", ""), Var(List("header")))
+      val newTodo = div(string("new-todo", ""), Var("header"))
       val addNewTodo =
         (button("add", notAddItem, addItem) <*> newTodo)
           .map(t => actions := (a => a ::: t))
@@ -134,28 +133,6 @@ object Main {
       renderOutput((col, row).mapN { (c, r) =>
         table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
       }, "#example-11")
-    }
-
-    {
-      import Monadic._
-      val greeting = Map(
-        "Chinese" -> "你好",
-        "English" -> "Hello",
-        "French" -> "Salut"
-      )
-      val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
-
-      val el = for {
-        selected <- selectBox
-        _ = println(selected)
-        space <- " ".pure[Owlet]
-        name <- if (selected == "你好") string("name", "继超")
-        else string("name", "Jichao")
-        _ = println(name)
-      } yield name
-
-      val output = (selectBox |+| el).map(string("sdf", _))
-      render(selectBox *> el *> output, "#example-12")
     }
   }
 }

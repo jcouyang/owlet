@@ -168,10 +168,6 @@ renderOutput((col, row).mapN { (c, r) =>
 ```
 <div id="example-11"></div>
 
-
-## Example 12: Monad
-<div id="example-12"></div>
-
 ## Example 13: List
 <div id="example-13"></div>
 
