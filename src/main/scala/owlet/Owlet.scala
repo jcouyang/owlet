@@ -1,6 +1,6 @@
 package us.oyanglul.owlet
 
-import cats.{Applicative, Comonad, Functor, Monoid, MonoidK}
+import cats._
 import cats.syntax.monoid._
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -9,6 +9,15 @@ import monix.reactive.subjects.Var
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
+
+case class Powlet[A](nodes: List[Node], signal: Observable[A]) {
+  def fold[S](seed: => S)(op: (S, A) => S) = {
+    Powlet(nodes, signal.scan(seed)(op))
+  }
+  def filter(b: A => Boolean) = {
+    Powlet(nodes, signal.filter(b))
+  }
+}
 
 case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
   def fold[S](seed: => S)(op: (S, A) => S) = {
@@ -19,28 +28,36 @@ case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
   }
 }
 
-object Owlet {
-  implicit val functorOwlet = new Functor[Owlet] {
-    def map[A, B](fa: Owlet[A])(f: A => B) = {
+trait ParallelInstances {
+  implicit val parallelForOwlet: Parallel[Owlet, Powlet] =
+    new Parallel[Owlet, Powlet] {
+      def applicative: Applicative[Powlet] = Powlet.applicativePowlet
+      def monad: Monad[Owlet] = Owlet.monadOwlet
+      def sequential = Lambda[Powlet ~> Owlet](x => Owlet(x.nodes, x.signal))
+      def parallel = Lambda[Owlet ~> Powlet](x => Powlet(x.nodes, x.signal))
+    }
+}
+
+object Owlet extends ParallelInstances {
+  implicit val monadOwlet = new Monad[Owlet] {
+    override def map[A, B](fa: Owlet[A])(f: A => B) = {
+      println("owlet map")
       Owlet(fa.nodes, fa.signal.map(f))
     }
-  }
-
-  implicit val comonadOwlet = new Comonad[Owlet] {
-    def extract[A](x: Owlet[A]): A =
-      x.nodes.head.asInstanceOf[html.Input].value.asInstanceOf[A]
-    def map[A, B](fa: Owlet[A])(f: A => B) = functorOwlet.map(fa)(f)
-    def coflatMap[A, B](fa: Owlet[A])(f: (Owlet[A]) => B): Owlet[B] =
-      Owlet(fa.nodes, Observable.pure[B](f(fa)))
-  }
-
-  implicit val applicativeOwlet = new Applicative[Owlet] {
-    def ap[A, B](ff: Owlet[A => B])(fa: Owlet[A]): Owlet[B] =
-      Owlet(
-        ff.nodes ++ fa.nodes,
-        Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
-      )
+    def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
+      println("owlet flatmap")
+      DOM.flat(map(fa)(f))
+    }
+    def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
+      f(a) match {
+        case Owlet(node, signal) =>
+          Owlet(node, signal.mergeMap {
+            case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
+            case Right(b)   => Observable.pure(b)
+          })
+      }
     def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
+
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
@@ -58,6 +75,41 @@ object Owlet {
     def empty = Owlet(List[Node](), Observable.empty)
   }
 }
+object Powlet {
+  implicit val functorPowlet = new Functor[Powlet] {
+    def map[A, B](fa: Powlet[A])(f: A => B) = {
+      println("powlet map")
+      Powlet(fa.nodes, fa.signal.map(f))
+    }
+  }
+
+  implicit val applicativePowlet = new Applicative[Powlet] {
+    def ap[A, B](ff: Powlet[A => B])(fa: Powlet[A]): Powlet[B] = {
+      println("---------->" + ff + fa)
+      Powlet(
+        ff.nodes ++ fa.nodes,
+        Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
+      )
+    }
+
+    def pure[A](a: A) = Powlet(Nil, Observable.pure[A](a))
+  }
+
+  implicit val monoidKPowlet = new MonoidK[Powlet] {
+    def empty[A]: Powlet[A] = Powlet(List[Node](), Observable.empty)
+    def combineK[A](x: Powlet[A], y: Powlet[A]): Powlet[A] =
+      Powlet(x.nodes ++ y.nodes, Observable.merge(x.signal, y.signal))
+  }
+
+  implicit def monoidPowlet[A: Monoid] = new Monoid[Powlet[A]] {
+    def combine(a: Powlet[A], b: Powlet[A]): Powlet[A] =
+      Powlet(
+        a.nodes ++ b.nodes,
+        Observable.combineLatestMap2(a.signal, b.signal)(_ |+| _)
+      )
+    def empty = Powlet(List[Node](), Observable.empty)
+  }
+}
 
 object DOM {
   // ==Input==
@@ -69,7 +121,10 @@ object DOM {
       default,
       e => state := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(List(input), state)
+    Owlet(List(input), state.map(x => {
+      println("sssssss" + x)
+      x
+    }))
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
@@ -232,6 +287,22 @@ object DOM {
     Owlet(List(ul), sink)
   }
 
+  def flat[A](item: Owlet[Owlet[A]]) = {
+    println("not here")
+    val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
+    Owlet(
+      List(div),
+      item.signal
+        .flatMapLatest { owlet =>
+          while (div.lastChild != null) {
+            div.removeChild(div.lastChild)
+          }
+          owlet.nodes.foreach(div.appendChild)
+          owlet.signal
+        }
+    )
+  }
+
   def removableList[A](
       items: Observable[List[Owlet[A]]],
       actions: Var[List[Owlet[A]] => List[Owlet[A]]]
@@ -282,6 +353,7 @@ object DOM {
     classNames.foreach(c => div.className = c.mkString(" "))
     div.className += " owlet-output"
     input.signal.foreach(v => div.innerHTML = v.toString)
+    println(input.nodes.map(_.textContent))
     input.nodes :+ div
   }
 
@@ -289,9 +361,17 @@ object DOM {
     * Render
     */
   def render[A](owlet: Owlet[A], selector: String) = {
-    owlet.signal.subscribe
+    println(owlet.nodes.map(_.toString))
     owlet.nodes
       .foreach(document.querySelector(selector).appendChild)
+    owlet.signal.subscribe
+  }
+
+  def render[A](owlet: Powlet[A], selector: String) = {
+    println(owlet.nodes.map(_.toString))
+    owlet.nodes
+      .foreach(document.querySelector(selector).appendChild)
+    owlet.signal.subscribe
   }
 
   def renderOutput[A](owlet: Owlet[A], selector: String) = {

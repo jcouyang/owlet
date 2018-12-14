@@ -1,14 +1,7 @@
 package us.oyanglul.owletexample
 
 import us.oyanglul.owlet._
-import cats.instances.string._
-import cats.instances.list._
-import cats.syntax.functor._
-import cats.syntax.monoid._
-import cats.syntax.applicative._
-import cats.syntax.traverse._
-import cats.syntax.semigroupk._
-import cats.syntax.apply._
+import cats.implicits._
 import monix.reactive.subjects.Var
 import Function.const
 import DOM._
@@ -19,8 +12,8 @@ object Main {
     {
       val baseInput = number("Base", 2.0)
       val exponentInput = number("Exponent", 10.0)
-      val pow = (baseInput, exponentInput).mapN(math.pow)
-      renderOutput(pow, "#example-1")
+      val pow = (baseInput, exponentInput).parMapN(math.pow)
+      render(pow, "#example-1")
     }
     // Monoid
     {
@@ -31,7 +24,7 @@ object Main {
 
     // Traverse
     {
-      val sum = List(2, 13, 27, 42).traverse(int("n", _)).map(_.sum)
+      val sum = List(2, 13, 27, 42).parTraverse(int("n", _)).map(_.sum)
       renderOutput(sum, "#example-3")
     }
 
@@ -50,7 +43,7 @@ object Main {
     // Checkbox
     {
       renderOutput(
-        (boolean("a", false), boolean("b", true)).mapN(_ && _),
+        (boolean("a", false), boolean("b", true)).parMapN(_ && _),
         "#example-5"
       )
     }
@@ -92,7 +85,7 @@ object Main {
       val numOfItem = int("noi", 3)
       val items = numOfItem
         .map(no => (0 to no).toList.map(i => string("inner", i.toString)))
-      renderOutput(numOfItem *> list(items), "#example-13")
+      renderOutput(numOfItem &> list(items), "#example-13")
     }
 
     // Todo List
@@ -122,7 +115,7 @@ object Main {
       val a3 = number("a3", 3)
       val sum = fx[Double, Double](_.sum, List(a1, a2, a3))
       val product = fx[Double, Double](_.product, List(a1, a2, a3, sum))
-      render(a1 *> a2 *> a3 *> sum *> product, "#example-10")
+      render(a1 &> a2 &> a3 &> sum &> product, "#example-10")
     }
 
     // Scala Tags
@@ -130,9 +123,26 @@ object Main {
       val col = intSlider("col", 1, 20, 8)
       val row = intSlider("row", 1, 20, 8)
       import scalatags.Text.all._
-      renderOutput((col, row).mapN { (c, r) =>
+      renderOutput((col, row).parMapN { (c, r) =>
         table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
       }, "#example-11")
+    }
+
+    {
+      import cats.syntax.functor._
+
+      val greeting = Map(
+        "Chinese" -> "你好",
+        "English" -> "Hello",
+        "French" -> "Salut"
+      )
+      val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
+      val hello = for {
+        selected <- selectBox
+        towho <- if (selected == "你好") string("name", "继超")
+        else string("name", "Jichao")
+      } yield towho
+      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12")
     }
   }
 }
