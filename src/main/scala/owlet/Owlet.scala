@@ -10,21 +10,27 @@ import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
 
-case class Powlet[A](nodes: List[Node], signal: Observable[A]) {
-  def fold[S](seed: => S)(op: (S, A) => S) = {
-    Powlet(nodes, signal.scan(seed)(op))
-  }
-  def filter(b: A => Boolean) = {
-    Powlet(nodes, signal.filter(b))
-  }
+trait Cell[A] {
+  def fold[S](seed: => S)(op: (S, A) => S): Cell[S]
+  def filter(b: A => Boolean): Cell[A]
 }
 
-case class Owlet[A](nodes: List[Node], signal: Observable[A]) {
+case class Owlet[A](nodes: List[Node], signal: Observable[A]) extends Cell[A] {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }
   def filter(b: A => Boolean) = {
     Owlet(nodes, signal.filter(b))
+  }
+}
+
+private[owlet] case class Powlet[A](nodes: List[Node], signal: Observable[A])
+    extends Cell[A] {
+  def fold[S](seed: => S)(op: (S, A) => S) = {
+    Powlet(nodes, signal.scan(seed)(op))
+  }
+  def filter(b: A => Boolean) = {
+    Powlet(nodes, signal.filter(b))
   }
 }
 
@@ -41,11 +47,9 @@ trait ParallelInstances {
 object Owlet extends ParallelInstances {
   implicit val monadOwlet = new Monad[Owlet] {
     override def map[A, B](fa: Owlet[A])(f: A => B) = {
-      println("owlet map")
       Owlet(fa.nodes, fa.signal.map(f))
     }
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      println("owlet flatmap")
       DOM.flat(map(fa)(f))
     }
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
@@ -78,14 +82,12 @@ object Owlet extends ParallelInstances {
 object Powlet {
   implicit val functorPowlet = new Functor[Powlet] {
     def map[A, B](fa: Powlet[A])(f: A => B) = {
-      println("powlet map")
       Powlet(fa.nodes, fa.signal.map(f))
     }
   }
 
   implicit val applicativePowlet = new Applicative[Powlet] {
     def ap[A, B](ff: Powlet[A => B])(fa: Powlet[A]): Powlet[B] = {
-      println("---------->" + ff + fa)
       Powlet(
         ff.nodes ++ fa.nodes,
         Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
@@ -121,10 +123,7 @@ object DOM {
       default,
       e => state := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(List(input), state.map(x => {
-      println("sssssss" + x)
-      x
-    }))
+    Owlet(List(input), state)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
@@ -288,7 +287,6 @@ object DOM {
   }
 
   def flat[A](item: Owlet[Owlet[A]]) = {
-    println("not here")
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
     Owlet(
       List(div),
@@ -353,7 +351,6 @@ object DOM {
     classNames.foreach(c => div.className = c.mkString(" "))
     div.className += " owlet-output"
     input.signal.foreach(v => div.innerHTML = v.toString)
-    println(input.nodes.map(_.textContent))
     input.nodes :+ div
   }
 
@@ -361,14 +358,6 @@ object DOM {
     * Render
     */
   def render[A](owlet: Owlet[A], selector: String) = {
-    println(owlet.nodes.map(_.toString))
-    owlet.nodes
-      .foreach(document.querySelector(selector).appendChild)
-    owlet.signal.subscribe
-  }
-
-  def render[A](owlet: Powlet[A], selector: String) = {
-    println(owlet.nodes.map(_.toString))
     owlet.nodes
       .foreach(document.querySelector(selector).appendChild)
     owlet.signal.subscribe
