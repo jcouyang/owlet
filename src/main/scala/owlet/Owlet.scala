@@ -67,7 +67,7 @@ object Owlet extends ParallelInstances {
   implicit val monoidKOwlet = new MonoidK[Owlet] {
     def empty[A]: Owlet[A] = Owlet(List[Node](), Observable.empty)
     def combineK[A](x: Owlet[A], y: Owlet[A]): Owlet[A] =
-      Owlet(x.nodes ++ y.nodes, Observable.merge(x.signal, y.signal))
+      Owlet(x.nodes ++ y.nodes, Observable.from(List(x.signal, y.signal)).merge)
   }
 
   implicit def monoidOwlet[A: Monoid] = new Monoid[Owlet[A]] {

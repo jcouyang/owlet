@@ -38,7 +38,7 @@ lazy val owlet = project.in(file("."))
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "1.5.0",
       "org.scala-js" %%% "scalajs-dom" % "0.9.2",
-      "io.monix" %%% "monix" % "3.0.0-RC1",
+      "io.monix" %%% "monix-reactive" % "3.0.0-RC2",
       "org.scalatest" %%% "scalatest" % "3.0.3" % Test,
       "org.typelevel" %%% "cats-laws" % "1.0.1" % Test,
       "org.typelevel" %%% "cats-testkit" % "1.0.1"% Test
