@@ -35,7 +35,7 @@ object Owlet extends ParallelInstances {
       Owlet(fa.nodes, fa.signal.map(f))
     }
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      DOM.flat(map(fa)(f))
+      flat(map(fa)(f))
     }
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
       f(a) match {
@@ -47,6 +47,21 @@ object Owlet extends ParallelInstances {
       }
     def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
 
+  }
+
+  private def flat[A](item: Owlet[Owlet[A]]) = {
+    val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
+    Owlet(
+      List(div),
+      item.signal
+        .flatMapLatest { owlet =>
+          while (div.lastChild != null) {
+            div.removeChild(div.lastChild)
+          }
+          owlet.nodes.foreach(div.appendChild)
+          owlet.signal
+        }
+    )
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {

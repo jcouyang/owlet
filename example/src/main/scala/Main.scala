@@ -1,6 +1,6 @@
 package us.oyanglul.owletexample
 
-import cats.Parallel
+import cats._
 import us.oyanglul.owlet._
 import cats.implicits._
 import monix.reactive.subjects.Var
@@ -14,7 +14,7 @@ object Main {
       val baseInput = number("Base", 2.0)
       val exponentInput = number("Exponent", 10.0)
       val pow = (baseInput, exponentInput).parMapN(math.pow)
-      render(pow, "#example-1")
+      renderOutput(pow, "#example-1")
     }
     // Monoid
     {
@@ -95,22 +95,33 @@ object Main {
 
     // Todo List
     {
-      val actions = Var(identity): Var[
-        List[Owlet[String]] => List[Owlet[String]]
-      ]
-      val listOfTodos =
-        actions.scan(List[Owlet[String]]())((owlets, f) => f(owlets))
+      type Store = List[String]
+      val actions: Var[Store => Store] = Var(identity)
 
-      val notAddItem = const(Nil) _
-      val addItem = (s: String) => List(string("todo-item", s))
+      val newTodoInput = string("new-todo", "")
+      val noop = (s: String) => identity: Store => Store
+      val addItem = (s: String) => (store: Store) => s :: store
+      val newTodo = Parallel
+        .parAp(button("add", noop, addItem))(newTodoInput)
+        .map(actions := _)
 
-      val newTodo = div(string("new-todo", ""), Var(List("header")))
-      val addNewTodo =
-        (button("add", notAddItem, addItem) <*> newTodo)
-          .map(t => actions := (a => a ::: t))
+      val reduced = actions.scan(Nil: List[String]) { (store, action) =>
+        action(store)
+      }
+      def createItem(content: String) = {
+        val item = string("todo-item", content)
+        val empty = Monoid[Owlet[String]].empty
+        val btn = button("delete", false, true)
+        btn.flatMap { y =>
+          if (y) {
+            actions := ((store: Store) => store.filter(_ != content))
+            empty
+          } else btn &> item
+        }
+      }
+      val todos = Owlet(Nil, reduced).flatMap(_.parTraverse(createItem))
 
-      val todoUl: Owlet[List[String]] = removableList(listOfTodos, actions)
-      render(addNewTodo *> todoUl, "#example-9")
+      render(newTodo &> todos, "#example-9")
     }
 
     // Spreadsheet like
