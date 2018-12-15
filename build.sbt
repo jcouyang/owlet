@@ -1,6 +1,6 @@
 organization in ThisBuild := "us.oyanglul"
 
-scalaVersion in ThisBuild := "2.12.7"
+scalaVersion in ThisBuild := "2.12.8"
 scalacOptions in ThisBuild ++= Seq(
   "-encoding", "UTF-8",   // source files are in UTF-8
   "-deprecation",         // warn about use of deprecated APIs
@@ -8,15 +8,17 @@ scalacOptions in ThisBuild ++= Seq(
   "-feature",             // warn about misused language features
   "-language:higherKinds",// allow higher kinded types without `import scala.language.higherKinds`
   "-Xlint",               // enable handy linter warnings
-  // "-Xfatal-warnings",     // turn compiler warnings into errors
+  "-Xfatal-warnings",     // turn compiler warnings into errors
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
+
+lazy val owletVersion = "0.2.0-SNAPSHOT"
 
 lazy val owlet = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "Owlet",
-    version := "0.1.5",
+    version := owletVersion,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/jcouyang/owlet"),
