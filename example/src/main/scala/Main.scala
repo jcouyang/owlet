@@ -1,5 +1,6 @@
 package us.oyanglul.owletexample
 
+import cats.Parallel
 import us.oyanglul.owlet._
 import cats.implicits._
 import monix.reactive.subjects.Var
@@ -58,9 +59,11 @@ object Main {
     {
       val emptyList = const(List[String]()) _
       val addItem = (s: String) => List(s)
-      val actions = button("add", emptyList, addItem) <*> string(
-        "add item",
-        "Orange"
+      val actions = Parallel.parAp(button("add", emptyList, addItem))(
+        string(
+          "add item",
+          "Orange"
+        )
       )
       val list = actions.fold(List[String]())(_ ::: _)
       renderOutput(list, "#example-7")
@@ -84,8 +87,8 @@ object Main {
     {
       val numOfItem = int("noi", 3)
       val items = numOfItem
-        .map(no => (0 to no).toList.map(i => string("inner", i.toString)))
-      renderOutput(numOfItem &> list(items), "#example-13")
+        .map(no => (0 to no).toList.traverse(i => string("inner", i.toString)))
+      renderOutput(numOfItem &> items.flatten, "#example-13")
     }
 
     // Todo List
