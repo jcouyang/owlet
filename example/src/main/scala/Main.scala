@@ -87,8 +87,10 @@ object Main {
     {
       val numOfItem = int("noi", 3)
       val items = numOfItem
-        .map(no => (0 to no).toList.traverse(i => string("inner", i.toString)))
-      renderOutput(numOfItem &> items.flatten, "#example-13")
+        .flatMap(
+          no => (0 to no).toList.parTraverse(i => string("inner", i.toString))
+        )
+      renderOutput(numOfItem &> items, "#example-13")
     }
 
     // Todo List
