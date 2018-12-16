@@ -4,6 +4,7 @@ import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
+import org.scalajs.dom.raw.HTMLElement
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
@@ -142,16 +143,41 @@ object DOM {
     * wrap nodes in `Owlet` into container element `div`, `label` etc
     * style of div can reactive from a stream of `className`
     */
-  def div[A](
+  def createContainer[A, Tag <: HTMLElement](
+      tag: String,
       inner: Owlet[A],
       className: Observable[Seq[String]] = Observable.empty,
       id: Option[String] = None
   ): Owlet[A] = {
-    val el = document.createElement("div").asInstanceOf[html.Div]
+    val el = document.createElement(tag).asInstanceOf[Tag]
     id.map(el.id = _)
     className.foreach(c => el.className = c.mkString(" "))
     inner.nodes.foreach(el.appendChild)
     Owlet(List(el), inner.signal)
+  }
+
+  def div[A](
+      inner: Owlet[A],
+      className: Observable[Seq[String]] = Observable.empty,
+      id: Option[String] = None
+  ) = {
+    createContainer[A, html.Div]("div", inner, className, id)
+  }
+
+  def ul[A](
+    inner: Owlet[A],
+    className: Observable[Seq[String]] = Observable.empty,
+    id: Option[String] = None
+  ) = {
+    createContainer[A, html.UList]("ul", inner, className, id)
+  }
+
+  def li[A](
+    inner: Owlet[A],
+    className: Observable[Seq[String]] = Observable.empty,
+    id: Option[String] = None
+  ) = {
+    createContainer[A, html.LI]("li", inner, className, id)
   }
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {

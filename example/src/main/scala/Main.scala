@@ -145,8 +145,6 @@ object Main {
     }
 
     {
-      import cats.syntax.functor._
-
       val greeting = Map(
         "Chinese" -> "你好",
         "English" -> "Hello",
