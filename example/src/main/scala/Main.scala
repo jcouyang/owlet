@@ -14,19 +14,20 @@ object Main {
       val baseInput = number("Base", 2.0)
       val exponentInput = number("Exponent", 10.0)
       val pow = (baseInput, exponentInput).parMapN(math.pow)
-      renderOutput(pow, "#example-1")
+      renderOutput(pow, "#example-1").runSyncStep
     }
     // Monoid
     {
       val helloText = string("hello", "Hello")
       val worldText = string("world", "World")
-      renderOutput(helloText |+| " ".pure[Owlet] |+| worldText, "#example-2")
+      renderOutput(helloText |+| " ".pure[Owlet] |+| worldText, "#example-2").runSyncStep
+
     }
 
     // Traverse
     {
       val sum = List(2, 13, 27, 42).parTraverse(int("n", _)).map(_.sum)
-      renderOutput(sum, "#example-3")
+      renderOutput(sum, "#example-3").runSyncStep
     }
 
     // Select Box
@@ -38,7 +39,7 @@ object Main {
       )
       val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
       val hello = string("name", "Jichao")
-      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4")
+      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-4").runSyncStep
     }
 
     // Checkbox
@@ -46,13 +47,13 @@ object Main {
       renderOutput(
         (boolean("a", false), boolean("b", true)).parMapN(_ && _),
         "#example-5"
-      )
+      ).runSyncStep
     }
 
     // Buttons
     {
       val b = button("increament", 0, 1)
-      renderOutput(b.fold(0)(_ + _), "#example-6")
+      renderOutput(b.fold(0)(_ + _), "#example-6").runSyncStep
     }
 
     // Adding items
@@ -66,7 +67,7 @@ object Main {
         )
       )
       val list = actions.fold(List[String]())(_ ::: _)
-      renderOutput(list, "#example-7")
+      renderOutput(list, "#example-7").runSyncStep
     }
 
     // Multiple Buttons
@@ -80,7 +81,7 @@ object Main {
       renderOutput(
         buttons.fold(0)((acc: Int, f: Int => Int) => f(acc)),
         "#example-8"
-      )
+      ).runSyncStep
     }
 
     // List
@@ -90,7 +91,7 @@ object Main {
         .flatMap(
           no => (0 to no).toList.parTraverse(i => string("inner", i.toString))
         )
-      renderOutput(numOfItem &> items, "#example-13")
+      renderOutput(numOfItem &> items, "#example-13").runSyncStep
     }
 
     // Todo List
@@ -121,7 +122,7 @@ object Main {
       }
       val todos = Owlet(Nil, reduced).flatMap(_.parTraverse(createItem))
 
-      render(newTodo &> todos, "#example-9")
+      render(newTodo &> todos, "#example-9").runSyncStep
     }
 
     // Spreadsheet like
@@ -131,7 +132,7 @@ object Main {
       val a3 = number("a3", 3)
       val sum = fx[Double, Double](_.sum, List(a1, a2, a3))
       val product = fx[Double, Double](_.product, List(a1, a2, a3, sum))
-      render(a1 &> a2 &> a3 &> sum &> product, "#example-10")
+      render(a1 &> a2 &> a3 &> sum &> product, "#example-10").runSyncStep
     }
 
     // Scala Tags
@@ -141,7 +142,7 @@ object Main {
       import scalatags.Text.all._
       renderOutput((col, row).parMapN { (c, r) =>
         table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
-      }, "#example-11")
+      }, "#example-11").runSyncStep
     }
 
     {
@@ -156,7 +157,7 @@ object Main {
         towho <- if (selected == "你好") string("name", "继超")
         else string("name", "Jichao")
       } yield towho
-      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12")
+      renderOutput(selectBox |+| " ".pure[Owlet] |+| hello, "#example-12").runSyncStep
     }
   }
 }

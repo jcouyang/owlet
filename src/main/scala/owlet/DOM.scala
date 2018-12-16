@@ -1,5 +1,6 @@
 package us.oyanglul.owlet
 
+import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import org.scalajs.dom._
@@ -165,17 +166,17 @@ object DOM {
   }
 
   def ul[A](
-    inner: Owlet[A],
-    className: Observable[Seq[String]] = Observable.empty,
-    id: Option[String] = None
+      inner: Owlet[A],
+      className: Observable[Seq[String]] = Observable.empty,
+      id: Option[String] = None
   ) = {
     createContainer[A, html.UList]("ul", inner, className, id)
   }
 
   def li[A](
-    inner: Owlet[A],
-    className: Observable[Seq[String]] = Observable.empty,
-    id: Option[String] = None
+      inner: Owlet[A],
+      className: Observable[Seq[String]] = Observable.empty,
+      id: Option[String] = None
   ) = {
     createContainer[A, html.LI]("li", inner, className, id)
   }
@@ -211,16 +212,19 @@ object DOM {
   /**
     * Render
     */
-  def render[A](owlet: Owlet[A], selector: String) = {
-    owlet.nodes
-      .foreach(document.querySelector(selector).appendChild)
-    owlet.signal.subscribe
-  }
+  def render[A](owlet: Owlet[A], selector: String) =
+    for {
+      _ <- Task {
+        owlet.nodes
+          .foreach(document.querySelector(selector).appendChild)
+      }
+      _ <- Task(owlet.signal.subscribe)
+    } yield ()
 
-  def renderOutput[A](owlet: Owlet[A], selector: String) = {
+  def renderOutput[A](owlet: Owlet[A], selector: String) = Task(
     output(owlet)
       .foreach(document.querySelector(selector).appendChild)
-  }
+  )
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase
 }
