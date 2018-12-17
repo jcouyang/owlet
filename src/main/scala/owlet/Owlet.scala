@@ -5,12 +5,12 @@ import cats.syntax.monoid._
 import org.scalajs.dom._
 import monix.reactive.Observable
 
-trait Cell[A] extends Product with Serializable {
+trait Cell[+A] extends Product with Serializable {
   def fold[S](seed: => S)(op: (S, A) => S): Cell[S]
   def filter(b: A => Boolean): Cell[A]
 }
 
-case class Owlet[A](nodes: List[Node], signal: Observable[A]) extends Cell[A] {
+case class Owlet[+A](nodes: List[Node], signal: Observable[A]) extends Cell[A] {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }

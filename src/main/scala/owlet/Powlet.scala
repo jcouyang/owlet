@@ -4,7 +4,7 @@ import cats._
 import org.scalajs.dom._
 import monix.reactive.Observable
 
-private[owlet] case class Powlet[A](nodes: List[Node], signal: Observable[A])
+private[owlet] case class Powlet[+A](nodes: List[Node], signal: Observable[A])
     extends Cell[A] {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Powlet(nodes, signal.scan(seed)(op))

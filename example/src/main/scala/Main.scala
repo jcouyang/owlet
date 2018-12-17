@@ -110,14 +110,14 @@ object Main {
         action(store)
       }
       def createItem(content: String) = {
-        val item = string("todo-item", content)
+        val item = text(content, "todo-item")
         val empty = Monoid[Owlet[String]].empty
         val btn = button("delete", false, true)
         btn.flatMap { y =>
           if (y) {
             actions := ((store: Store) => store.filter(_ != content))
             empty
-          } else btn &> item
+          } else li(item <& btn)
         }
       }
       val todos = Owlet(Nil, reduced).flatMap(_.parTraverse(createItem))

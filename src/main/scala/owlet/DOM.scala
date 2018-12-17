@@ -188,6 +188,11 @@ object DOM {
     Owlet(List(el), inner.signal)
   }
 
+  def text(content: String, name: String): Owlet[Nothing] = {
+    val el = document.createTextNode(content)
+    Owlet(List(el), Observable.empty)
+  }
+
   /** Spreadsheet like fx
     * create a new Owlet with existing Owlets with a formula
     */
