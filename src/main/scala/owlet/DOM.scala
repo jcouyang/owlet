@@ -1,5 +1,6 @@
 package us.oyanglul.owlet
 
+import cats.Later
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -20,7 +21,7 @@ object DOM {
       default,
       e => state := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(List(input), state)
+    Owlet(Later(List(input)), state)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
@@ -30,7 +31,7 @@ object DOM {
       Try(value.toDouble).foreach(state := _)
     })
     input.step = "any"
-    Owlet(List(input), state)
+    Owlet(Later(List(input)), state)
   }
 
   def numberSlider(
@@ -47,7 +48,7 @@ object DOM {
     input.step = "any"
     input.min = min.toString
     input.max = max.toString
-    Owlet(List(input), state)
+    Owlet(Later(List(input)), state)
   }
 
   def int(name: String, default: Int): Owlet[Int] = {
@@ -56,7 +57,7 @@ object DOM {
       val value = e.target.asInstanceOf[html.Input].value
       Try(value.toDouble.toInt).foreach(state := _)
     })
-    Owlet(List(input), state)
+    Owlet(Later(List(input)), state)
   }
 
   def boolean(name: String, default: Boolean): Owlet[Boolean] = {
@@ -67,7 +68,7 @@ object DOM {
     input.className = "owlet-input-" + normalize(name)
     input.checked = default
     input.onchange = e => sink := e.target.asInstanceOf[html.Input].checked
-    Owlet(List(input), sink)
+    Owlet(Later(List(input)), sink)
   }
 
   def intSlider(
@@ -84,7 +85,7 @@ object DOM {
     input.step = "1"
     input.min = min.toString
     input.max = max.toString
-    Owlet(List(input), state)
+    Owlet(Later(List(input)), state)
   }
 
   private def createInput[A](
@@ -123,7 +124,7 @@ object DOM {
     })
     val sink = Var(default)
     el.onchange = e => sink := e.target.asInstanceOf[html.Select].value
-    Owlet(List(el), sink)
+    Owlet(Later(List(el)), sink)
   }
 
   /**
@@ -135,7 +136,7 @@ object DOM {
     val sink = Var(default)
     el.onmousedown = _ => sink := pressed
     el.onmouseup = _ => sink := default
-    Owlet(List(el), sink)
+    Owlet(Later(List(el)), sink)
   }
 
   /**
@@ -150,11 +151,14 @@ object DOM {
       className: Observable[Seq[String]] = Observable.empty,
       id: Option[String] = None
   ): Owlet[A] = {
-    val el = document.createElement(tag).asInstanceOf[Tag]
-    id.map(el.id = _)
-    className.foreach(c => el.className = c.mkString(" "))
-    inner.nodes.foreach(el.appendChild)
-    Owlet(List(el), inner.signal)
+    val wrapped = inner.nodes.map { nodes =>
+      val el = document.createElement(tag).asInstanceOf[Tag]
+      id.map(el.id = _)
+      className.foreach(c => el.className = c.mkString(" "))
+      nodes.foreach(el.appendChild)
+      List(el)
+    }
+    Owlet(wrapped, inner.signal)
   }
 
   def div[A](
@@ -182,15 +186,19 @@ object DOM {
   }
 
   def label[A](inner: Owlet[A], name: String): Owlet[A] = {
-    val el = document.createElement("label").asInstanceOf[html.Label]
-    el.appendChild(document.createTextNode(name))
-    inner.nodes.foreach(el.appendChild)
-    Owlet(List(el), inner.signal)
+    Owlet(
+      inner.nodes.map { nodes =>
+        val el = document.createElement("label").asInstanceOf[html.Label]
+        el.appendChild(document.createTextNode(name))
+        nodes.foreach(el.appendChild)
+        List(el)
+      },
+      inner.signal
+    )
   }
 
   def text(content: String, name: String): Owlet[Nothing] = {
-    val el = document.createTextNode(content)
-    Owlet(List(el), Observable.empty)
+    Owlet(Later(List(document.createTextNode(content))), Observable.empty)
   }
 
   /** Spreadsheet like fx
@@ -200,7 +208,7 @@ object DOM {
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
     val sink = input.sequence.signal.map(formula)
     sink.foreach(a => div.textContent = a.toString)
-    Owlet(List(div), sink)
+    Owlet(Later(List(div)), sink)
   }
 
   def output[A](
@@ -211,7 +219,7 @@ object DOM {
     classNames.foreach(c => div.className = c.mkString(" "))
     div.className += " owlet-output"
     input.signal.foreach(v => div.innerHTML = v.toString)
-    input.nodes :+ div
+    input.nodes.map(_ :+ div)
   }
 
   /**
@@ -220,14 +228,14 @@ object DOM {
   def render[A](owlet: Owlet[A], selector: String) =
     for {
       _ <- Task {
-        owlet.nodes
+        owlet.nodes.value
           .foreach(document.querySelector(selector).appendChild)
       }
       _ <- Task(owlet.signal.subscribe)
     } yield ()
 
   def renderOutput[A](owlet: Owlet[A], selector: String) = Task(
-    output(owlet)
+    output(owlet).value
       .foreach(document.querySelector(selector).appendChild)
   )
 

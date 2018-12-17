@@ -3,9 +3,13 @@ package us.oyanglul.owlet
 import cats._
 import org.scalajs.dom._
 import monix.reactive.Observable
+import cats.syntax.monoid._
+import cats.instances.list._
 
-private[owlet] case class Powlet[+A](nodes: List[Node], signal: Observable[A])
-    extends Cell[A] {
+private[owlet] case class Powlet[+A](
+    nodes: Eval[List[Node]],
+    signal: Observable[A]
+) extends Cell[A] {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Powlet(nodes, signal.scan(seed)(op))
   }
@@ -21,11 +25,11 @@ private[owlet] object Powlet {
     }
     def ap[A, B](ff: Powlet[A => B])(fa: Powlet[A]): Powlet[B] = {
       Powlet(
-        ff.nodes ++ fa.nodes,
+        ff.nodes |+| fa.nodes,
         Observable.combineLatestMap2(ff.signal, fa.signal)(_(_))
       )
     }
 
-    def pure[A](a: A) = Powlet(Nil, Observable.pure[A](a))
+    def pure[A](a: A) = Powlet(Owlet.emptyNode, Observable.pure[A](a))
   }
 }

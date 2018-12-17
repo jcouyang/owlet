@@ -120,7 +120,8 @@ object Main {
           } else li(item <& btn)
         }
       }
-      val todos = Owlet(Nil, reduced).flatMap(_.parTraverse(createItem))
+      val todos =
+        Owlet(Owlet.emptyNode, reduced).flatMap(_.parTraverse(createItem))
 
       render(newTodo &> todos, "#example-9").runSyncStep
     }

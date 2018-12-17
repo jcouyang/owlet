@@ -4,13 +4,15 @@ import cats._
 import cats.syntax.monoid._
 import org.scalajs.dom._
 import monix.reactive.Observable
+import cats.instances.list._
 
 trait Cell[+A] extends Product with Serializable {
   def fold[S](seed: => S)(op: (S, A) => S): Cell[S]
   def filter(b: A => Boolean): Cell[A]
 }
 
-case class Owlet[+A](nodes: List[Node], signal: Observable[A]) extends Cell[A] {
+case class Owlet[+A](nodes: Eval[List[Node]], signal: Observable[A])
+    extends Cell[A] {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
   }
@@ -30,6 +32,8 @@ trait ParallelInstances {
 }
 
 object Owlet extends ParallelInstances {
+  val emptyNode = Later(List[Node]())
+
   implicit val monadOwlet = new Monad[Owlet] {
     override def map[A, B](fa: Owlet[A])(f: A => B) = {
       Owlet(fa.nodes, fa.signal.map(f))
@@ -45,37 +49,40 @@ object Owlet extends ParallelInstances {
             case Right(b)   => Observable.pure(b)
           })
       }
-    def pure[A](a: A) = Owlet(Nil, Observable.pure[A](a))
+    def pure[A](a: A) = Owlet(emptyNode, Observable.pure[A](a))
 
   }
 
   private def flat[A](item: Owlet[Owlet[A]]) = {
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
     Owlet(
-      List(div),
+      Later(List(div)),
       item.signal
         .flatMapLatest { owlet =>
           while (div.lastChild != null) {
             div.removeChild(div.lastChild)
           }
-          owlet.nodes.foreach(div.appendChild)
+          owlet.nodes.value.foreach(div.appendChild)
           owlet.signal
         }
     )
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
-    def empty[A]: Owlet[A] = Owlet(List[Node](), Observable.empty)
+    def empty[A]: Owlet[A] = Owlet(emptyNode, Observable.empty)
     def combineK[A](x: Owlet[A], y: Owlet[A]): Owlet[A] =
-      Owlet(x.nodes ++ y.nodes, Observable.from(List(x.signal, y.signal)).merge)
+      Owlet(
+        x.nodes |+| y.nodes,
+        Observable.from(List(x.signal, y.signal)).merge
+      )
   }
 
   implicit def monoidOwlet[A: Monoid] = new Monoid[Owlet[A]] {
     def combine(a: Owlet[A], b: Owlet[A]): Owlet[A] =
       Owlet(
-        a.nodes ++ b.nodes,
+        a.nodes |+| b.nodes,
         Observable.combineLatestMap2(a.signal, b.signal)(_ |+| _)
       )
-    def empty = Owlet(List[Node](), Observable.empty)
+    def empty = monoidKOwlet.empty[A]
   }
 }
