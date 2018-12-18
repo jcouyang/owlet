@@ -119,16 +119,20 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="us.oyanglul">oyanglul</a></dd></dl></div>
     </li><li class="current-entities indented3">
                         <span class="separator"></span>
-                        <a class="object" href="" title=""></a>
-                        <a href="" title="">DOM</a>
+                        <a class="trait" href="Cell.html" title=""></a>
+                        <a href="Cell.html" title="">Cell</a>
                       </li><li class="current-entities indented3">
                         <span class="separator"></span>
-                        <a class="object" href="Monadic$.html" title=""></a>
-                        <a href="Monadic$.html" title="">Monadic</a>
+                        <a class="object" href="" title=""></a>
+                        <a href="" title="">DOM</a>
                       </li><li class="current-entities indented3">
                         <a class="object" href="Owlet$.html" title=""></a>
                         <a class="class" href="Owlet.html" title=""></a>
                         <a href="Owlet.html" title="">Owlet</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="trait" href="ParallelInstances.html" title=""></a>
+                        <a href="ParallelInstances.html" title="">ParallelInstances</a>
                       </li>
               </ul>
             </div>
@@ -335,7 +339,25 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="us.oyanglul.owlet.DOM#div" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="us.oyanglul.owlet.DOM#createContainer" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="createContainer[A,Tag&lt;:org.scalajs.dom.raw.HTMLElement](tag:String,inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]"></a><a id="createContainer[A,Tag&lt;:HTMLElement](String,Owlet[A],Observable[Seq[String]],Option[String]):Owlet[A]"></a>
+      <span class="permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#createContainer[A,Tag&lt;:org.scalajs.dom.raw.HTMLElement](tag:String,inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">createContainer</span><span class="tparams">[<span name="A">A</span>, <span name="Tag">Tag &lt;: <span class="extype" name="org.scalajs.dom.raw.HTMLElement">HTMLElement</span></span>]</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="inner">inner: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.createContainer.A">A</span>]</span>, <span name="className">className: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Observable.empty</span></span>, <span name="id">id: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.createContainer.A">A</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Container</p><div class="fullcomment"><div class="comment cmt"><p>Container</p><p>wrap nodes in <code>Owlet</code> into container element <code>div</code>, <code>label</code> etc
+style of div can reactive from a stream of <code>className</code>
+</p></div></div>
+    </li><li name="us.oyanglul.owlet.DOM#div" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="div[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]"></a><a id="div[A](Owlet[A],Observable[Seq[String]],Option[String]):Owlet[A]"></a>
       <span class="permalink">
       <a href="../../../us/oyanglul/owlet/DOM$.html#div[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]" title="Permalink">
@@ -350,9 +372,7 @@
         <span class="name">div</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="inner">inner: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.div.A">A</span>]</span>, <span name="className">className: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Observable.empty</span></span>, <span name="id">id: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.div.A">A</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Container</p><div class="fullcomment"><div class="comment cmt"><p>Container</p><p>wrap nodes in <code>Owlet</code> into container element <code>div</code>, <code>label</code> etc
-style of div can reactive from a stream of <code>className</code>
-</p></div></div>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -527,10 +547,10 @@ create a new Owlet with existing Owlets with a formula
       </span>
       
       
-    </li><li name="us.oyanglul.owlet.DOM#list" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="list[A](items:us.oyanglul.owlet.Owlet[List[us.oyanglul.owlet.Owlet[A]]]):us.oyanglul.owlet.Owlet[List[A]]"></a><a id="list[A](Owlet[List[Owlet[A]]]):Owlet[List[A]]"></a>
+    </li><li name="us.oyanglul.owlet.DOM#li" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="li[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]"></a><a id="li[A](Owlet[A],Observable[Seq[String]],Option[String]):Owlet[A]"></a>
       <span class="permalink">
-      <a href="../../../us/oyanglul/owlet/DOM$.html#list[A](items:us.oyanglul.owlet.Owlet[List[us.oyanglul.owlet.Owlet[A]]]):us.oyanglul.owlet.Owlet[List[A]]" title="Permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#li[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -539,10 +559,10 @@ create a new Owlet with existing Owlets with a formula
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">list</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="items">items: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="scala.List">List</span>[<a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.list.A">A</span>]]]</span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="us.oyanglul.owlet.DOM.list.A">A</span>]]</span>
+        <span class="name">li</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="inner">inner: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.li.A">A</span>]</span>, <span name="className">className: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Observable.empty</span></span>, <span name="id">id: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.li.A">A</span>]</span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"><h4>Output</h4></div></div>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -630,9 +650,9 @@ create a new Owlet with existing Owlets with a formula
       
       
     </li><li name="us.oyanglul.owlet.DOM#output" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="output[A](input:us.oyanglul.owlet.Owlet[A],classNames:monix.reactive.Observable[Seq[String]]):us.oyanglul.owlet.Owlet[A]"></a><a id="output[A](Owlet[A],Observable[Seq[String]]):Owlet[A]"></a>
+      <a id="output[A](input:us.oyanglul.owlet.Owlet[A],classNames:monix.reactive.Observable[Seq[String]]):cats.Eval[List[org.scalajs.dom.Node]]"></a><a id="output[A](Owlet[A],Observable[Seq[String]]):Eval[List[Node]]"></a>
       <span class="permalink">
-      <a href="../../../us/oyanglul/owlet/DOM$.html#output[A](input:us.oyanglul.owlet.Owlet[A],classNames:monix.reactive.Observable[Seq[String]]):us.oyanglul.owlet.Owlet[A]" title="Permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#output[A](input:us.oyanglul.owlet.Owlet[A],classNames:monix.reactive.Observable[Seq[String]]):cats.Eval[List[org.scalajs.dom.Node]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -641,30 +661,14 @@ create a new Owlet with existing Owlets with a formula
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">output</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="input">input: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.output.A">A</span>]</span>, <span name="classNames">classNames: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Var(Nil)</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.output.A">A</span>]</span>
-      </span>
-      
-      
-    </li><li name="us.oyanglul.owlet.DOM#removableList" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="removableList[A](items:monix.reactive.Observable[List[us.oyanglul.owlet.Owlet[A]]],actions:monix.reactive.subjects.Var[List[us.oyanglul.owlet.Owlet[A]]=&gt;List[us.oyanglul.owlet.Owlet[A]]]):us.oyanglul.owlet.Owlet[List[A]]"></a><a id="removableList[A](Observable[List[Owlet[A]]],Var[(List[Owlet[A]])⇒List[Owlet[A]]]):Owlet[List[A]]"></a>
-      <span class="permalink">
-      <a href="../../../us/oyanglul/owlet/DOM$.html#removableList[A](items:monix.reactive.Observable[List[us.oyanglul.owlet.Owlet[A]]],actions:monix.reactive.subjects.Var[List[us.oyanglul.owlet.Owlet[A]]=&gt;List[us.oyanglul.owlet.Owlet[A]]]):us.oyanglul.owlet.Owlet[List[A]]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">removableList</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="items">items: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.List">List</span>[<a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.removableList.A">A</span>]]]</span>, <span name="actions">actions: <span class="extype" name="monix.reactive.subjects.Var">Var</span>[(<span class="extype" name="scala.List">List</span>[<a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.removableList.A">A</span>]]) ⇒ <span class="extype" name="scala.List">List</span>[<a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.removableList.A">A</span>]]]</span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="us.oyanglul.owlet.DOM.removableList.A">A</span>]]</span>
+        <span class="name">output</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="input">input: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.output.A">A</span>]</span>, <span name="classNames">classNames: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Var(Nil)</span></span>)</span><span class="result">: <span class="extype" name="cats.Eval">Eval</span>[<span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="org.scalajs.dom.Node">Node</span>]]</span>
       </span>
       
       
     </li><li name="us.oyanglul.owlet.DOM#render" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="render[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.execution.CancelableFuture[Unit]"></a><a id="render[A](Owlet[A],String):CancelableFuture[Unit]"></a>
+      <a id="render[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.eval.Task[Unit]"></a><a id="render[A](Owlet[A],String):Task[Unit]"></a>
       <span class="permalink">
-      <a href="../../../us/oyanglul/owlet/DOM$.html#render[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.execution.CancelableFuture[Unit]" title="Permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#render[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.eval.Task[Unit]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -673,15 +677,15 @@ create a new Owlet with existing Owlets with a formula
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="owlet">owlet: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.render.A">A</span>]</span>, <span name="selector">selector: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="monix.execution.CancelableFuture">CancelableFuture</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">render</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="owlet">owlet: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.render.A">A</span>]</span>, <span name="selector">selector: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="monix.eval.Task">Task</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       
       <p class="shortcomment cmt">Render
 </p>
     </li><li name="us.oyanglul.owlet.DOM#renderOutput" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="renderOutput[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.execution.CancelableFuture[Unit]"></a><a id="renderOutput[A](Owlet[A],String):CancelableFuture[Unit]"></a>
+      <a id="renderOutput[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.eval.Task[Unit]"></a><a id="renderOutput[A](Owlet[A],String):Task[Unit]"></a>
       <span class="permalink">
-      <a href="../../../us/oyanglul/owlet/DOM$.html#renderOutput[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.execution.CancelableFuture[Unit]" title="Permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#renderOutput[A](owlet:us.oyanglul.owlet.Owlet[A],selector:String):monix.eval.Task[Unit]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -690,7 +694,7 @@ create a new Owlet with existing Owlets with a formula
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">renderOutput</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="owlet">owlet: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.renderOutput.A">A</span>]</span>, <span name="selector">selector: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="monix.execution.CancelableFuture">CancelableFuture</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">renderOutput</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="owlet">owlet: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.renderOutput.A">A</span>]</span>, <span name="selector">selector: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="monix.eval.Task">Task</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       
       
@@ -743,6 +747,22 @@ create a new Owlet with existing Owlets with a formula
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="us.oyanglul.owlet.DOM#text" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="text(content:String,name:String):us.oyanglul.owlet.Owlet[Nothing]"></a><a id="text(String,String):Owlet[Nothing]"></a>
+      <span class="permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#text(content:String,name:String):us.oyanglul.owlet.Owlet[Nothing]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">text</span><span class="params">(<span name="content">content: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="scala.Nothing">Nothing</span>]</span>
+      </span>
+      
+      
     </li><li name="scala.AnyRef#toString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <span class="permalink">
@@ -759,6 +779,22 @@ create a new Owlet with existing Owlets with a formula
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="us.oyanglul.owlet.DOM#ul" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ul[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]"></a><a id="ul[A](Owlet[A],Observable[Seq[String]],Option[String]):Owlet[A]"></a>
+      <span class="permalink">
+      <a href="../../../us/oyanglul/owlet/DOM$.html#ul[A](inner:us.oyanglul.owlet.Owlet[A],className:monix.reactive.Observable[Seq[String]],id:Option[String]):us.oyanglul.owlet.Owlet[A]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ul</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="inner">inner: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.ul.A">A</span>]</span>, <span name="className">className: <span class="extype" name="monix.reactive.Observable">Observable</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">Observable.empty</span></span>, <span name="id">id: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="Owlet.html" class="extype" name="us.oyanglul.owlet.Owlet">Owlet</a>[<span class="extype" name="us.oyanglul.owlet.DOM.ul.A">A</span>]</span>
+      </span>
+      
+      
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">
