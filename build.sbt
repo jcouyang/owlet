@@ -1,6 +1,6 @@
 organization in ThisBuild := "us.oyanglul"
 
-scalaVersion in ThisBuild := "2.12.6"
+scalaVersion in ThisBuild := "2.12.8"
 scalacOptions in ThisBuild ++= Seq(
   "-encoding", "UTF-8",   // source files are in UTF-8
   "-deprecation",         // warn about use of deprecated APIs
@@ -8,15 +8,17 @@ scalacOptions in ThisBuild ++= Seq(
   "-feature",             // warn about misused language features
   "-language:higherKinds",// allow higher kinded types without `import scala.language.higherKinds`
   "-Xlint",               // enable handy linter warnings
-  // "-Xfatal-warnings",     // turn compiler warnings into errors
+  "-Xfatal-warnings",     // turn compiler warnings into errors
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
+
+lazy val owletVersion = "0.2.0-SNAPSHOT"
 
 lazy val owlet = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "Owlet",
-    version := "0.1.5",
+    version := owletVersion,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/jcouyang/owlet"),
@@ -34,10 +36,9 @@ lazy val owlet = project.in(file("."))
     licenses := List("MIT" -> new URL("https://opensource.org/licenses/MIT")),
     homepage := Some(url("https://oyanglul.us/owlet")),
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "1.0.1",
-      "org.typelevel" %%% "cats-free" % "1.0.1",
+      "org.typelevel" %%% "cats-core" % "1.5.0",
       "org.scala-js" %%% "scalajs-dom" % "0.9.2",
-      "io.monix" %%% "monix" % "3.0.0-RC1",
+      "io.monix" %%% "monix-reactive" % "3.0.0-RC2",
       "org.scalatest" %%% "scalatest" % "3.0.3" % Test,
       "org.typelevel" %%% "cats-laws" % "1.0.1" % Test,
       "org.typelevel" %%% "cats-testkit" % "1.0.1"% Test
