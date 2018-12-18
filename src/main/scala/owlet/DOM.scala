@@ -14,24 +14,27 @@ import cats.instances.list._
 object DOM {
   // ==Input==
   def string(name: String, default: String): Owlet[String] = {
-    val state = Var(default)
+    val signal = Var(default)
     val input = createInput(
       name,
       "text",
       default,
-      e => state := e.target.asInstanceOf[html.Input].value
+      e => signal := e.target.asInstanceOf[html.Input].value
     )
-    Owlet(Later(List(input)), state)
+    Owlet(input.map(List(_)), signal)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
-    val state = Var(default)
-    val input = createInput(name, "number", default, e => {
+    val signal = Var(default)
+    val node = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble).foreach(state := _)
-    })
-    input.step = "any"
-    Owlet(Later(List(input)), state)
+      Try(value.toDouble).foreach(signal := _)
+    }).map { input =>
+      input.step = "any"
+      input
+    }
+
+    Owlet(node.map(List(_)), signal)
   }
 
   def numberSlider(
@@ -40,35 +43,41 @@ object DOM {
       max: Double,
       default: Double
   ): Owlet[Double] = {
-    val state = Var(default)
-    val input = createInput(name, "range", default, e => {
+    val signal = Var(default)
+    val node = createInput(name, "range", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(state := _)
-    })
-    input.step = "any"
-    input.min = min.toString
-    input.max = max.toString
-    Owlet(Later(List(input)), state)
+      Try(value.toDouble.toInt).foreach(signal := _)
+    }).map { input =>
+      input.step = "any"
+      input.min = min.toString
+      input.max = max.toString
+      input
+    }
+
+    Owlet(node.map(List(_)), signal)
   }
 
   def int(name: String, default: Int): Owlet[Int] = {
-    val state = Var(default)
-    val input = createInput(name, "number", default, e => {
+    val signal = Var(default)
+    val node = createInput(name, "number", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(state := _)
+      Try(value.toDouble.toInt).foreach(signal := _)
     })
-    Owlet(Later(List(input)), state)
+    Owlet(node.map(List(_)), signal)
   }
 
   def boolean(name: String, default: Boolean): Owlet[Boolean] = {
-    val sink = Var(default)
-    val input = document.createElement("input").asInstanceOf[html.Input]
-    input.`type` = "checkbox"
-    input.name = name
-    input.className = "owlet-input-" + normalize(name)
-    input.checked = default
-    input.onchange = e => sink := e.target.asInstanceOf[html.Input].checked
-    Owlet(Later(List(input)), sink)
+    val signal = Var(default)
+    val node = Later {
+      val input = document.createElement("input").asInstanceOf[html.Input]
+      input.`type` = "checkbox"
+      input.name = name
+      input.className = "owlet-input-" + normalize(name)
+      input.checked = default
+      input.onchange = e => signal := e.target.asInstanceOf[html.Input].checked
+      input
+    }
+    Owlet(node.map(List(_)), signal)
   }
 
   def intSlider(
@@ -77,15 +86,17 @@ object DOM {
       max: Int,
       default: Int
   ): Owlet[Int] = {
-    val state = Var(default)
-    val input = createInput(name, "range", default, e => {
+    val signal = Var(default)
+    val node = createInput(name, "range", default, e => {
       val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(state := _)
-    })
-    input.step = "1"
-    input.min = min.toString
-    input.max = max.toString
-    Owlet(Later(List(input)), state)
+      Try(value.toDouble.toInt).foreach(signal := _)
+    }).map { input =>
+      input.step = "1"
+      input.min = min.toString
+      input.max = max.toString
+      input
+    }
+    Owlet(node.map(List(_)), signal)
   }
 
   private def createInput[A](
@@ -93,7 +104,7 @@ object DOM {
       t: String,
       default: A,
       transform: Event => Unit,
-  ) = {
+  ) = Later {
     val input: html.Input =
       document.createElement("input").asInstanceOf[html.Input]
     input.`type` = t
@@ -122,21 +133,24 @@ object DOM {
         op.outerHTML
       }.mkString
     })
-    val sink = Var(default)
-    el.onchange = e => sink := e.target.asInstanceOf[html.Select].value
-    Owlet(Later(List(el)), sink)
+    val signal = Var(default)
+    el.onchange = e => signal := e.target.asInstanceOf[html.Select].value
+    Owlet(Later(List(el)), signal)
   }
 
   /**
     * button emit `default` value immediatly and emit `pressed` value every time it's clicked
     */
   def button[A](name: String, default: A, pressed: A) = {
-    val el = document.createElement("button").asInstanceOf[html.Button]
-    el.appendChild(document.createTextNode(name))
-    val sink = Var(default)
-    el.onmousedown = _ => sink := pressed
-    el.onmouseup = _ => sink := default
-    Owlet(Later(List(el)), sink)
+    val signal = Var(default)
+    val node = Later {
+      val el = document.createElement("button").asInstanceOf[html.Button]
+      el.appendChild(document.createTextNode(name))
+      el.onmousedown = _ => signal := pressed
+      el.onmouseup = _ => signal := default
+      el
+    }
+    Owlet(node.map(List(_)), signal)
   }
 
   /**
@@ -206,9 +220,9 @@ object DOM {
     */
   def fx[A, B](formula: List[A] => B, input: List[Owlet[A]]): Owlet[B] = {
     val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
-    val sink = input.sequence.signal.map(formula)
-    sink.foreach(a => div.textContent = a.toString)
-    Owlet(Later(List(div)), sink)
+    val signal = input.sequence.signal.map(formula)
+    signal.foreach(a => div.textContent = a.toString)
+    Owlet(Later(List(div)), signal)
   }
 
   def output[A](

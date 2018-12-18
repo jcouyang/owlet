@@ -6,7 +6,7 @@ import org.scalajs.dom._
 import monix.reactive.Observable
 import cats.instances.list._
 
-trait Cell[+A] extends Product with Serializable {
+abstract trait Cell[+A] extends Product with Serializable {
   def fold[S](seed: => S)(op: (S, A) => S): Cell[S]
   def filter(b: A => Boolean): Cell[A]
 }
