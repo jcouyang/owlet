@@ -1,6 +1,6 @@
 package us.oyanglul.owlet
 
-import cats.Later
+import cats.{Later, Show}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
@@ -10,6 +10,9 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.util.Try
 import cats.syntax.traverse._
 import cats.instances.list._
+import cats.syntax.functor._
+import cats.syntax.flatMap._
+import cats.syntax.show._
 
 object DOM {
   // ==Input==
@@ -211,29 +214,22 @@ object DOM {
     )
   }
 
-  def text(content: String, name: String): Owlet[Nothing] = {
+  def text(content: String): Owlet[Nothing] = {
     Owlet(Later(List(document.createTextNode(content))), Observable.empty)
   }
 
   /** Spreadsheet like fx
     * create a new Owlet with existing Owlets with a formula
     */
-  def fx[A, B](formula: List[A] => B, input: List[Owlet[A]]): Owlet[B] = {
-    val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
-    val signal = input.sequence.signal.map(formula)
-    signal.foreach(a => div.textContent = a.toString)
-    Owlet(Later(List(div)), signal)
+  def fx[A, B: Show](formula: List[A] => B, input: List[Owlet[A]]): Owlet[B] = {
+    input.sequence.map(formula).flatMap(output => text(output.show))
   }
 
-  def output[A](
+  def output[A: Show](
       input: Owlet[A],
       classNames: Observable[Seq[String]] = Var(Nil)
   ) = {
-    val div = document.createElement("div").asInstanceOf[html.Div]
-    classNames.foreach(c => div.className = c.mkString(" "))
-    div.className += " owlet-output"
-    input.signal.foreach(v => div.innerHTML = v.toString)
-    input.nodes.map(_ :+ div)
+    div(input.flatMap(o => text(o.show)), classNames)
   }
 
   /**
@@ -248,9 +244,8 @@ object DOM {
       _ <- Task(owlet.signal.subscribe)
     } yield ()
 
-  def renderOutput[A](owlet: Owlet[A], selector: String) = Task(
-    output(owlet).value
-      .foreach(document.querySelector(selector).appendChild)
+  def renderOutput[A: Show](owlet: Owlet[A], selector: String) = Task(
+    render(output(owlet), selector)
   )
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase

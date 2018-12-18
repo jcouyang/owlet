@@ -110,7 +110,7 @@ object Main {
         action(store)
       }
       def createItem(content: String) = {
-        val item = text(content, "todo-item")
+        val item = text(content)
         val empty = Monoid[Owlet[String]].empty
         val btn = button("delete", false, true)
         btn.flatMap { y =>
