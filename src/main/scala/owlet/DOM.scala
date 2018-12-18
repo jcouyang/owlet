@@ -13,6 +13,7 @@ import cats.instances.list._
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
+import cats.syntax.parallel._
 
 object DOM {
   // ==Input==
@@ -244,9 +245,8 @@ object DOM {
       _ <- Task(owlet.signal.subscribe)
     } yield ()
 
-  def renderOutput[A: Show](owlet: Owlet[A], selector: String) = Task(
-    render(output(owlet), selector)
-  )
+  def renderOutput[A: Show](owlet: Owlet[A], selector: String) =
+    render(owlet &> output(owlet), selector)
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase
 }
