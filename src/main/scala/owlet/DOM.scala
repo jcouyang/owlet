@@ -145,11 +145,17 @@ object DOM {
   /**
     * button emit `default` value immediatly and emit `pressed` value every time it's clicked
     */
-  def button[A](name: String, default: A, pressed: A) = {
+  def button[A](
+      name: String,
+      default: A,
+      pressed: A,
+      classNames: Seq[String] = Nil
+  ) = {
     val signal = Var(default)
     val node = Later {
       val el = document.createElement("button").asInstanceOf[html.Button]
       el.appendChild(document.createTextNode(name))
+      el.className = classNames.mkString(" ")
       el.onmousedown = _ => signal := pressed
       el.onmouseup = _ => signal := default
       el
@@ -186,6 +192,20 @@ object DOM {
   ) = {
     createContainer[A, html.Div]("div", inner, className, id)
   }
+
+  def span[A](
+      inner: Owlet[A],
+      classNames: Seq[String] = Nil,
+      id: Option[String] = None
+  ) = {
+    createContainer[A, html.Span]("span", inner, Var(classNames), id)
+  }
+
+  def h1[A](
+      content: String,
+      classNames: Seq[String] = Nil,
+      id: Option[String] = None
+  ) = createContainer[A, html.Heading]("h1", text(content), Var(classNames), id)
 
   def ul[A](
       inner: Owlet[A],
