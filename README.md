@@ -4,10 +4,10 @@ Owlet is a Typed Spreadsheet UI library for ScalaJS. It is built on top of [Moni
 
 ## Get Started
 
-### add dependency in your `build.sbt`
+### 1. add dependency in your `build.sbt`
 
 #### Stable
-[![Latest version](https://index.scala-lang.org/jcouyang/owlet/owlet/latest.svg)](https://index.scala-lang.org/<yjcouyang/owlet/owlet)
+[![Latest version](https://index.scala-lang.org/jcouyang/owlet/owlet/latest.svg)](https://index.scala-lang.org/jcouyang/owlet/owlet)
 
 ```
 libraryDependencies += "us.oyanglul" %%% "owlet" % "0.1.5"
@@ -21,7 +21,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 libraryDependencies += "com.github.jcouyang" % "owlet" % "<jitpact version>"
 ```
 
-2. now programming UI just like using spreadsheet
+### 2. now programming UI just like using spreadsheet
 ```scala
 import us.oyanglul.owlet._
 import DOM._
