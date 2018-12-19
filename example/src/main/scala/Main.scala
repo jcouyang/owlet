@@ -141,7 +141,7 @@ object Main {
       val col = intSlider("col", 1, 20, 8)
       val row = intSlider("row", 1, 20, 8)
       import scalatags.Text.all._
-      renderOutput((col, row).parMapN { (c, r) =>
+      unsafeRenderOutput((col, row).parMapN { (c, r) =>
         table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
       }, "#example-11").runSyncStep
     }

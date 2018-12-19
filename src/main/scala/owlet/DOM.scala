@@ -233,6 +233,21 @@ object DOM {
     div(input.flatMap(o => text(o.show)), classNames)
   }
 
+  def unsafeOutput[A: Show](
+      input: Owlet[A],
+      classNames: Observable[Seq[String]] = Var(Nil)
+  ) = {
+    input.flatMap { content =>
+      val node = Later {
+        val el = document.createElement("div").asInstanceOf[html.Div]
+        el.innerHTML = content.show
+        classNames.foreach(c => el.className = c.mkString(" "))
+        el
+      }
+      Owlet(node.map(List(_)), input.signal)
+    }
+  }
+
   /**
     * Render
     */
@@ -247,6 +262,9 @@ object DOM {
 
   def renderOutput[A: Show](owlet: Owlet[A], selector: String) =
     render(owlet &> output(owlet), selector)
+
+  def unsafeRenderOutput[A: Show](owlet: Owlet[A], selector: String) =
+    render(owlet &> unsafeOutput(owlet), selector)
 
   private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase
 }
