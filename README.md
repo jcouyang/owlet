@@ -10,7 +10,7 @@ Owlet is a Typed Spreadsheet UI library for ScalaJS. It is built on top of [Moni
 [![Latest version](https://index.scala-lang.org/jcouyang/owlet/owlet/latest.svg)](https://index.scala-lang.org/jcouyang/owlet/owlet)
 
 ```
-libraryDependencies += "us.oyanglul" %%% "owlet" % "0.1.5"
+libraryDependencies += "us.oyanglul" %%% "owlet" % "<maven version>"
 ```
 
 #### RC
@@ -22,6 +22,7 @@ libraryDependencies += "com.github.jcouyang" % "owlet" % "<jitpact version>"
 ```
 
 ### 2. now programming UI just like using spreadsheet
+
 ```scala
 import us.oyanglul.owlet._
 import DOM._
@@ -29,6 +30,15 @@ val a1 = number("a1", 1)
 val a2 = number("a2", 2)
 val a3 = number("a3", 3)
 val sum     = fx[Double, Double](_.sum, List(a1, a2, a3))
-val product = fx[Double, Double](_.product, List(a1, a2, a3))
-render(a1 *> a2 *> a3 *> sum *> product, "#app")
+render(a1 &> a2 &> a3 &> sum, "#app")
+```
+
+or ![Cats Friendly Badge](https://typelevel.org/cats/img/cats-badge-tiny.png)
+
+```scala
+val a1 = number("a1", 1)
+val a2 = number("a2", 2)
+val a3 = number("a3", 3)
+val sum     = a1 |+| a2 |+| a3
+renderOutput(sum, "#app")
 ```

@@ -25,10 +25,10 @@ object Main {
       }
 
     val badges = h1("Badges") &>
-    span(
-      text("Primary"),
-      classNames = List("badge", "badge-primary")
-    ) &>
+      span(
+        text("Primary"),
+        classNames = List("badge", "badge-primary")
+      ) &>
       span(text("Secondary"), classNames = List("badge", "badge-secondary")) &>
       span(text("Success"), classNames = List("badge", "badge-success"))
 
