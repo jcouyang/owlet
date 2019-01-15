@@ -78,7 +78,18 @@ lazy val docs = project.enablePlugins(MicrositesPlugin)
     micrositeGithubRepo := "owlet",
     micrositeDocumentationUrl := "api",
     micrositeGitterChannel := true,
-    micrositeGitterChannelUrl := "jcouyang/owlet"
+    micrositeGitterChannelUrl := "jcouyang/owlet",
+    micrositeExtraMdFiles := Map(
+      file("README.md") -> microsites.ExtraMdFileConfig(
+        "index.md",
+        "home",
+        Map("title" -> "Home", "section" -> "home", "position" -> "0", "technologies" -> """
+ - first: ["Scala", "Owlet components are completely written in Scala"]
+ - second: ["Cats", "Owlet implements Cats typeclasses so you will get awesome cats syntax"]
+ - third: ["Monix", "Owlet takes advantage from high performance Reactive lib Monix to build reactive UI component"]""""
+        )
+      )
+    )
   )
 
 target in Compile in doc := baseDirectory.value / "docs" / "src" / "main" / "tut" / "api"
