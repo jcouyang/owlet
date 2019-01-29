@@ -4,6 +4,7 @@ import cats.{Later, Show}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
+import monix.reactive.subjects.PublishSubject
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
@@ -160,6 +161,27 @@ object DOM {
       el.onmouseup = _ => signal := default
       el
     }
+    Owlet(node.map(List(_)), signal)
+  }
+
+  def a[A](
+      child: Owlet[Nothing],
+      pressed: A,
+      classNames: Seq[String] = Nil,
+      href: String = "#"
+  ) = {
+    val signal = PublishSubject[A]()
+    val node = child.nodes.flatMap(
+      c =>
+        Later {
+          val el = document.createElement("a").asInstanceOf[html.Anchor]
+          c.foreach(el.appendChild)
+          el.className = classNames.mkString(" ")
+          el.onclick = _ => signal onNext pressed
+          el.href = href
+          el
+        }
+    )
     Owlet(node.map(List(_)), signal)
   }
 
