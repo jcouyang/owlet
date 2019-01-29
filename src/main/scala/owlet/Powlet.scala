@@ -9,14 +9,7 @@ import cats.instances.list._
 private[owlet] case class Powlet[+A](
     nodes: Eval[List[Node]],
     signal: Observable[A]
-) extends Cell[A] {
-  def fold[S](seed: => S)(op: (S, A) => S) = {
-    Powlet(nodes, signal.scan(seed)(op))
-  }
-  def filter(b: A => Boolean) = {
-    Powlet(nodes, signal.filter(b))
-  }
-}
+)
 
 private[owlet] object Powlet {
   implicit val applicativePowlet = new Applicative[Powlet] {

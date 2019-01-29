@@ -6,18 +6,9 @@ import org.scalajs.dom._
 import monix.reactive.Observable
 import cats.instances.list._
 
-abstract trait Cell[+A] extends Product with Serializable {
-  def fold[S](seed: => S)(op: (S, A) => S): Cell[S]
-  def filter(b: A => Boolean): Cell[A]
-}
-
-case class Owlet[+A](nodes: Eval[List[Node]], signal: Observable[A])
-    extends Cell[A] {
+case class Owlet[+A](nodes: Eval[List[Node]], signal: Observable[A]) {
   def fold[S](seed: => S)(op: (S, A) => S) = {
     Owlet(nodes, signal.scan(seed)(op))
-  }
-  def filter(b: A => Boolean) = {
-    Owlet(nodes, signal.filter(b))
   }
 }
 
@@ -33,6 +24,26 @@ trait ParallelInstances {
 
 object Owlet extends ParallelInstances {
   val emptyNode = Later(List[Node]())
+
+  implicit val functorOwlet = new Functor[Owlet] {
+    override def map[A, B](fa: Owlet[A])(f: A => B) = {
+      Owlet(fa.nodes, fa.signal.map(f))
+    }
+  }
+
+  implicit val functorFilterOwlet = new FunctorFilter[Owlet] {
+    override def functor = functorOwlet
+    override def mapFilter[A, B](fa: Owlet[A])(f: A => Option[B]): Owlet[B] = {
+      Owlet(
+        fa.nodes,
+        fa.signal
+          .flatMap(f(_) match {
+            case Some(a) => Observable.pure(a)
+            case None    => Observable.empty
+          })
+      )
+    }
+  }
 
   implicit val monadOwlet = new Monad[Owlet] {
     override def map[A, B](fa: Owlet[A])(f: A => B) = {
@@ -50,7 +61,6 @@ object Owlet extends ParallelInstances {
           })
       }
     def pure[A](a: A) = Owlet(emptyNode, Observable.pure[A](a))
-
   }
 
   private def flat[A](item: Owlet[Owlet[A]]) = {
