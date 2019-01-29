@@ -191,7 +191,7 @@ object DOM {
     * wrap nodes in `Owlet` into container element `div`, `label` etc
     * style of div can reactive from a stream of `className`
     */
-  def createContainer[A, Tag <: HTMLElement](
+  private[owlet] def createContainer[A, Tag <: HTMLElement](
       tag: String,
       inner: Owlet[A],
       className: Observable[Seq[String]] = Observable.empty,
@@ -245,16 +245,13 @@ object DOM {
     createContainer[A, html.LI]("li", inner, className, id)
   }
 
-  def label[A](inner: Owlet[A], name: String): Owlet[A] = {
-    Owlet(
-      inner.nodes.map { nodes =>
-        val el = document.createElement("label").asInstanceOf[html.Label]
-        el.appendChild(document.createTextNode(name))
-        nodes.foreach(el.appendChild)
-        List(el)
-      },
-      inner.signal
-    )
+  def label[A](
+      inner: Owlet[A],
+      text: String = "",
+      className: Observable[List[String]] = Observable.empty,
+      id: Option[String] = None
+  ): Owlet[A] = {
+    createContainer[A, html.Label]("label", inner, className, id)
   }
 
   def text(content: String): Owlet[Nothing] = {
