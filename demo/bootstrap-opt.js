@@ -5861,7 +5861,6 @@ $c_Lus_oyanglul_owletexample_Main$.prototype.main__AT__V = (function(args) {
   var mb$3 = jsx$7.span__Lus_oyanglul_owlet_Owlet__sc_Seq__s_Option__Lus_oyanglul_owlet_Owlet(jsx$6, $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs$4, cbf$4)), $m_s_None$());
   var P$4 = $m_Lus_oyanglul_owlet_Owlet$().parallelForOwlet$1;
   var badges = $as_Lus_oyanglul_owlet_Owlet($f_Lcats_NonEmptyParallel__parProductR__O__O__O(P$4, ma$4, mb$3));
-  var jsx$8 = $m_Lus_oyanglul_owlet_DOM$();
   var this$59 = $m_Lus_oyanglul_owlet_DOM$();
   var this$52 = $m_Lus_oyanglul_owlet_DOM$();
   $m_Lcats_implicits$();
@@ -5887,10 +5886,15 @@ $c_Lus_oyanglul_owletexample_Main$.prototype.main__AT__V = (function(args) {
   var s$2 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
   var className$2 = new $c_Lmonix_reactive_subjects_Var().init___O__Lmonix_execution_Scheduler(initial$2, s$2);
   var id$2 = $m_s_None$();
-  var this$60 = jsx$8.render__Lus_oyanglul_owlet_Owlet__T__Lmonix_eval_Task(this$59.createContainer__T__Lus_oyanglul_owlet_Owlet__Lmonix_reactive_Observable__s_Option__Lus_oyanglul_owlet_Owlet("div", inner$2, className$2, id$2), "#app");
+  var app = this$59.createContainer__T__Lus_oyanglul_owlet_Owlet__Lmonix_reactive_Observable__s_Option__Lus_oyanglul_owlet_Owlet("div", inner$2, className$2, id$2);
+  var this$60 = $m_Lus_oyanglul_owlet_DOM$().render__Lus_oyanglul_owlet_Owlet__T__Lmonix_eval_Task(app, "#app");
   var s$3 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
   var opts = $m_Lmonix_eval_Task$().defaultOptions$8;
-  $m_Lmonix_eval_internal_TaskRunLoop$().startStep__Lmonix_eval_Task__Lmonix_execution_Scheduler__Lmonix_eval_Task$Options__s_util_Either(this$60, s$3, opts)
+  $m_Lmonix_eval_internal_TaskRunLoop$().startStep__Lmonix_eval_Task__Lmonix_execution_Scheduler__Lmonix_eval_Task$Options__s_util_Either(this$60, s$3, opts);
+  var this$61 = $m_Lus_oyanglul_owlet_DOM$().render__Lus_oyanglul_owlet_Owlet__T__Lmonix_eval_Task(app, "#app1");
+  var s$4 = $m_Lmonix_execution_Scheduler$().Implicits__Lmonix_execution_schedulers_SchedulerCompanionImpl$Implicits$().global__Lmonix_execution_Scheduler();
+  var opts$1 = $m_Lmonix_eval_Task$().defaultOptions$8;
+  $m_Lmonix_eval_internal_TaskRunLoop$().startStep__Lmonix_eval_Task__Lmonix_execution_Scheduler__Lmonix_eval_Task$Options__s_util_Either(this$61, s$4, opts$1)
 });
 var $d_Lus_oyanglul_owletexample_Main$ = new $TypeData().initClass({
   Lus_oyanglul_owletexample_Main$: 0
