@@ -64,13 +64,22 @@ val example4 = selectBox |+| " ".pure[Owlet] |+| hello
 
 ## Example 5: Checkboxes
 
-`boolean` will be render as `checkbox`
+`checkbox` will generate a pair of value `(name, value)`
 
 ```scala
-(boolean("a", false), boolean("b", true)).parMapN(_ && _),
+List(("a", false), ("b", true), ("c", false))
+  .parTraverse { case (name, value) => checkbox(name, value) }
 ```
 
 <div id="example-5" ></div>
+
+`toggle` will generate exclusive value as radio
+
+```scala
+toggle("a", false, "b") <+> toggle("a", true, "a") <+> toggle("a", false, "c")
+```
+
+<div id="example-14" ></div>
 
 ## Example 6: Buttons
 
@@ -89,7 +98,7 @@ with `button`, it's easy to build a increamental list
 ```
 val emptyList = const(List[String]()) _
 val addItem = (s: String) => List(s)
-val actions = parAp(button("add", emptyList, addItem))(string("add item","Orange"))
+val actions = button("add", emptyList, addItem) <&> string("add item","Orange"
 val list = actions.fold(List[String]())(_ ::: _)
 ```
 <div id="example-7" ></div>
@@ -115,36 +124,34 @@ buttons.fold(0)((acc: Int, f: Int => Int) => f(acc))
 
 Imagine how many lines of code you need to implement a todo list?
 
-**JUST 10!!!**
+**JUST 20!!!**
 
 ``` scala
-      type Store = List[String]
-      val actions: Var[Store => Store] = Var(identity)
+type Store = List[String]
+val actions: Var[Store => Store] = Var(identity)
 
-      val newTodoInput = string("new-todo", "")
-      val noop = (s: String) => identity: Store => Store
-      val addItem = (s: String) => (store: Store) => s :: store
-      val newTodo = Parallel
-        .parAp(button("add", noop, addItem))(newTodoInput)
-        .map(actions := _)
+val newTodoInput = string("new-todo", "")
+val noop = (s: String) => identity: Store => Store
+val addItem = (s: String) => (store: Store) => s :: store
+val newTodo = (button("add", noop, addItem) <&> newTodoInput)
+  .map(actions := _)
 
-      val reduced = actions.scan(Nil: List[String]) { (store, action) =>
-        action(store)
-      }
-      def createItem(content: String) = {
-        val item = text(content, "todo-item")
-        val empty = Monoid[Owlet[String]].empty
-        val btn = button("delete", false, true)
-        btn.flatMap { y =>
-          if (y) {
-            actions := ((store: Store) => store.filter(_ != content))
-            empty
-          } else li(item <& btn)
-        }
-      }
-      val todos =
-        Owlet(Owlet.emptyNode, reduced).flatMap(_.parTraverse(createItem))
-      val todomvc = newTodo &> todos
+val reduced = actions.scan(Nil: List[String]) { (store, action) =>
+  action(store)
+}
+def createItem(content: String) = {
+  val item = text(content)
+  val empty = Monoid[Owlet[String]].empty
+  val btn = button("delete", false, true)
+  btn.flatMap { y =>
+    if (y) {
+      actions := ((store: Store) => store.filter(_ != content))
+      empty
+    } else li(item <& btn)
+  }
+}
+val todos =
+  Owlet(Owlet.emptyNode, reduced).flatMap(_.parTraverse(createItem))
 ```
 
 <div id="example-9"></div>

@@ -36,7 +36,7 @@ lazy val owlet = project.in(file("."))
     licenses := List("MIT" -> new URL("https://opensource.org/licenses/MIT")),
     homepage := Some(url("https://oyanglul.us/owlet")),
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "1.5.0",
+      "org.typelevel" %%% "cats-core" % "1.6.0",
       "org.scala-js" %%% "scalajs-dom" % "0.9.2",
       "io.monix" %%% "monix-reactive" % "3.0.0-RC2",
       "org.scalatest" %%% "scalatest" % "3.0.3" % Test,

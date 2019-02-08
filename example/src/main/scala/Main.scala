@@ -45,8 +45,21 @@ object Main {
     // Checkbox
     {
       renderOutput(
-        (boolean("a", false), boolean("b", true)).parMapN(_ && _),
+        List(("a", false), ("b", true), ("c", false))
+          .parTraverse { case (name, value) => checkbox(name, value) },
         "#example-5"
+      ).runSyncStep
+    }
+
+    // Toggle
+    {
+      renderOutput(
+        toggle("a", false, "b") <+> toggle("a", true, "a") <+> toggle(
+          "a",
+          false,
+          "c"
+        ),
+        "#example-14"
       ).runSyncStep
     }
 
@@ -60,12 +73,12 @@ object Main {
     {
       val emptyList = const(List[String]()) _
       val addItem = (s: String) => List(s)
-      val actions = Parallel.parAp(button("add", emptyList, addItem))(
+      val actions = button("add", emptyList, addItem) <&>
         string(
           "add item",
           "Orange"
         )
-      )
+
       val list = actions.fold(List[String]())(_ ::: _)
       renderOutput(list, "#example-7").runSyncStep
     }
@@ -102,8 +115,7 @@ object Main {
       val newTodoInput = string("new-todo", "")
       val noop = (s: String) => identity: Store => Store
       val addItem = (s: String) => (store: Store) => s :: store
-      val newTodo = Parallel
-        .parAp(button("add", noop, addItem))(newTodoInput)
+      val newTodo = (button("add", noop, addItem) <&> newTodoInput)
         .map(actions := _)
 
       val reduced = actions.scan(Nil: List[String]) { (store, action) =>

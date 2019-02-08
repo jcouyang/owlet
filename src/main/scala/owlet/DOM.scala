@@ -4,7 +4,7 @@ import cats.{Later, Show}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
-import monix.reactive.subjects.PublishSubject
+import monix.reactive.subjects.{PublishSubject, ReplaySubject}
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
@@ -71,15 +71,40 @@ object DOM {
     Owlet(node.map(List(_)), signal)
   }
 
-  def boolean(name: String, default: Boolean): Owlet[Boolean] = {
-    val signal = Var(default)
+  def checkbox(name: String, default: Boolean): Owlet[(String, Boolean)] = {
+    val signal = Var((name, default))
     val node = Later {
       val input = document.createElement("input").asInstanceOf[html.Input]
       input.`type` = "checkbox"
       input.name = name
       input.className = "owlet-input-" + normalize(name)
       input.checked = default
-      input.onchange = e => signal := e.target.asInstanceOf[html.Input].checked
+      input.onchange =
+        e => signal := ((name, e.target.asInstanceOf[html.Input].checked))
+      input
+    }
+    Owlet(node.map(List(_)), signal)
+  }
+
+  def toggle(
+      name: String,
+      default: Boolean = false,
+      value: String = ""
+  ): Owlet[String] = {
+    val signal =
+      if (default)
+        ReplaySubject(value)
+      else PublishSubject[String]
+
+    val node = Later {
+      val input = document.createElement("input").asInstanceOf[html.Input]
+      input.`type` = "radio"
+      input.name = name
+      input.value = value
+      input.className = "owlet-input-" + normalize(name)
+      input.checked = default
+      input.onchange =
+        e => signal.onNext(e.target.asInstanceOf[html.Input].value)
       input
     }
     Owlet(node.map(List(_)), signal)
