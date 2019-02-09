@@ -2,11 +2,13 @@ package us.oyanglul.owletexample
 
 import cats._
 import us.oyanglul.owlet._
-import cats.implicits._
 import monix.reactive.subjects.Var
 import DOM._
 import monix.execution.Scheduler.Implicits.global
+import cats.implicits._
+
 object Main {
+  def noop = Function.const _
   def main(args: scala.Array[String]): Unit = {
     val dismissAlert = button(
       name = "×",
@@ -32,10 +34,26 @@ object Main {
       span(text("Secondary"), classNames = List("badge", "badge-secondary")) &>
       span(text("Success"), classNames = List("badge", "badge-success"))
 
+    val breadcrumbClass = Var(List("breadcrumb-item"))
+    val breadcrumb = h1("Breadcrumb") &>
+      div(
+        ul(
+          a(
+            li(text("Home"), breadcrumbClass),
+            noop,
+            List("breadcrumb-item")
+          ) &>
+            li(text("Library"), breadcrumbClass),
+          Var(List("breadcrumb"))
+        )
+      )
+
     render(
       div(
         div(
-          alert &> badges,
+          alert &>
+            badges &>
+            breadcrumb,
           Var(List("col-12"))
         ),
         Var(List("container-fluid"))

@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+  app:
+    image: hseeberger/scala-sbt:8u181_2.12.8_1.2.8
+    command: sbt fastOptJS
+    working_dir: /app
+    volumes:
+      - "./:/app"
+      - "sbt-ivy2-cache:/root/.ivy2"
+volumes:
+  sbt-ivy2-cache:
+    external: true
