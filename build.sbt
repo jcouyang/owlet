@@ -65,6 +65,10 @@ lazy val bootstrap = project.enablePlugins(ScalaJSPlugin).settings(
   scalaJSUseMainModuleInitializer := true
 ).dependsOn(owlet)
 
+lazy val todomvc = project.enablePlugins(ScalaJSPlugin).settings(
+  scalaJSUseMainModuleInitializer := true
+).dependsOn(owlet)
+
 lazy val docs = project.enablePlugins(MicrositesPlugin)
   .settings(
     micrositeName := "Owlet",

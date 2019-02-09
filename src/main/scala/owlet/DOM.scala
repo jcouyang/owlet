@@ -71,13 +71,17 @@ object DOM {
     Owlet(node.map(List(_)), signal)
   }
 
-  def checkbox(name: String, default: Boolean): Owlet[(String, Boolean)] = {
+  def checkbox(
+      name: String,
+      default: Boolean,
+      classNames: List[String] = Nil
+  ): Owlet[(String, Boolean)] = {
     val signal = Var((name, default))
     val node = Later {
       val input = document.createElement("input").asInstanceOf[html.Input]
       input.`type` = "checkbox"
       input.name = name
-      input.className = "owlet-input-" + normalize(name)
+      input.className = classNames.mkString(" ")
       input.checked = default
       input.onchange =
         e => signal := ((name, e.target.asInstanceOf[html.Input].checked))
