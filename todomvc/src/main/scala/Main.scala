@@ -7,22 +7,28 @@ import monix.reactive.subjects.Var
 import DOM._
 import monix.execution.Scheduler.Implicits.global
 import java.util.UUID
+
 object Main {
   def main(args: scala.Array[String]): Unit = {
     case class Todo(id: UUID, text: String)
     type Store = Vector[Todo]
     val actions: Var[Store => Store] = Var(identity)
 
-    val todoInput = string("new-todo", "")
-
-    // do nothing
-    val noop = (s: String) => identity: Store => Store
     // add a new item
     val newItem = (txt: String) =>
       (store: Store) => Todo(UUID.randomUUID, txt) +: store
-    val todoAddButton = button("add", noop, newItem)
-    val todoHeader = (todoAddButton <*> todoInput)
-      .map(actions := _) <& todoAddButton
+
+    val todoInput = $.input
+      .modify { el =>
+        el.onkeyup = e =>
+          if (e.keyCode == 13) {
+            actions := newItem(el.value)
+            el.value = ""
+          }
+        el
+      }(string("new-todo", ""))
+
+    val todoHeader = todoInput
 
     val reducedStore = actions.scan(Vector(): Store) { (store, action) =>
       action(store)
