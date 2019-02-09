@@ -28,7 +28,7 @@ object Main {
         el
       }(string("new-todo", ""))
 
-    val todoHeader = todoInput
+    val todoHeader = div(todoInput, Var(List("header")))
 
     val reducedStore = actions.scan(Vector(): Store) { (store, action) =>
       action(store)
@@ -49,11 +49,17 @@ object Main {
       }
     }
 
-    val todoList = ul(
-      Owlet(Owlet.emptyNode, reducedStore).flatMap(_.parTraverse(createItem)),
-      Var(List("todo-list"))
+    val todoList = div(
+      ul(
+        Owlet(Owlet.emptyNode, reducedStore).flatMap(_.parTraverse(createItem)),
+        Var(List("todo-list"))
+      ),
+      Var(List("main"))
     )
 
-    render(todoHeader &> todoList, "#application-container").runSyncStep
+    render(
+      div(todoHeader &> todoList, Var(List("todoapp"))),
+      "#application-container"
+    ).runSyncStep
   }
 }

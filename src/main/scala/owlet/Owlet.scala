@@ -27,14 +27,13 @@ object $ {
   import monocle._
   import monocle.macros.GenPrism
 
-
   val nodes =
     Lens[Owlet[_], List[Node]](_.nodes.value)(
       n => a => Owlet(Later(n), a.signal)
     )
   val eachNode = nodes composeTraversal Traversal.fromTraverse[List, Node]
-  val input = eachNode composePrism GenPrism[Node,html.Input]
-  val div = eachNode composePrism GenPrism[Node,html.Div]
+  val input = eachNode composePrism GenPrism[Node, html.Input]
+  val div = eachNode composePrism GenPrism[Node, html.Div]
 }
 
 object Owlet extends ParallelInstances {
