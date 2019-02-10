@@ -1,6 +1,5 @@
 package us.oyanglul.owlettodomvc
 
-import cats.kernel.Monoid
 import us.oyanglul.owlet._
 import cats.implicits._
 import monix.reactive.subjects.Var
@@ -9,56 +8,67 @@ import monix.execution.Scheduler.Implicits.global
 import java.util.UUID
 
 object Main {
-  def main(args: scala.Array[String]): Unit = {
-    case class Todo(id: UUID, text: String)
-    type Store = Vector[Todo]
-    val actions: Var[Store => Store] = Var(identity)
+  case class Todo(id: UUID, text: String)
+  type Store = Vector[Todo]
+  type Action = Store => Store
 
-    // add a new item
-    val newItem = (txt: String) =>
+  object actions {
+    def newTodo(txt: String): Action =
       (store: Store) => Todo(UUID.randomUUID, txt) +: store
+
+    def deleteTodo(id: UUID): Action =
+      (store: Store) => store.filter(_.id != id)
+
+  }
+  def main(args: scala.Array[String]): Unit = {
+    import actions._
+
+    val events: Var[Action] = Var(identity)
+    val reducedStore = events.scan(Vector(): Store) { (store, action) =>
+      action(store)
+    }
 
     val todoInput = $.input
       .modify { el =>
+        el.autofocus = true
         el.onkeyup = e =>
           if (e.keyCode == 13) {
-            actions := newItem(el.value)
+            events := newTodo(el.value)
             el.value = ""
           }
         el
       }(string("new-todo", ""))
 
-    val todoHeader = div(todoInput, Var(List("header")))
+    val todoHeader = div(h1("todos") &> todoInput, Var(List("header")))
 
-    val reducedStore = actions.scan(Vector(): Store) { (store, action) =>
-      action(store)
-    }
-
-    def deleteTodo(id: UUID) = (store: Store) => store.filter(_.id != id)
-
-    def createItem(todo: Todo): Owlet[List[(String, Boolean)]] = {
+    def todoItem(todo: Todo): Owlet[(String, Boolean)] = {
       val checked = checkbox(todo.id.toString, false, List("toggle"))
       val item = label(text(todo.text))
-      val empty = Monoid[Owlet[List[(String, Boolean)]]].empty
-      val btn = button("delete", false, true, classNames = List("destroy"))
-      btn.flatMap { y =>
-        if (y) {
-          actions := deleteTodo(todo.id)
-          empty
-        } else li(checked <& item <& btn, Var(List("view"))).map(List(_))
-      }
+      val btn =
+        button("delete", false, true, classNames = List("destroy")).map { del =>
+          if (del) events := deleteTodo(todo.id)
+          del
+        }
+      li(checked <& item <& btn, Var(List("view")))
     }
 
-    val todoList = div(
+    val todoList: Owlet[Vector[(String, Boolean)]] = div(
       ul(
-        Owlet(Owlet.emptyNode, reducedStore).flatMap(_.parTraverse(createItem)),
+        Owlet(Owlet.emptyNode, reducedStore)
+          .flatMap(_.parTraverse(todoItem)),
         Var(List("todo-list"))
       ),
       Var(List("main"))
     )
 
+    val todoCount = todoList.flatMap { list =>
+      println(list)
+      span(text(s"${list.filter(!_._2).size} item left"), List("todo-count"))
+    }
+
+    val todoFooter = todoCount
     render(
-      div(todoHeader &> todoList, Var(List("todoapp"))),
+      div(todoHeader &> todoList &> todoFooter, Var(List("todoapp"))),
       "#application-container"
     ).runSyncStep
   }

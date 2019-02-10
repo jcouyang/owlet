@@ -252,11 +252,17 @@ object DOM {
     createContainer[A, html.Span]("span", inner, Var(classNames), id)
   }
 
-  def h1[A](
+  def h1(
       content: String,
       classNames: Seq[String] = Nil,
       id: Option[String] = None
-  ) = createContainer[A, html.Heading]("h1", text(content), Var(classNames), id)
+  ) =
+    createContainer[String, html.Heading](
+      "h1",
+      text(content),
+      Var(classNames),
+      id
+    )
 
   def ul[A](
       inner: Owlet[A],
@@ -283,15 +289,18 @@ object DOM {
     createContainer[A, html.Label]("label", inner, className, id)
   }
 
-  def text(content: String): Owlet[Nothing] = {
-    Owlet(Later(List(document.createTextNode(content))), Observable.empty)
+  def text(content: String): Owlet[String] = {
+    Owlet(Later(List(document.createTextNode(content))), Observable(content))
   }
 
   /** Spreadsheet like fx
     * create a new Owlet with existing Owlets with a formula
     */
-  def fx[A, B: Show](formula: List[A] => B, input: List[Owlet[A]]): Owlet[B] = {
-    input.sequence.map(formula).flatMap(output => text(output.show))
+  def fx[A, B: Show](
+      formula: List[A] => B,
+      input: List[Owlet[A]]
+  ): Owlet[B] = {
+    input.sequence.map(formula)
   }
 
   def output[A: Show](
