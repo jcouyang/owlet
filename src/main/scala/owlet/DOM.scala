@@ -328,11 +328,14 @@ object DOM {
   /**
     * Render
     */
-  def render[A](owlet: Owlet[A], selector: String) =
+  def render[A](owlet: Owlet[A], selector: String): Task[Unit] =
+    render(owlet, document.querySelector(selector))
+
+  def render[A](owlet: Owlet[A], elm: Element): Task[Unit] =
     for {
       _ <- Task {
         owlet.nodes.value
-          .foreach(document.querySelector(selector).appendChild)
+          .foreach(elm.appendChild)
       }
       _ <- Task(owlet.signal.subscribe)
     } yield ()

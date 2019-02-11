@@ -3,6 +3,7 @@ package us.oyanglul.owlet
 import cats._
 import cats.syntax.monoid._
 import org.scalajs.dom._
+import org.scalajs.dom.console
 import monix.reactive.Observable
 import cats.instances.list._
 
@@ -83,7 +84,9 @@ object Owlet extends ParallelInstances {
       Later(List(div)),
       item.signal
         .flatMapLatest { owlet =>
+          console.log("flating")
           while (div.lastChild != null) {
+            console.log("removing..", div.lastChild)
             div.removeChild(div.lastChild)
           }
           owlet.nodes.value.foreach(div.appendChild)
