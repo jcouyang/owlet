@@ -194,7 +194,7 @@ object DOM {
   }
 
   def a[A](
-      child: Owlet[Nothing],
+      child: Owlet[_],
       pressed: A,
       classNames: Seq[String] = Nil,
       href: String = "#"
