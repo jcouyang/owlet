@@ -22,7 +22,6 @@ trait ParallelInstances {
       def parallel = Lambda[Owlet ~> Par](x => Par(x.nodes, x.signal))
     }
 }
-
 object $ {
   import org.scalajs.dom._
   import monocle._
@@ -64,11 +63,14 @@ object Owlet extends ParallelInstances {
   }
 
   implicit val monadOwlet = new Monad[Owlet] {
+    override def map[A, B](fa: Owlet[A])(f: A => B) = {
+      Owlet(fa.nodes, fa.signal.map(f))
+    }
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
       val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
       Owlet(
         Later(div).map(List(_)),
-        fa.signal.flatMap { s =>
+        fa.signal.switchMap { s =>
           val currentOwlet = f(s)
           while (div.lastChild != null) {
             console.log("removing..", div.lastChild)
@@ -79,6 +81,7 @@ object Owlet extends ParallelInstances {
         }
       )
     }
+
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
       f(a) match {
         case Owlet(node, signal) =>
