@@ -20,10 +20,8 @@ object Main {
       console.log("creating todo", todo.toString())
       store.copy(list = todo +: store.list)
     }
-
     def deleteTodo(id: UUID): Action =
       (store: Store) => store.copy(list = store.list.filter(_.id != id))
-
     def toggleTodo(id: String, done: Boolean): Action =
       (store: Store) =>
         store.copy(list = store.list.map { todo =>
@@ -34,18 +32,16 @@ object Main {
           else
             todo
         })
-
     def allTodos: Action = (store: Store) => store.copy(filter = identity)
-
     def activeTodos: Action =
       (store: Store) => store.copy(filter = _.filter(!_.done))
+    def completedTodos: Action =
+      (store: Store) => store.copy(filter = _.filter(_.done))
   }
 
   def main(args: scala.Array[String]): Unit = {
     import actions._
-
     val events: Var[Action] = Var(identity)
-
     val reducedStore: Observable[Store] =
       events
         .scan(Store(Vector(), identity)) { (store, action) =>
@@ -54,8 +50,8 @@ object Main {
         }
         .share
 
-    val todoInput = $.input
-      .modify { el =>
+    val todoInput = $.input[String]
+ .modify { el =>
         el.autofocus = true
         el.onkeyup = e =>
           if (e.keyCode == 13) {
@@ -105,19 +101,30 @@ object Main {
       )
     }
 
-    val todoFilterAll = button("All", false, true, List("selected")).map {
-      clicked =>
-        if (clicked) events := allTodos
-        clicked
-    }
+    val todoFilterAll = $.a[Action].modify { el =>
+      val oldclick = el.onclick
+      el.onclick = e => {
+        el.className = "selected"
+        oldclick(e)
+      }
+      el
+    }(
+      a(text("All"), allTodos)
+    )
+    val todoFilterActive = a(text("Active"), activeTodos)
+    val todoFilterDone = a(text("Completed"), completedTodos)
 
-    val todoFilterActive = button("Active", false, true, List("")).map {
-      clicked =>
-        if (clicked) events := activeTodos
-        clicked
-    }
+    val todoFilters = (li(todoFilterAll) <+> li(todoFilterActive) <+>
+      li(todoFilterDone)).map(events := _)
+
     val todoFooter =
-      div(todoCount &> todoFilterAll &> todoFilterActive, Var(List("footer")))
+      div(
+        ul(
+          li(todoCount) &> todoFilters,
+          Var(List("filters"))
+        ),
+        Var(List("footer"))
+      )
 
     render(
       div(todoHeader &> todoList &> todoFooter, Var(List("todoapp"))),
