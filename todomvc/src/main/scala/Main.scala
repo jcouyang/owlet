@@ -1,5 +1,6 @@
 package us.oyanglul.owlettodomvc
 
+import monix.reactive.Observable
 import us.oyanglul.owlet._
 import cats.implicits._
 import monix.reactive.subjects.Var
@@ -41,9 +42,9 @@ object Main {
   }
 
   def main(args: scala.Array[String]): Unit = {
-    import actions._
+    // import actions._
 
-    val events: Var[Action] = Var(identity)
+    // val events: Var[Action] = Var(identity)
 
     // val reducedStore = events.scan(Store(Vector(), identity)) {
     //   (store, action) =>
@@ -51,68 +52,77 @@ object Main {
     //     action(store)
     // }
 
-    val todoInput = $.input
-      .modify { el =>
-        el.autofocus = true
-        el.onkeyup = e =>
-          if (e.keyCode == 13) {
-            println(s"creating new todo $el.value")
-            events := newTodo(el.value)
-            el.value = ""
-          }
-        el
-      }(string("new-todo", ""))
+    // val todoInput = $.input
+    //   .modify { el =>
+    //     el.autofocus = true
+    //     el.onkeyup = e =>
+    //       if (e.keyCode == 13) {
+    //         println(s"creating new todo $el.value")
+    //         events := newTodo(el.value)
+    //         el.value = ""
+    //       }
+    //     el
+    //   }(string("new-todo", ""))
 
-    val todoHeader = div(h1("todos") &> todoInput, Var(List("header")))
+    // val todoHeader = div(h1("todos") &> todoInput, Var(List("header")))
 
-    val dataSource = Owlet(Owlet.emptyNode, Var(Store(Vector(), identity)))
+    val dataSource = Owlet(Owlet.emptyNode, Var(1))
 
     val a = dataSource.flatMap(x => {
-      console.log("flatmap1", x.list)
-      text("hehe")
+      console.log("flatmap1", x.toString)
+      button("", ((x: String) => x + "hoho"), ((x: String) => x + "hoho"))
+      // Owlet(Owlet.emptyNode, Var((x: String) => x + "hoho"))
     })
-    val b = a.flatMap(x => {
-      console.log("flatMap2", x)
-      text("hoho")
+    val b = a.flatMap(_ => {
+      console.log("flatMap2")
+      Owlet(Owlet.emptyNode, Var("hehe"))
     })
 
-    (a &> b &> b).signal.foreach(println)
+    (a <*> b).signal.foreach(println)
 
-    def todoItem(todo: Todo): Owlet[(String, Boolean)] = {
-      val checked = checkbox(todo.id.toString, todo.done, List("toggle")).map {
-        case a @ (id, done) =>
-          println(s"click:$id")
-          if (todo.done != done) events := toggleTodo(id, done)
-          a
-      }
-      val item = label(text(todo.text))
-      val btn =
-        button("", false, true, classNames = List("destroy")).map { del =>
-          if (del) events := deleteTodo(todo.id)
-          del
-        }
-      li(checked <& item <& btn, Var(List("view")))
+    val aa = Var(1).flatMap { x =>
+      console.log("flatMap aa")
+      Var((x: Int) => x + 1)
     }
+    val bb = aa.flatMap(x => {
+      console.log("flatMap bb")
+      Var(2)
+    })
+    (aa <*> bb).foreach(println)
+    // def todoItem(todo: Todo): Owlet[(String, Boolean)] = {
+    //   val checked = checkbox(todo.id.toString, todo.done, List("toggle")).map {
+    //     case a @ (id, done) =>
+    //       println(s"click:$id")
+    //       if (todo.done != done) events := toggleTodo(id, done)
+    //       a
+    //   }
+    //   val item = label(text(todo.text))
+    //   val btn =
+    //     button("", false, true, classNames = List("destroy")).map { del =>
+    //       if (del) events := deleteTodo(todo.id)
+    //       del
+    //     }
+    //   li(checked <& item <& btn, Var(List("view")))
+    // }
 
-    val todoList: Owlet[Vector[(String, Boolean)]] = div(
-      ul(
-        dataSource
-          .flatMap { store =>
-            console.log("store updated", store.toString())
-            store.filter(store.list).parTraverse(todoItem)
-          },
-        Var(List("todo-list"))
-      ),
-      Var(List("main"))
-    )
+    // val todoList: Owlet[Vector[(String, Boolean)]] = div(
+    //   ul(
+    //     dataSource
+    //       .flatMap { store =>
+    //         console.log("store updated", store.toString())
+    //         store.filter(store.list).parTraverse(todoItem)
+    //       },
+    //     Var(List("todo-list"))
+    //   ),
+    //   Var(List("main"))
+    // )
 
-    val todoCount = todoList.flatMap { list =>
-      println(list)
-      span(
-        text(s"${list.filter(!_._2).size} item left"),
-        List("todo-count")
-      )
-    }
+    // val todoCount = todoList.flatMap { list =>
+    //   span(
+    //     text(s"${list.filter(!_._2).size} item left"),
+    //     List("todo-count")
+    //   )
+    // }
 
     // val todoFilterAll = button("All", false, true, List("selected")).map {
     //   clicked =>

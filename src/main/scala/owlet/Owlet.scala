@@ -42,7 +42,10 @@ object Owlet extends ParallelInstances {
 
   implicit val functorOwlet = new Functor[Owlet] {
     override def map[A, B](fa: Owlet[A])(f: A => B) = {
-      Owlet(fa.nodes, fa.signal.map(f))
+      Owlet(fa.nodes, fa.signal.map { x =>
+        console.log("mapping:::", x.toString())
+        f(x)
+      })
     }
   }
 
@@ -61,38 +64,31 @@ object Owlet extends ParallelInstances {
   }
 
   implicit val monadOwlet = new Monad[Owlet] {
-    override def map[A, B](fa: Owlet[A])(f: A => B) = {
-      Owlet(fa.nodes, fa.signal.map(f))
-    }
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
-      flat(map(fa)(f))
+      val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
+      Owlet(
+        Later(div).map(List(_)),
+        fa.signal.flatMap { s =>
+          val currentOwlet = f(s)
+          while (div.lastChild != null) {
+            console.log("removing..", div.lastChild)
+            div.removeChild(div.lastChild)
+          }
+          currentOwlet.nodes.value.foreach(div.appendChild)
+          currentOwlet.signal
+        }
+      )
     }
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
       f(a) match {
         case Owlet(node, signal) =>
+          console.log("tailRecM...")
           Owlet(node, signal.mergeMap {
             case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
             case Right(b)   => Observable.pure(b)
           })
       }
     def pure[A](a: A) = Owlet(emptyNode, Observable.pure[A](a))
-  }
-
-  private def flat[A](item: Owlet[Owlet[A]]) = {
-    val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
-    Owlet(
-      Later(List(div)),
-      item.signal
-        .flatMapLatest { owlet =>
-          console.log("flating")
-          while (div.lastChild != null) {
-            console.log("removing..", div.lastChild)
-            div.removeChild(div.lastChild)
-          }
-          owlet.nodes.value.foreach(div.appendChild)
-          owlet.signal
-        }
-    )
   }
 
   implicit val monoidKOwlet = new MonoidK[Owlet] {
