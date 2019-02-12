@@ -51,7 +51,7 @@ object Main {
         .share
 
     val todoInput = $.input[String]
- .modify { el =>
+      .modify { el =>
         el.autofocus = true
         el.onkeyup = e =>
           if (e.keyCode == 13) {
@@ -62,7 +62,7 @@ object Main {
         el
       }(string("new-todo", ""))
 
-    val todoHeader = div(h1("todos") &> todoInput, Var(List("header")))
+    val todoHeader = div(h1("todos") &> todoInput, List("header"))
 
     val dataSource = Owlet(Owlet.emptyNode, reducedStore)
 
@@ -79,7 +79,7 @@ object Main {
           if (del) events := deleteTodo(todo.id)
           del
         }
-      li(checked <& item <& btn, Var(List("view")))
+      li(checked <& item <& btn, List("view"))
     }
 
     val todoList: Owlet[Vector[(String, Boolean)]] = div(
@@ -89,9 +89,9 @@ object Main {
             console.log("store updated", store.toString())
             store.filter(store.list).parTraverse(todoItem)
           },
-        Var(List("todo-list"))
+        List("todo-list")
       ),
-      Var(List("main"))
+      List("main")
     )
 
     val todoCount = todoList.flatMap { list =>
@@ -121,13 +121,13 @@ object Main {
       div(
         ul(
           li(todoCount) &> todoFilters,
-          Var(List("filters"))
+          List("filters")
         ),
-        Var(List("footer"))
+        List("footer")
       )
 
     render(
-      div(todoHeader &> todoList &> todoFooter, Var(List("todoapp"))),
+      div(todoHeader &> todoList &> todoFooter, List("todoapp")),
       "#application-container"
     ).runSyncStep
   }

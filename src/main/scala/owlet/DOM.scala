@@ -220,10 +220,10 @@ object DOM {
     * wrap nodes in `Owlet` into container element `div`, `label` etc
     * style of div can reactive from a stream of `className`
     */
-  private[owlet] def createContainer[A, Tag <: HTMLElement](
+  private def createContainer[A, Tag <: HTMLElement](
       tag: String,
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ): Owlet[A] = {
     val wrapped = inner.nodes.map { nodes =>
@@ -238,7 +238,7 @@ object DOM {
 
   def div[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.Div]("div", inner, className, id)
@@ -249,7 +249,7 @@ object DOM {
       classNames: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
-    createContainer[A, html.Span]("span", inner, Var(classNames), id)
+    createContainer[A, html.Span]("span", inner, classNames, id)
   }
 
   def h1(
@@ -260,13 +260,13 @@ object DOM {
     createContainer[String, html.Heading](
       "h1",
       text(content),
-      Var(classNames),
+      classNames,
       id
     )
 
   def ul[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.UList]("ul", inner, className, id)
@@ -274,7 +274,7 @@ object DOM {
 
   def li[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.LI]("li", inner, className, id)
@@ -283,7 +283,7 @@ object DOM {
   def label[A](
       inner: Owlet[A],
       text: String = "",
-      className: Observable[List[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ): Owlet[A] = {
     createContainer[A, html.Label]("label", inner, className, id)
@@ -305,20 +305,20 @@ object DOM {
 
   def output[A: Show](
       input: Owlet[A],
-      classNames: Observable[Seq[String]] = Var(Nil)
+      classNames: Seq[String] = Nil,
   ) = {
     div(input.flatMap(o => text(o.show)), classNames)
   }
 
   def unsafeOutput[A: Show](
       input: Owlet[A],
-      classNames: Observable[Seq[String]] = Var(Nil)
+      classNames: Seq[String] = Nil,
   ) = {
     input.flatMap { content =>
       val node = Later {
         val el = document.createElement("div").asInstanceOf[html.Div]
         el.innerHTML = content.show
-        classNames.foreach(c => el.className = c.mkString(" "))
+        el.className = classNames.mkString(" ")
         el
       }
       Owlet(node.map(List(_)), input.signal)
