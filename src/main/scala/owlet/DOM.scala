@@ -223,13 +223,14 @@ object DOM {
   private def createContainer[A, Tag <: HTMLElement](
       tag: String,
       inner: Owlet[A],
-      className: Seq[String] = Nil,
-      id: Option[String] = None
+      className: Seq[String],
+      id: Option[String]
   ): Owlet[A] = {
     val wrapped = inner.nodes.map { nodes =>
       val el = document.createElement(tag).asInstanceOf[Tag]
       id.map(el.id = _)
-      className.foreach(c => el.className = c.mkString(" "))
+      console.log(className)
+      el.className = className.mkString(" ")
       nodes.foreach(el.appendChild)
       List(el)
     }

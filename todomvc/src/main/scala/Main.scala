@@ -7,7 +7,6 @@ import monix.reactive.subjects.Var
 import DOM._
 import monix.execution.Scheduler.Implicits.global
 import java.util.UUID
-import org.scalajs.dom._
 
 object Main {
   case class Todo(id: UUID, text: String, done: Boolean = false)
@@ -17,7 +16,6 @@ object Main {
   object actions {
     def newTodo(txt: String): Action = { (store: Store) =>
       val todo = Todo(UUID.randomUUID, txt)
-      console.log("creating todo", todo.toString())
       store.copy(list = todo +: store.list)
     }
     def deleteTodo(id: UUID): Action =
@@ -25,8 +23,6 @@ object Main {
     def toggleTodo(id: String, done: Boolean): Action =
       (store: Store) =>
         store.copy(list = store.list.map { todo =>
-          println(todo)
-          println(id)
           if (todo.id.toString == id)
             todo.copy(done = done)
           else
@@ -42,20 +38,17 @@ object Main {
   def main(args: scala.Array[String]): Unit = {
     import actions._
     val events: Var[Action] = Var(identity)
-    val reducedStore: Observable[Store] =
-      events
-        .scan(Store(Vector(), identity)) { (store, action) =>
-          console.log("reduce", store.toString)
-          action(store)
-        }
-        .share
+    val reducedStore: Observable[Store] = events
+      .scan(Store(Vector(), identity)) { (acc, f) =>
+        f(acc)
+      }
+      .share
 
     val todoInput = $.input[String]
       .modify { el =>
         el.autofocus = true
         el.onkeyup = e =>
           if (e.keyCode == 13) {
-            println(s"creating new todo $el.value")
             events := newTodo(el.value)
             el.value = ""
           }
@@ -69,7 +62,6 @@ object Main {
     def todoItem(todo: Todo): Owlet[(String, Boolean)] = {
       val checked = checkbox(todo.id.toString, todo.done, List("toggle")).map {
         case a @ (id, done) =>
-          println(s"click:$id")
           if (todo.done != done) events := toggleTodo(id, done)
           a
       }
@@ -79,14 +71,16 @@ object Main {
           if (del) events := deleteTodo(todo.id)
           del
         }
-      li(checked <& item <& btn, List("view"))
+      li(
+        checked <& item <& btn,
+        List("view", if (todo.done) "completed" else "")
+      )
     }
 
     val todoList: Owlet[Vector[(String, Boolean)]] = div(
       ul(
         dataSource
           .flatMap { store =>
-            console.log("store updated", store.toString())
             store.filter(store.list).parTraverse(todoItem)
           },
         List("todo-list")
@@ -101,30 +95,34 @@ object Main {
       )
     }
 
-    val todoFilterAll = $.a[Action].modify { el =>
+    val selected = Var("Active")
+    def selectClassName(filter: String) = $.a[Action].modify { el =>
       val oldclick = el.onclick
       el.onclick = e => {
-        el.className = "selected"
+        selected := filter
+        selected.foreach(
+          s => el.className = if (s == filter) "selected" else ""
+        )
         oldclick(e)
       }
       el
-    }(
+    }
+    val todoFilterAll = selectClassName("All")(
       a(text("All"), allTodos)
     )
-    val todoFilterActive = a(text("Active"), activeTodos)
-    val todoFilterDone = a(text("Completed"), completedTodos)
+    val todoFilterActive =
+      selectClassName("Active")(a(text("Active"), activeTodos))
+    val todoFilterDone =
+      selectClassName("Completed")(a(text("Completed"), completedTodos))
 
-    val todoFilters = (li(todoFilterAll) <+> li(todoFilterActive) <+>
-      li(todoFilterDone)).map(events := _)
+    val todoFilters = ul(
+      li(todoFilterAll) <+> li(todoFilterActive) <+>
+        li(todoFilterDone),
+      List("filters")
+    ).map(events := _)
 
     val todoFooter =
-      div(
-        ul(
-          li(todoCount) &> todoFilters,
-          List("filters")
-        ),
-        List("footer")
-      )
+      div(todoCount &> todoFilters, List("footer"))
 
     render(
       div(todoHeader &> todoList &> todoFooter, List("todoapp")),
