@@ -3,7 +3,6 @@ package us.oyanglul.owlet
 import cats._
 import cats.syntax.monoid._
 import org.scalajs.dom._
-import org.scalajs.dom.console
 import monix.reactive.Observable
 import cats.instances.list._
 
@@ -42,10 +41,7 @@ object Owlet extends ParallelInstances {
 
   implicit val functorOwlet = new Functor[Owlet] {
     override def map[A, B](fa: Owlet[A])(f: A => B) = {
-      Owlet(fa.nodes, fa.signal.map { x =>
-        console.log("mapping:::", x.toString())
-        f(x)
-      })
+      Owlet(fa.nodes, fa.signal.map(f))
     }
   }
 
@@ -64,9 +60,8 @@ object Owlet extends ParallelInstances {
   }
 
   implicit val monadOwlet = new Monad[Owlet] {
-    override def map[A, B](fa: Owlet[A])(f: A => B) = {
-      Owlet(fa.nodes, fa.signal.map(f))
-    }
+    override def map[A, B](fa: Owlet[A])(f: A => B) = functorOwlet.map(fa)(f)
+
     def flatMap[A, B](fa: Owlet[A])(f: A => Owlet[B]): Owlet[B] = {
       val div: html.Div = document.createElement("div").asInstanceOf[html.Div]
       Owlet(
@@ -74,7 +69,6 @@ object Owlet extends ParallelInstances {
         fa.signal.switchMap { s =>
           val currentOwlet = f(s)
           while (div.lastChild != null) {
-            console.log("removing..", div.lastChild)
             div.removeChild(div.lastChild)
           }
           currentOwlet.nodes.value.foreach(div.appendChild)
@@ -86,7 +80,6 @@ object Owlet extends ParallelInstances {
     def tailRecM[A, B](a: A)(f: A => Owlet[Either[A, B]]): Owlet[B] =
       f(a) match {
         case Owlet(node, signal) =>
-          console.log("tailRecM...")
           Owlet(node, signal.mergeMap {
             case Left(next) => Observable.tailRecM(next)(c => f(c).signal)
             case Right(b)   => Observable.pure(b)

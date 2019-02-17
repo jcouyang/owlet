@@ -229,7 +229,6 @@ object DOM {
     val wrapped = inner.nodes.map { nodes =>
       val el = document.createElement(tag).asInstanceOf[Tag]
       id.map(el.id = _)
-      console.log(className)
       el.className = className.mkString(" ")
       nodes.foreach(el.appendChild)
       List(el)
