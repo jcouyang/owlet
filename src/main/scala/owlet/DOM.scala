@@ -1,9 +1,11 @@
 package us.oyanglul.owlet
 
-import cats.{Later, Show}
+import cats.{Eval, Later, Show}
 import monix.eval.Task
+import monix.execution.{Ack, Cancelable}
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
+import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive.subjects.{PublishSubject, ReplaySubject}
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
@@ -15,18 +17,44 @@ import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
 import cats.syntax.parallel._
+import monix.execution.cancelables.SingleAssignCancelable
 
 object DOM {
+  private def eventListener(
+      target: Eval[EventTarget],
+      event: String
+  ): Observable[Event] =
+    Observable.create(Unbounded) { subscriber =>
+      val c = SingleAssignCancelable()
+      // Forced conversion, otherwise canceling will not work!
+      val f: scalajs.js.Function1[Event, Ack] =
+        (e: Event) => {
+          console.log("event trigger", e)
+          subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
+        }
+
+      target.value.addEventListener(event, f)
+      c := Cancelable(() => target.value.removeEventListener(event, f))
+    }
   // ==Input==
   def string(name: String, default: String): Owlet[String] = {
-    val signal = Var(default)
+    val signal = PublishSubject[String]
     val input = createInput(
       name,
       "text",
       default,
-      e => signal := e.target.asInstanceOf[html.Input].value
+      e => signal.onNext(e.target.asInstanceOf[html.Input].value)
     )
-    Owlet(input.map(List(_)), signal)
+
+    Owlet(
+      input.map(List(_)),
+      eventListener(input, "input")
+        .map { x =>
+          console.log(x)
+          x.target.asInstanceOf[html.Input].value
+        }
+        .prepend(default)
+    )
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
