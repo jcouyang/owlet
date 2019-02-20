@@ -1,6 +1,6 @@
 # Owlet
 
-Owlet is a Typed Spreadsheet UI library for ScalaJS. It is built on top of [Monix](https://monix.io/) and [Typelevel Cats](https://typelevel.org/cats/)' Applicative syntax to combine predefined input fields to a reactive user interface, just like what you would done in spreadsheet. Owlet is inspired by the PureScript library [Flare](https://github.com/sharkdp/purescript-flare).
+Owlet is a Typed Spreadsheet UI library for ScalaJS. It is built on top of [Monix](https://monix.io/) and [Typelevel Cats](https://typelevel.org/cats/) to combine predefined input fields to a reactive user interface, just like what you would done in spreadsheet. Owlet is inspired by the PureScript library [Flare](https://github.com/sharkdp/purescript-flare).
 
 ## Get Started
 
@@ -21,7 +21,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 libraryDependencies += "com.github.jcouyang" % "owlet" % "<jitpact version>"
 ```
 
-### 2. now programming UI just like using spreadsheet
+### 2. Now programming UI is just like using spreadsheet
 
 ```scala
 import us.oyanglul.owlet._
@@ -42,3 +42,5 @@ val a3 = number("a3", 3)
 val sum     = a1 |+| a2 |+| a3
 renderOutput(sum, "#app")
 ```
+
+## [More...](https://oyanglul.us/owlet/)

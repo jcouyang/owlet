@@ -14,7 +14,7 @@ private[owlet] case class Par[+A](
 private[owlet] object Par {
   implicit val applicativePowlet = new Applicative[Par] {
     override def map[A, B](fa: Par[A])(f: A => B) = {
-      Par(fa.nodes, fa.signal.map(f))
+      Par(fa.nodes, fa.signal.map(f(_)))
     }
     def ap[A, B](ff: Par[A => B])(fa: Par[A]): Par[B] = {
       Par(

@@ -1,9 +1,11 @@
 package us.oyanglul.owlet
 
-import cats.{Later, Show}
+import cats.{Eval, Later, Show}
 import monix.eval.Task
+import monix.execution.{Ack, Cancelable}
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
+import monix.reactive.OverflowStrategy.Unbounded
 import monix.reactive.subjects.{PublishSubject, ReplaySubject}
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
@@ -15,31 +17,55 @@ import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
 import cats.syntax.parallel._
+import monix.execution.cancelables.SingleAssignCancelable
 
 object DOM {
+  private def eventListener(
+      target: Eval[EventTarget],
+      event: String
+  ): Observable[Event] =
+    (Observable
+      .create(Unbounded) { subscriber =>
+        val c = SingleAssignCancelable()
+        val f: scalajs.js.Function1[Event, Ack] =
+          (e: Event) => {
+            subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
+          }
+        console.log("adding event to", target.value)
+        target.value.addEventListener(event, f)
+        c := Cancelable(() => target.value.removeEventListener(event, f))
+      })
   // ==Input==
-  def string(name: String, default: String): Owlet[String] = {
-    val signal = Var(default)
-    val input = createInput(
-      name,
-      "text",
-      default,
-      e => signal := e.target.asInstanceOf[html.Input].value
+  def string(
+      name: String,
+      default: String,
+      classNames: Seq[String] = Nil
+  ): Owlet[String] = {
+    val node = Later {
+      val input: html.Input =
+        document.createElement("input").asInstanceOf[html.Input]
+      input.name = name
+      input.`type` = "text"
+      input.className = classNames.mkString(" ")
+      input.defaultValue = default.toString
+      input
+    }
+    Owlet(
+      node.map(List(_)),
+      eventListener(node, "input").share
+        .map { _.target.asInstanceOf[html.Input].value }
+        .prepend(default)
     )
-    Owlet(input.map(List(_)), signal)
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
-    val signal = Var(default)
-    val node = createInput(name, "number", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble).foreach(signal := _)
-    }).map { input =>
-      input.step = "any"
-      input
-    }
-
-    Owlet(node.map(List(_)), signal)
+    $.input[String]
+      .modify { el =>
+        el.`type` = "number"
+        el.step = "any"
+        el
+      }(string(name, default.toString))
+      .map((x: String) => Try(x.toDouble).getOrElse(default))
   }
 
   def numberSlider(
@@ -48,28 +74,24 @@ object DOM {
       max: Double,
       default: Double
   ): Owlet[Double] = {
-    val signal = Var(default)
-    val node = createInput(name, "range", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    }).map { input =>
-      input.step = "any"
-      input.min = min.toString
-      input.max = max.toString
-      input
-    }
-
-    Owlet(node.map(List(_)), signal)
+    $.input[String]
+      .modify { el =>
+        el.`type` = "range"
+        el.step = "any"
+        el.min = min.toString
+        el.max = max.toString
+        el
+      }(string(name, default.toString))
+      .map(x => Try(x.toDouble).getOrElse(default))
   }
 
-  def int(name: String, default: Int): Owlet[Int] = {
-    val signal = Var(default)
-    val node = createInput(name, "number", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    })
-    Owlet(node.map(List(_)), signal)
-  }
+  def int(name: String, default: Int): Owlet[Int] =
+    $.input[Double]
+      .modify(el => {
+        el.step = "1"
+        el
+      })(number(name, default))
+      .map(_.toInt)
 
   def checkbox(
       name: String,
@@ -119,35 +141,13 @@ object DOM {
       min: Int,
       max: Int,
       default: Int
-  ): Owlet[Int] = {
-    val signal = Var(default)
-    val node = createInput(name, "range", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    }).map { input =>
-      input.step = "1"
-      input.min = min.toString
-      input.max = max.toString
-      input
-    }
-    Owlet(node.map(List(_)), signal)
-  }
-
-  private def createInput[A](
-      n: String,
-      t: String,
-      default: A,
-      transform: Event => Unit,
-  ) = Later {
-    val input: html.Input =
-      document.createElement("input").asInstanceOf[html.Input]
-    input.`type` = t
-    input.name = n
-    input.className = "owlet-input " + normalize(n)
-    input.defaultValue = default.toString
-    input.oninput = e => transform(e)
-    input
-  }
+  ): Owlet[Int] =
+    $.input[Double]
+      .modify { el =>
+        el.step = "1"
+        el
+      }(numberSlider(name, min, max, default))
+      .map(_.toInt)
 
   /**
     * Select
@@ -220,16 +220,16 @@ object DOM {
     * wrap nodes in `Owlet` into container element `div`, `label` etc
     * style of div can reactive from a stream of `className`
     */
-  private[owlet] def createContainer[A, Tag <: HTMLElement](
+  private def createContainer[A, Tag <: HTMLElement](
       tag: String,
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
-      id: Option[String] = None
+      className: Seq[String],
+      id: Option[String]
   ): Owlet[A] = {
     val wrapped = inner.nodes.map { nodes =>
       val el = document.createElement(tag).asInstanceOf[Tag]
       id.map(el.id = _)
-      className.foreach(c => el.className = c.mkString(" "))
+      el.className = className.mkString(" ")
       nodes.foreach(el.appendChild)
       List(el)
     }
@@ -238,7 +238,7 @@ object DOM {
 
   def div[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.Div]("div", inner, className, id)
@@ -249,7 +249,7 @@ object DOM {
       classNames: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
-    createContainer[A, html.Span]("span", inner, Var(classNames), id)
+    createContainer[A, html.Span]("span", inner, classNames, id)
   }
 
   def h1(
@@ -260,13 +260,13 @@ object DOM {
     createContainer[String, html.Heading](
       "h1",
       text(content),
-      Var(classNames),
+      classNames,
       id
     )
 
   def ul[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.UList]("ul", inner, className, id)
@@ -274,7 +274,7 @@ object DOM {
 
   def li[A](
       inner: Owlet[A],
-      className: Observable[Seq[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ) = {
     createContainer[A, html.LI]("li", inner, className, id)
@@ -283,7 +283,7 @@ object DOM {
   def label[A](
       inner: Owlet[A],
       text: String = "",
-      className: Observable[List[String]] = Observable.empty,
+      className: Seq[String] = Nil,
       id: Option[String] = None
   ): Owlet[A] = {
     createContainer[A, html.Label]("label", inner, className, id)
@@ -305,20 +305,20 @@ object DOM {
 
   def output[A: Show](
       input: Owlet[A],
-      classNames: Observable[Seq[String]] = Var(Nil)
+      classNames: Seq[String] = Nil,
   ) = {
     div(input.flatMap(o => text(o.show)), classNames)
   }
 
   def unsafeOutput[A: Show](
       input: Owlet[A],
-      classNames: Observable[Seq[String]] = Var(Nil)
+      classNames: Seq[String] = Nil,
   ) = {
     input.flatMap { content =>
       val node = Later {
         val el = document.createElement("div").asInstanceOf[html.Div]
         el.innerHTML = content.show
-        classNames.foreach(c => el.className = c.mkString(" "))
+        el.className = classNames.mkString(" ")
         el
       }
       Owlet(node.map(List(_)), input.signal)
@@ -328,11 +328,14 @@ object DOM {
   /**
     * Render
     */
-  def render[A](owlet: Owlet[A], selector: String) =
+  def render[A](owlet: Owlet[A], selector: String): Task[Unit] =
+    render(owlet, document.querySelector(selector))
+
+  def render[A](owlet: Owlet[A], elm: Element): Task[Unit] =
     for {
       _ <- Task {
         owlet.nodes.value
-          .foreach(document.querySelector(selector).appendChild)
+          .foreach(elm.appendChild)
       }
       _ <- Task(owlet.signal.subscribe)
     } yield ()

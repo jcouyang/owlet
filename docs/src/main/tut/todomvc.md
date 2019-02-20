@@ -1,5 +1,5 @@
 ---
-layout: docs
+layout: raw
 title: TodoMVC
 section: en
 position: 4
