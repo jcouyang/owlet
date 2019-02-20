@@ -24,50 +24,48 @@ object DOM {
       target: Eval[EventTarget],
       event: String
   ): Observable[Event] =
-    Observable.create(Unbounded) { subscriber =>
-      val c = SingleAssignCancelable()
-      // Forced conversion, otherwise canceling will not work!
-      val f: scalajs.js.Function1[Event, Ack] =
-        (e: Event) => {
-          console.log("event trigger", e)
-          subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
-        }
-
-      target.value.addEventListener(event, f)
-      c := Cancelable(() => target.value.removeEventListener(event, f))
-    }
+    (Observable
+      .create(Unbounded) { subscriber =>
+        val c = SingleAssignCancelable()
+        val f: scalajs.js.Function1[Event, Ack] =
+          (e: Event) => {
+            subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
+          }
+        console.log("adding event to", target.value)
+        target.value.addEventListener(event, f)
+        c := Cancelable(() => target.value.removeEventListener(event, f))
+      })
   // ==Input==
-  def string(name: String, default: String): Owlet[String] = {
-    val signal = PublishSubject[String]
-    val input = createInput(
-      name,
-      "text",
-      default,
-      e => signal.onNext(e.target.asInstanceOf[html.Input].value)
-    )
-
+  def string(
+      name: String,
+      default: String,
+      classNames: Seq[String] = Nil
+  ): Owlet[String] = {
+    val node = Later {
+      val input: html.Input =
+        document.createElement("input").asInstanceOf[html.Input]
+      input.name = name
+      input.`type` = "text"
+      input.className = classNames.mkString(" ")
+      input.defaultValue = default.toString
+      input
+    }
     Owlet(
-      input.map(List(_)),
-      eventListener(input, "input")
-        .map { x =>
-          console.log(x)
-          x.target.asInstanceOf[html.Input].value
-        }
+      node.map(List(_)),
+      eventListener(node, "input").share
+        .map { _.target.asInstanceOf[html.Input].value }
         .prepend(default)
     )
   }
 
   def number(name: String, default: Double): Owlet[Double] = {
-    val signal = Var(default)
-    val node = createInput(name, "number", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble).foreach(signal := _)
-    }).map { input =>
-      input.step = "any"
-      input
-    }
-
-    Owlet(node.map(List(_)), signal)
+    $.input[String]
+      .modify { el =>
+        el.`type` = "number"
+        el.step = "any"
+        el
+      }(string(name, default.toString))
+      .map((x: String) => Try(x.toDouble).getOrElse(default))
   }
 
   def numberSlider(
@@ -76,28 +74,24 @@ object DOM {
       max: Double,
       default: Double
   ): Owlet[Double] = {
-    val signal = Var(default)
-    val node = createInput(name, "range", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    }).map { input =>
-      input.step = "any"
-      input.min = min.toString
-      input.max = max.toString
-      input
-    }
-
-    Owlet(node.map(List(_)), signal)
+    $.input[String]
+      .modify { el =>
+        el.`type` = "range"
+        el.step = "any"
+        el.min = min.toString
+        el.max = max.toString
+        el
+      }(string(name, default.toString))
+      .map(x => Try(x.toDouble).getOrElse(default))
   }
 
-  def int(name: String, default: Int): Owlet[Int] = {
-    val signal = Var(default)
-    val node = createInput(name, "number", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    })
-    Owlet(node.map(List(_)), signal)
-  }
+  def int(name: String, default: Int): Owlet[Int] =
+    $.input[Double]
+      .modify(el => {
+        el.step = "1"
+        el
+      })(number(name, default))
+      .map(_.toInt)
 
   def checkbox(
       name: String,
@@ -147,35 +141,13 @@ object DOM {
       min: Int,
       max: Int,
       default: Int
-  ): Owlet[Int] = {
-    val signal = Var(default)
-    val node = createInput(name, "range", default, e => {
-      val value = e.target.asInstanceOf[html.Input].value
-      Try(value.toDouble.toInt).foreach(signal := _)
-    }).map { input =>
-      input.step = "1"
-      input.min = min.toString
-      input.max = max.toString
-      input
-    }
-    Owlet(node.map(List(_)), signal)
-  }
-
-  private def createInput[A](
-      n: String,
-      t: String,
-      default: A,
-      transform: Event => Unit,
-  ) = Later {
-    val input: html.Input =
-      document.createElement("input").asInstanceOf[html.Input]
-    input.`type` = t
-    input.name = n
-    input.className = "owlet-input " + normalize(n)
-    input.defaultValue = default.toString
-    input.oninput = e => transform(e)
-    input
-  }
+  ): Owlet[Int] =
+    $.input[Double]
+      .modify { el =>
+        el.step = "1"
+        el
+      }(numberSlider(name, min, max, default))
+      .map(_.toInt)
 
   /**
     * Select
