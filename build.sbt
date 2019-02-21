@@ -13,7 +13,7 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
 
-lazy val owletVersion = "0.2.0-SNAPSHOT"
+lazy val owletVersion = "0.3.1"
 
 lazy val owlet = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
