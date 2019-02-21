@@ -6,13 +6,13 @@ import monix.execution.{Ack, Cancelable}
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import monix.reactive.OverflowStrategy.Unbounded
-import monix.reactive.subjects.{PublishSubject, ReplaySubject}
+import monix.reactive.subjects.{PublishSubject}
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
 import scala.util.Try
-import cats.syntax.traverse._
 import cats.instances.list._
+import cats.syntax.traverse._
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
@@ -20,21 +20,6 @@ import cats.syntax.parallel._
 import monix.execution.cancelables.SingleAssignCancelable
 
 object DOM {
-  private def eventListener(
-      target: Eval[EventTarget],
-      event: String
-  ): Observable[Event] =
-    (Observable
-      .create(Unbounded) { subscriber =>
-        val c = SingleAssignCancelable()
-        val f: scalajs.js.Function1[Event, Ack] =
-          (e: Event) => {
-            subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
-          }
-        console.log("adding event to", target.value)
-        target.value.addEventListener(event, f)
-        c := Cancelable(() => target.value.removeEventListener(event, f))
-      })
   // ==Input==
   def string(
       name: String,
@@ -52,7 +37,7 @@ object DOM {
     }
     Owlet(
       node.map(List(_)),
-      eventListener(node, "input").share
+      eventListener(node, "input")
         .map { _.target.asInstanceOf[html.Input].value }
         .prepend(default)
     )
@@ -98,43 +83,37 @@ object DOM {
       default: Boolean,
       classNames: List[String] = Nil
   ): Owlet[(String, Boolean)] = {
-    val signal = Var((name, default))
     val node = Later {
-      val input = document.createElement("input").asInstanceOf[html.Input]
-      input.`type` = "checkbox"
+      val input: html.Input =
+        document.createElement("input").asInstanceOf[html.Input]
       input.name = name
-      input.className = classNames.mkString(" ")
+      input.`type` = "checkbox"
       input.checked = default
-      input.onchange =
-        e => signal := ((name, e.target.asInstanceOf[html.Input].checked))
+      input.className = classNames.mkString(" ")
+      input.defaultValue = default.toString
       input
     }
-    Owlet(node.map(List(_)), signal)
+    Owlet(
+      node.map(List(_)),
+      eventListener(node, "change")
+        .map { e =>
+          val el = e.target.asInstanceOf[html.Input]
+          (el.name, el.checked)
+        }
+        .prepend((name, default))
+    )
   }
 
   def toggle(
       name: String,
       default: Boolean = false,
       value: String = ""
-  ): Owlet[String] = {
-    val signal =
-      if (default)
-        ReplaySubject(value)
-      else PublishSubject[String]
-
-    val node = Later {
-      val input = document.createElement("input").asInstanceOf[html.Input]
-      input.`type` = "radio"
-      input.name = name
-      input.value = value
-      input.className = "owlet-input-" + normalize(name)
-      input.checked = default
-      input.onchange =
-        e => signal.onNext(e.target.asInstanceOf[html.Input].value)
-      input
-    }
-    Owlet(node.map(List(_)), signal)
-  }
+  ): Owlet[String] =
+    $.input[String].modify { el =>
+      el.`type` = "radio"
+      el.checked = default
+      el
+    }(string(name, value))
 
   def intSlider(
       name: String,
@@ -346,5 +325,19 @@ object DOM {
   def unsafeRenderOutput[A: Show](owlet: Owlet[A], selector: String) =
     render(owlet &> unsafeOutput(owlet), selector)
 
-  private def normalize(s: String) = s.replaceAll(" ", "-").toLowerCase
+  private def eventListener(
+      target: Eval[EventTarget],
+      event: String
+  ): Observable[Event] =
+    (Observable
+      .create[Event](Unbounded) { subscriber =>
+        val c = SingleAssignCancelable()
+        val f: scalajs.js.Function1[Event, Ack] =
+          (e: Event) => {
+            subscriber.onNext(e).syncOnStopOrFailure(_ => c.cancel())
+          }
+        target.value.addEventListener(event, f)
+        c := Cancelable(() => target.value.removeEventListener(event, f))
+      })
+      .share
 }

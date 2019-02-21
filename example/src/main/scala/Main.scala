@@ -145,7 +145,7 @@ object Main {
       val a3 = number("a3", 3)
       val sum = fx[Double, Double](_.sum, List(a1, a2, a3))
       val product = fx[Double, Double](_.product, List(a1, a2, a3, sum))
-      render(a1 &> a2 &> a3 &> sum &> product, "#example-10").runSyncStep
+      render(a1 &> a2 &> a3 &> output(sum) &> output(product), "#example-10").runSyncStep
     }
 
     // Scala Tags
