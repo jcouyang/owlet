@@ -1,50 +1,72 @@
 ---
 layout: docs
-title: Examples
+title: Tutorial
 section: en
 position: 3
 ---
 
-# Owlet examples
-
 ## Example 1: Two number inputs
+
+Imagine you want to build a web app to calculate a exponent.
+
+the core business should be just as easy as:
+```scala
+val base = 2
+val exponent = 10
+val pow = math.pow(base, exponent)
+```
+
+You can simply translate code above into an interactive web app by using Owlet:
+
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=QBXZHwB/1&layout=v53"></iframe>
+
+How did I do this? It's Owlet meowgic:
 
 `Owlet[_]` is instance of typeclass [Applicative](https://typelevel.org/cats/typeclasses/applicative.html)
 
-So you can use `.mapN` which is syntax for typeclass `Apply`
+So you can use `.mapN` which is a syntax from typeclass `Apply`
 
-```scala
-val baseInput = number("Base", 2.0)
-val exponentInput = number("Exponent", 10.0)
-val pow = (baseInput, exponentInput) parMapN math.pow
-```
-<div id="example-1" ></div>
+and `.mapN` is just like `.map`, but instead of map one Functor, you can map multiple Functors(unfortunatly, these functor need to be Apply as well). So here we just map over both `baseInput` and `exponentInput` using `math.pow`
 
-> notice that here I'm using `parMapN` instead of `mapN`, because `parXYZ` is the applicative instance while `XYZ` come from Monad instance https://typelevel.org/cats/typeclasses/parallel.html
+> wait, but what the hell is `parMapN`?
 
-## Example 2: Semigroup instance
+Short Answer: It's parallel version of `mapN`
+
+Long Story: it's from typeclass [`Parallel`](https://typelevel.org/cats/typeclasses/parallel.html), Owlet is actually a Monad, which you know, is running in sequence. but `base` and `exponent` don't depend on each other, they can run in parallel instead.
+
+While Applicative can be parallel, so Owlet implement a Applicative version of `Owlet.Par`. `Owlet` and `Owlet.Par` is Isomorphic(means you have morphism back and forth, Owlet can be convert to Owlet.Par and backward).
+
+Parallel is just the typeclass for it, since it help you to convert Monad to Applicative automatically by just adding `par` preffix in your method name.
+
+So `parMapN` will know you want to use Applicative version of `mapN`, it will covert `Owlet` to `Owlet.Par`, map it and covert it back to `Owlet`.
+
+## Example 2: Semigroup
 
 `Owlet[A]` is also an instance of typeclass [Monoid](https://typelevel.org/cats/typeclasses/monoid.html)
 
-Here is a simple example of how to concat two string components:
-
+Think about how you concat two string togather
 ```scala
-val helloText = string("hello", "Hello")
-val worldText = string("world", "World")
-val example2 = helloText |+| " ".pure[Owlet] |+| worldText
+val hello = "Hello"
+val world = "World"
+val helloworld = hellow + " " + world
+
 ```
-<div id="example-2" ></div>
+
+Here is the web interactive version in Owlet:
+
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=mDggvjd/1&layout=v50"></iframe>
+
+`|+|` is the method from Semigroup so you can simply concat two value
 
 ## Example 3: Traverse
 
 `Owlet[_]` is an instance of typeclass [Traverse](https://typelevel.org/cats/typeclasses/traverse.html)
 
-which will help you create a `Owlet[List[A]]` from from `List[A]`
+which will be very useful when we need to create a `Owlet[List[A]]` from a `List[A]`
 
-```scala
-val sum = List(2, 13, 27, 42).parTraverse(int("n", _)).map(_.sum)
-```
-<div id="example-3" ></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=CPTAwpq/1&layout=v50"></iframe>
+
+> using `par*` again since those number aren't sequence.
 
 ## Example 4: Select box
 

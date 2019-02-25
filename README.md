@@ -29,7 +29,7 @@ import DOM._
 val a1 = number("a1", 1)
 val a2 = number("a2", 2)
 val a3 = number("a3", 3)
-val sum     = fx[Double, Double](_.sum, List(a1, a2, a3))
+val sum = fx[Double, Double](_.sum, List(a1, a2, a3))
 render(a1 &> a2 &> a3 &> sum, "#app")
 ```
 
@@ -39,8 +39,13 @@ or ![Cats Friendly Badge](https://typelevel.org/cats/img/cats-badge-tiny.png)
 val a1 = number("a1", 1)
 val a2 = number("a2", 2)
 val a3 = number("a3", 3)
-val sum     = a1 |+| a2 |+| a3
+val sum = a1 |+| a2 |+| a3
 renderOutput(sum, "#app")
 ```
 
 ## [More...](https://oyanglul.us/owlet/)
+
+- Monadic [Examples](https://oyanglul.us/owlet/Examples.html)
+- Tweaking Owlet with [Lens](https://oyanglul.us/owlet/Lens.html)
+- [Todo MVC](https://oyanglul.us/owlet/todomvc.html) Completed
+- [API Doc](https://oyanglul.us/owlet/api)

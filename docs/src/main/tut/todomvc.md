@@ -2,7 +2,7 @@
 layout: raw
 title: TodoMVC
 section: en
-position: 4
+position: 5
 ---
 
 <link rel="stylesheet" href="https://rawgit.com/tastejs/todomvc-common/master/base.css" />
