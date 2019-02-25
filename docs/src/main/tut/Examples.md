@@ -88,20 +88,13 @@ val example4 = selectBox |+| " ".pure[Owlet] |+| hello
 
 `checkbox` will generate a pair of value `(name, value)`
 
-```scala
-List(("a", false), ("b", true), ("c", false))
-  .parTraverse { case (name, value) => checkbox(name, value) }
-```
+so if we traverse a list of checkboxes, we have a list of `(name, value)`
 
-<div id="example-5" ></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=5tySTHF/1&layout=v50"></iframe>
 
-`toggle` will generate exclusive value as radio
+`toggle` group will generate exclusive value as radio
 
-```scala
-toggle("a", false, "b") <+> toggle("a", true, "a") <+> toggle("a", false, "c")
-```
-
-<div id="example-14" ></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=sP6DxSS/2&layout=v50"></iframe>
 
 ## Example 6: Buttons
 
@@ -109,38 +102,20 @@ There are two effects from a `button`, button down will emit a value and button 
 
 and you can simply `fold` those values into one
 
-```scala
-button("increament", 0, 1).fold(0)(_ + _)
-```
-
-<div id="example-6" ></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=9FWc6vK/1&layout=v50"></iframe>
 
 ## Example 7: Adding items to a list
 with `button`, it's easy to build a increamental list
-```
-val emptyList = const(List[String]()) _
-val addItem = (s: String) => List(s)
-val actions = button("add", emptyList, addItem) <&> string("add item","Orange"
-val list = actions.fold(List[String]())(_ ::: _)
-```
-<div id="example-7" ></div>
+
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=akI5Rs9/1&layout=v50"></iframe>
 
 ## Example 8: Multiple buttons
 
 `Owlet[_]`  is an instance of [MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) as well
 
 with MonoidK method `<+>`, we can easily fold multi actions(like Elm) on our init value:
-```scala
-val intId = identity: Int => Int
-val inc = button("+ 1", intId, (x: Int) => x + 1)
-val dec = button("- 1", intId, (x: Int) => x - 1)
-val neg = button("+/-", intId, (x: Int) => -x)
-val reset = button("reset", intId, (x: Int) => 0)
-val buttons = inc <+> dec <+> neg <+> reset
-buttons.fold(0)((acc: Int, f: Int => Int) => f(acc))
-)
-```
-<div id="example-8" ></div>
+
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=Ku1mN4c/1&layout=v64"></iframe>
 
 ## Example 9: Resizable lists
 
@@ -229,15 +204,8 @@ most important! Owlet is Monad!
 ```
 <div id="example-12"></div>
 
-## Example 13: List
-```scala
-      val numOfItem = int("noi", 3)
-      val items = numOfItem
-        .flatMap(
-          no => (0 to no).toList.parTraverse(i => string("inner", i.toString))
-        )
-      val example13 = numOfItem &> items
-```
-<div id="example-13"></div>
+## Example 13: Resizable List
+
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=KGwrRdd/1&layout=v56"></iframe>
 
 <script src="demo/owlet-opt.js"></script>
