@@ -71,18 +71,8 @@ which will be very useful when we need to create a `Owlet[List[A]]` from a `List
 ## Example 4: Select box
 
 Select box is just like a Map of data
-```scala
-val greeting = Map(
-"Chinese" -> "你好",
-"English" -> "Hello",
-"French" -> "Salut"
-)
-val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
-val hello = string("name", "Jichao")
-val example4 = selectBox |+| " ".pure[Owlet] |+| hello
-```
 
-<div id="example-4" ></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=mHNvMx3/1&layout=v80"></iframe>
 
 ## Example 5: Checkboxes
 
@@ -121,37 +111,7 @@ with MonoidK method `<+>`, we can easily fold multi actions(like Elm) on our ini
 
 Imagine how many lines of code you need to implement a todo list?
 
-**JUST 20!!!**
-
-``` scala
-type Store = List[String]
-val actions: Var[Store => Store] = Var(identity)
-
-val newTodoInput = string("new-todo", "")
-val noop = (s: String) => identity: Store => Store
-val addItem = (s: String) => (store: Store) => s :: store
-val newTodo = (button("add", noop, addItem) <&> newTodoInput)
-  .map(actions := _)
-
-val reduced = actions.scan(Nil: List[String]) { (store, action) =>
-  action(store)
-}
-def createItem(content: String) = {
-  val item = text(content)
-  val empty = Monoid[Owlet[String]].empty
-  val btn = button("delete", false, true)
-  btn.flatMap { y =>
-    if (y) {
-      actions := ((store: Store) => store.filter(_ != content))
-      empty
-    } else li(item <& btn)
-  }
-}
-val todos =
-  Owlet(Owlet.emptyNode, reduced).flatMap(_.parTraverse(createItem))
-```
-
-<div id="example-9"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=Q1VuNGK/1&layout=h65"></iframe>
 
 ## Example 10: Spreadsheet like
 
@@ -161,51 +121,18 @@ In spreadsheet it's very easy to do this:
 
 and we can do exactly the same thing programmatically
 
-```scala
-val a1 = number("a1", 1)
-val a2 = number("a2", 2)
-val a3 = number("a3", 3)
-val sum = fx((a: List[Double]) => a.sum, List(a1, a2, a3))
-val product = fx(((a: List[Double]) => a.product), List(a1, a2, a3, sum))
-render(a1 &> a2 &> a3 &> sum &> product, "#example-10")
-```
-
-<div id="example-10"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=xgdEWFA/1&layout=v66"></iframe>
 
 ## Example 11: Scala Tag
 
 easy to hook up with any template engine like Scala Tag reactively render complex UI
 
-```scala
-val col = intSlider("col", 1, 20, 8)
-val row = intSlider("row", 1, 20, 8)
-import scalatags.Text.all._
-renderOutput((col, row).mapN { (c, r) =>
-  table((1 to r).map(ri => tr((1 to c).map(ci => td(s"$ri.$ci"))))).render
-}, "#example-11")
-```
-<div id="example-11"></div>
+<iframe height="500px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=iZ2iEnY/2&layout=v75"></iframe>
 
 ## Example 12: Monad
 most important! Owlet is Monad!
-```scala
-      val greeting = Map(
-        "Chinese" -> "你好",
-        "English" -> "Hello",
-        "French" -> "Salut"
-      )
-      val selectBox = label(select("pierer", Var(greeting), "你好"), "Language")
-      val hello = for {
-        selected <- selectBox
-        towho <- if (selected == "你好") string("name", "继超")
-        else string("name", "Jichao")
-      } yield towho
-      val example12 = selectBox |+| " ".pure[Owlet] |+| hello
-```
-<div id="example-12"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=03HPHDz/1&layout=h74"></iframe>
 
 ## Example 13: Resizable List
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=KGwrRdd/1&layout=v56"></iframe>
-
-<script src="demo/owlet-opt.js"></script>

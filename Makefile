@@ -1,8 +1,8 @@
-docs: examples bootstrap todomvc
+docs: examples todomvc
 	sbt doc
 	sbt docs/publishMicrosite
 
-docs-dev: examples bootstrap todomvc
+docs-dev: examples todomvc
 	sbt docs/makeMicrosite
 
 examples: docs/src/main/tut/demo/owlet-opt.js
