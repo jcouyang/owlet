@@ -127,7 +127,7 @@ and we can do exactly the same thing programmatically
 
 easy to hook up with any template engine like Scala Tag reactively render complex UI
 
-<iframe height="500px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=iZ2iEnY/2&layout=v75"></iframe>
+<iframe height="500px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=iZ2iEnY/3&layout=v75"></iframe>
 
 ## Example 12: Monad
 most important! Owlet is Monad!
