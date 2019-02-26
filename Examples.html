@@ -66,17 +66,8 @@
 <h2 id="example-4-select-box">Example 4: Select box</h2>
 
 <p>Select box is just like a Map of data</p>
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
-<span class="s">"Chinese"</span> <span class="o">-&gt;</span> <span class="s">"你好"</span><span class="o">,</span>
-<span class="s">"English"</span> <span class="o">-&gt;</span> <span class="s">"Hello"</span><span class="o">,</span>
-<span class="s">"French"</span> <span class="o">-&gt;</span> <span class="s">"Salut"</span>
-<span class="o">)</span>
-<span class="k">val</span> <span class="n">selectBox</span> <span class="k">=</span> <span class="n">label</span><span class="o">(</span><span class="n">select</span><span class="o">(</span><span class="s">"pierer"</span><span class="o">,</span> <span class="nc">Var</span><span class="o">(</span><span class="n">greeting</span><span class="o">),</span> <span class="s">"你好"</span><span class="o">),</span> <span class="s">"Language"</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">hello</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"Jichao"</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">example4</span> <span class="k">=</span> <span class="n">selectBox</span> <span class="o">|+|</span> <span class="s">" "</span><span class="o">.</span><span class="n">pure</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">]</span> <span class="o">|+|</span> <span class="n">hello</span>
-</code></pre></div></div>
 
-<div id="example-4"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=mHNvMx3/1&amp;layout=v80"></iframe>
 
 <h2 id="example-5-checkboxes">Example 5: Checkboxes</h2>
 
@@ -115,36 +106,7 @@
 
 <p>Imagine how many lines of code you need to implement a todo list?</p>
 
-<p><strong>JUST 20!!!</strong></p>
-
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="kt">Store</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
-<span class="k">val</span> <span class="n">actions</span><span class="k">:</span> <span class="kt">Var</span><span class="o">[</span><span class="kt">Store</span> <span class="k">=&gt;</span> <span class="kt">Store</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Var</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">newTodoInput</span> <span class="k">=</span> <span class="n">string</span><span class="o">(</span><span class="s">"new-todo"</span><span class="o">,</span> <span class="s">""</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">noop</span> <span class="k">=</span> <span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">identity</span><span class="k">:</span> <span class="kt">Store</span> <span class="o">=&gt;</span> <span class="nc">Store</span>
-<span class="k">val</span> <span class="n">addItem</span> <span class="k">=</span> <span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">store</span><span class="k">:</span> <span class="kt">Store</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">::</span> <span class="n">store</span>
-<span class="k">val</span> <span class="n">newTodo</span> <span class="k">=</span> <span class="o">(</span><span class="n">button</span><span class="o">(</span><span class="s">"add"</span><span class="o">,</span> <span class="n">noop</span><span class="o">,</span> <span class="n">addItem</span><span class="o">)</span> <span class="o">&lt;&amp;&gt;</span> <span class="n">newTodoInput</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">actions</span> <span class="o">:=</span> <span class="k">_</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">reduced</span> <span class="k">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">scan</span><span class="o">(</span><span class="nc">Nil</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span> <span class="o">(</span><span class="n">store</span><span class="o">,</span> <span class="n">action</span><span class="o">)</span> <span class="k">=&gt;</span>
-  <span class="n">action</span><span class="o">(</span><span class="n">store</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="k">def</span> <span class="n">createItem</span><span class="o">(</span><span class="n">content</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-  <span class="k">val</span> <span class="n">item</span> <span class="k">=</span> <span class="n">text</span><span class="o">(</span><span class="n">content</span><span class="o">)</span>
-  <span class="k">val</span> <span class="n">empty</span> <span class="k">=</span> <span class="nc">Monoid</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">[</span><span class="kt">String</span><span class="o">]].</span><span class="n">empty</span>
-  <span class="k">val</span> <span class="n">btn</span> <span class="k">=</span> <span class="n">button</span><span class="o">(</span><span class="s">"delete"</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-  <span class="n">btn</span><span class="o">.</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">y</span> <span class="k">=&gt;</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">y</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">actions</span> <span class="o">:=</span> <span class="o">((</span><span class="n">store</span><span class="k">:</span> <span class="kt">Store</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">store</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span> <span class="o">!=</span> <span class="n">content</span><span class="o">))</span>
-      <span class="n">empty</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="n">li</span><span class="o">(</span><span class="n">item</span> <span class="o">&lt;&amp;</span> <span class="n">btn</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-<span class="k">val</span> <span class="n">todos</span> <span class="k">=</span>
-  <span class="nc">Owlet</span><span class="o">(</span><span class="nc">Owlet</span><span class="o">.</span><span class="n">emptyNode</span><span class="o">,</span> <span class="n">reduced</span><span class="o">).</span><span class="n">flatMap</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">parTraverse</span><span class="o">(</span><span class="n">createItem</span><span class="o">))</span>
-</code></pre></div></div>
-
-<div id="example-9"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=Q1VuNGK/1&amp;layout=h65"></iframe>
 
 <h2 id="example-10-spreadsheet-like">Example 10: Spreadsheet like</h2>
 
@@ -154,52 +116,21 @@
 
 <p>and we can do exactly the same thing programmatically</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">a1</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a1"</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">a2</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a2"</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">a3</span> <span class="k">=</span> <span class="n">number</span><span class="o">(</span><span class="s">"a3"</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">fx</span><span class="o">((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">sum</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">))</span>
-<span class="k">val</span> <span class="n">product</span> <span class="k">=</span> <span class="n">fx</span><span class="o">(((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Double</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">product</span><span class="o">),</span> <span class="nc">List</span><span class="o">(</span><span class="n">a1</span><span class="o">,</span> <span class="n">a2</span><span class="o">,</span> <span class="n">a3</span><span class="o">,</span> <span class="n">sum</span><span class="o">))</span>
-<span class="n">render</span><span class="o">(</span><span class="n">a1</span> <span class="o">&amp;&gt;</span> <span class="n">a2</span> <span class="o">&amp;&gt;</span> <span class="n">a3</span> <span class="o">&amp;&gt;</span> <span class="n">sum</span> <span class="o">&amp;&gt;</span> <span class="n">product</span><span class="o">,</span> <span class="s">"#example-10"</span><span class="o">)</span>
-</code></pre></div></div>
-
-<div id="example-10"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=xgdEWFA/1&amp;layout=v66"></iframe>
 
 <h2 id="example-11-scala-tag">Example 11: Scala Tag</h2>
 
 <p>easy to hook up with any template engine like Scala Tag reactively render complex UI</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">col</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"col"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">row</span> <span class="k">=</span> <span class="n">intSlider</span><span class="o">(</span><span class="s">"row"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
-<span class="k">import</span> <span class="nn">scalatags.Text.all._</span>
-<span class="n">renderOutput</span><span class="o">((</span><span class="n">col</span><span class="o">,</span> <span class="n">row</span><span class="o">).</span><span class="n">mapN</span> <span class="o">{</span> <span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span> <span class="k">=&gt;</span>
-  <span class="n">table</span><span class="o">((</span><span class="mi">1</span> <span class="n">to</span> <span class="n">r</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">ri</span> <span class="k">=&gt;</span> <span class="n">tr</span><span class="o">((</span><span class="mi">1</span> <span class="n">to</span> <span class="n">c</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">ci</span> <span class="k">=&gt;</span> <span class="n">td</span><span class="o">(</span><span class="n">s</span><span class="s">"$ri.$ci"</span><span class="o">))))).</span><span class="n">render</span>
-<span class="o">},</span> <span class="s">"#example-11"</span><span class="o">)</span>
-</code></pre></div></div>
-<div id="example-11"></div>
+<iframe height="500px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=iZ2iEnY/2&amp;layout=v75"></iframe>
 
 <h2 id="example-12-monad">Example 12: Monad</h2>
 <p>most important! Owlet is Monad!</p>
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      <span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
-        <span class="s">"Chinese"</span> <span class="o">-&gt;</span> <span class="s">"你好"</span><span class="o">,</span>
-        <span class="s">"English"</span> <span class="o">-&gt;</span> <span class="s">"Hello"</span><span class="o">,</span>
-        <span class="s">"French"</span> <span class="o">-&gt;</span> <span class="s">"Salut"</span>
-      <span class="o">)</span>
-      <span class="k">val</span> <span class="n">selectBox</span> <span class="k">=</span> <span class="n">label</span><span class="o">(</span><span class="n">select</span><span class="o">(</span><span class="s">"pierer"</span><span class="o">,</span> <span class="nc">Var</span><span class="o">(</span><span class="n">greeting</span><span class="o">),</span> <span class="s">"你好"</span><span class="o">),</span> <span class="s">"Language"</span><span class="o">)</span>
-      <span class="k">val</span> <span class="n">hello</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-        <span class="n">selected</span> <span class="k">&lt;-</span> <span class="n">selectBox</span>
-        <span class="n">towho</span> <span class="k">&lt;-</span> <span class="k">if</span> <span class="o">(</span><span class="n">selected</span> <span class="o">==</span> <span class="s">"你好"</span><span class="o">)</span> <span class="n">string</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"继超"</span><span class="o">)</span>
-        <span class="k">else</span> <span class="n">string</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"Jichao"</span><span class="o">)</span>
-      <span class="o">}</span> <span class="k">yield</span> <span class="n">towho</span>
-      <span class="k">val</span> <span class="n">example12</span> <span class="k">=</span> <span class="n">selectBox</span> <span class="o">|+|</span> <span class="s">" "</span><span class="o">.</span><span class="n">pure</span><span class="o">[</span><span class="kt">Owlet</span><span class="o">]</span> <span class="o">|+|</span> <span class="n">hello</span>
-</code></pre></div></div>
-<div id="example-12"></div>
+<iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=03HPHDz/1&amp;layout=h74"></iframe>
 
 <h2 id="example-13-resizable-list">Example 13: Resizable List</h2>
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=KGwrRdd/1&amp;layout=v56"></iframe>
-
-<script src="demo/owlet-opt.js"></script>
-
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/owlet/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
 hljs.initHighlighting();
               </script><script>((window.gitter = {}).chat = {}).options = {
