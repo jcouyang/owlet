@@ -1,3 +1,4 @@
+
 ---
 layout: docs
 title: Tutorial
@@ -7,9 +8,9 @@ position: 3
 
 ## Example 1: Two number inputs
 
-Imagine you want to build a web app to calculate a exponent.
+Imagine you want to build a web app to calculate an exponent.
 
-the core business should be just as easy as:
+The core business should be just as easy as:
 ```scala
 val base = 2
 val exponent = 10
@@ -26,17 +27,17 @@ How did I do this? It's Owlet meowgic:
 
 So you can use `.mapN` which is a syntax from typeclass `Apply`
 
-and `.mapN` is just like `.map`, but instead of map one Functor, you can map multiple Functors(unfortunatly, these functor need to be Apply as well). So here we just map over both `baseInput` and `exponentInput` using `math.pow`
+and `.mapN` is just like `.map`, but instead of map one Functor, you can map multiple Functors(unfortunately, these functors need to be Apply as well). So here we just map over both `baseInput` and `exponentInput` using `math.pow`
 
 > wait, but what the hell is `parMapN`?
 
 Short Answer: It's parallel version of `mapN`
 
-Long Story: it's from typeclass [`Parallel`](https://typelevel.org/cats/typeclasses/parallel.html), Owlet is actually a Monad, which you know, is running in sequence. but `base` and `exponent` don't depend on each other, they can run in parallel instead.
+Long Story: it's from typeclass [`Parallel`](https://typelevel.org/cats/typeclasses/parallel.html), Owlet is actually a Monad, which you know, is running in sequence. But `base` and `exponent` don't depend on each other, they can run in parallel instead.
 
-While Applicative can be parallel, so Owlet implement a Applicative version of `Owlet.Par`. `Owlet` and `Owlet.Par` is Isomorphic(means you have morphism back and forth, Owlet can be convert to Owlet.Par and backward).
+While Applicative can be parallel, so Owlet implement an Applicative version of `Owlet.Par`.  `Owlet` and `Owlet.Par` is Isomorphic(means you have morphism back and forth, Owlet can be converted to Owlet.Par and backward).
 
-Parallel is just the typeclass for it, since it help you to convert Monad to Applicative automatically by just adding `par` preffix in your method name.
+Parallel is just the typeclass for it, since it help you to convert Monad to Applicative automatically by just adding `par` prefix in your method name.
 
 So `parMapN` will know you want to use Applicative version of `mapN`, it will covert `Owlet` to `Owlet.Par`, map it and covert it back to `Owlet`.
 
@@ -44,12 +45,11 @@ So `parMapN` will know you want to use Applicative version of `mapN`, it will co
 
 `Owlet[A]` is also an instance of typeclass [Monoid](https://typelevel.org/cats/typeclasses/monoid.html)
 
-Think about how you concat two string togather
+Think about how you concat two string together
 ```scala
 val hello = "Hello"
 val world = "World"
 val helloworld = hellow + " " + world
-
 ```
 
 Here is the web interactive version in Owlet:
@@ -70,7 +70,7 @@ which will be very useful when we need to create a `Owlet[List[A]]` from a `List
 
 ## Example 4: Select box
 
-Select box is just like a Map of data
+Select box is just like a Map of data,  it will emit value you select
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=mHNvMx3/1&layout=v80"></iframe>
 
@@ -78,11 +78,11 @@ Select box is just like a Map of data
 
 `checkbox` will generate a pair of value `(name, value)`
 
-so if we traverse a list of checkboxes, we have a list of `(name, value)`
+so if we traverse a list of checkboxes, then we have a list of `(name, value)`
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=5tySTHF/1&layout=v50"></iframe>
 
-`toggle` group will generate exclusive value as radio
+`toggle` group will generate exclusive value
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=sP6DxSS/2&layout=v50"></iframe>
 
@@ -95,7 +95,8 @@ and you can simply `fold` those values into one
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=9FWc6vK/1&layout=v50"></iframe>
 
 ## Example 7: Adding items to a list
-with `button`, it's easy to build a increamental list
+
+with `button`, it's easy to build an incremental list
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=akI5Rs9/1&layout=v50"></iframe>
 
@@ -103,13 +104,13 @@ with `button`, it's easy to build a increamental list
 
 `Owlet[_]`  is an instance of [MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) as well
 
-with MonoidK method `<+>`, we can easily fold multi actions(like Elm) on our init value:
+with MonoidK method `<+>`, we can easily fold multi actions(Elm style) on our init value:
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=Ku1mN4c/1&layout=v64"></iframe>
 
 ## Example 9: Resizable lists
 
-Imagine how many lines of code you need to implement a todo list?
+Imagine how many lines of code you need to implement a simple todo list?
 
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=Q1VuNGK/1&layout=h65"></iframe>
 
@@ -130,7 +131,9 @@ easy to hook up with any template engine like Scala Tag reactively render comple
 <iframe height="500px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=iZ2iEnY/3&layout=v75"></iframe>
 
 ## Example 12: Monad
+
 most important! Owlet is Monad!
+
 <iframe height="400px" frameborder="0" style="width: 100%" src="https://embed.scalafiddle.io/embed?sfid=03HPHDz/1&layout=h74"></iframe>
 
 ## Example 13: Resizable List
