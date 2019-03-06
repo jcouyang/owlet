@@ -44,10 +44,34 @@ val a3 = number("a3", 3)
 val sum = a1 |+| a2 |+| a3
 renderOutput(sum, "#app")
 ```
+### eh... Ready for 3D spreadsheet programming?
+You know spreadsheet is 2D, when we have monad, it became 3D
 
-## [More...](https://oyanglul.us/owlet/)
+!!!Monad Warning!!!
 
-- Monadic [Examples](https://oyanglul.us/owlet/Examples.html)
+```scala
+val numOfItem = int("noi", 3)
+val items = numOfItem
+  .flatMap(
+    no => (0 to no).toList.parTraverse(i => string("inner", i.toString))
+  )
+```
+- imagine that `numOfItem` lives in dimension (x=1, y=1, z=0)
+- then `items` live in dimension (x=1,y=1,z=1)
+
+you can render either `numOfItem` or `items` seperatly, for they live in diffenrent z axis (which means render `items` you won't able to see `numOfItem` even it's flatMap from there
+
+but you can some how connect the dots with magic `&>`
+```scala
+renderOutput(numOfItem &> items, "#output")
+```
+
+Anyway, just keep in mind that monad ops `map` `ap` `flatMap`... will lift your z axis
+`parMap` `parAp` `parXXX` instead, will keep them in the same z axis
+
+## More...
+
+- [Tutorial](https://oyanglul.us/owlet/Examples.html)
 - Tweaking Owlet with [Lens](https://oyanglul.us/owlet/Lens.html)
 - [Todo MVC](https://oyanglul.us/owlet/todomvc.html) Completed
 - [API Doc](https://oyanglul.us/owlet/api)
