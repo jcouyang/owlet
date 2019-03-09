@@ -71,7 +71,7 @@ Anyway, just keep in mind that monad ops `map` `ap` `flatMap`... will lift your 
 
 ## More...
 
-- [Tutorial](https://oyanglul.us/owlet/Examples.html)
+- [Tutorial](https://oyanglul.us/owlet/Tutorial.html)
 - Tweaking Owlet with [Lens](https://oyanglul.us/owlet/Lens.html)
 - [Todo MVC](https://oyanglul.us/owlet/todomvc.html) Completed
 - [API Doc](https://oyanglul.us/owlet/api)
