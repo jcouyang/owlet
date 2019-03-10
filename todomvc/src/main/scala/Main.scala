@@ -47,6 +47,7 @@ object Main {
     val todoInput = $.input[String]
       .modify { el =>
         el.autofocus = true
+        el.className = "new-todo"
         el.onkeyup = e =>
           if (e.keyCode == 13) {
             events := newTodo(el.value)
