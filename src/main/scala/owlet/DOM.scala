@@ -1,18 +1,18 @@
 package us.oyanglul.owlet
 
-import cats.{Eval, Later, Show}
+import cats.{Eval, Later, Show, Traverse}
 import monix.eval.Task
 import monix.execution.{Ack, Cancelable}
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import monix.reactive.OverflowStrategy.Unbounded
-import monix.reactive.subjects.{PublishSubject}
+import monix.reactive.subjects.PublishSubject
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
+
 import scala.util.Try
-import cats.instances.list._
-import cats.syntax.traverse._
+
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
@@ -273,13 +273,14 @@ object DOM {
   }
 
   /** Spreadsheet like fx
-    * create a new Owlet with existing Owlets with a formula
+    * Create a new Owlet with existing Owlets with a formula.
+    * The formula can be from any instance of Traverse such as List
     */
-  def fx[A, B: Show](
-      formula: List[A] => B,
-      input: List[Owlet[A]]
+  def fx[F[_]: Traverse, A, B: Show](
+      formula: F[A] => B,
+      input: F[Owlet[A]]
   ): Owlet[B] = {
-    input.sequence.map(formula)
+    Traverse[F].sequence(input).map(formula)
   }
 
   def output[A: Show](

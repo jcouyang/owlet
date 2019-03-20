@@ -143,8 +143,8 @@ object Main {
       val a1 = number("a1", 1)
       val a2 = number("a2", 2)
       val a3 = number("a3", 3)
-      val sum = fx[Double, Double](_.sum, List(a1, a2, a3))
-      val product = fx[Double, Double](_.product, List(a1, a2, a3, sum))
+      val sum = fx[List, Double, Double](_.sum, List(a1, a2, a3))
+      val product = fx[List, Double, Double](_.product, List(a1, a2, a3, sum))
       render(a1 &> a2 &> a3 &> output(sum) &> output(product), "#example-10").runSyncStep
     }
 
