@@ -12,8 +12,7 @@ import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
 
 import scala.util.Try
-import cats.instances.list._
-import cats.syntax.traverse._
+
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
