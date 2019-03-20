@@ -274,20 +274,14 @@ object DOM {
   }
 
   /** Spreadsheet like fx
-    * create a new Owlet with existing Owlets with a formula
+    * Create a new Owlet with existing Owlets with a formula.
+    * The formula can be from any instance of Traverse such as List
     */
   def fx[F[_]: Traverse, A, B: Show](
       formula: F[A] => B,
       input: F[Owlet[A]]
   ): Owlet[B] = {
     Traverse[F].sequence(input).map(formula)
-  }
-
-  def fx[A, B: Show](
-      formula: List[A] => B,
-      input: List[Owlet[A]]
-  ): Owlet[B] = {
-    input.sequence.map(formula)
   }
 
   def output[A: Show](
