@@ -261,11 +261,16 @@ object DOM {
 
   def label[A](
       inner: Owlet[A],
-      text: String = "",
+      textValue: String = "",
       className: Seq[String] = Nil,
       id: Option[String] = None
   ): Owlet[A] = {
-    createContainer[A, html.Label]("label", inner, className, id)
+    createContainer[A, html.Label](
+      "label",
+      text(textValue) &> inner,
+      className,
+      id
+    )
   }
 
   def text(content: String): Owlet[String] = {
