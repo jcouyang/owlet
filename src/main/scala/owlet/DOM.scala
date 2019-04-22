@@ -10,9 +10,8 @@ import monix.reactive.subjects.PublishSubject
 import org.scalajs.dom._
 import monix.reactive.subjects.Var
 import org.scalajs.dom.raw.HTMLElement
-
+import cats.instances.list._
 import scala.util.Try
-
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.show._
@@ -346,4 +345,21 @@ object DOM {
         c := Cancelable(() => target.value.removeEventListener(event, f))
       })
       .share
+}
+
+object $ {
+  import monocle._
+  import monocle.macros.GenPrism
+
+  def nodes[A] =
+    Lens[Owlet[A], List[Node]](_.nodes.value)(
+      n => a => Owlet(Later(n), a.signal)
+    )
+  def eachNode[A] = nodes[A] composeTraversal Traversal.fromTraverse[List, Node]
+  def input[A] = eachNode[A] composePrism GenPrism[Node, html.Input]
+  def div[A] = eachNode[A] composePrism GenPrism[Node, html.Div]
+  def label[A] = eachNode[A] composePrism GenPrism[Node, html.Label]
+  def a[A] = eachNode[A] composePrism GenPrism[Node, html.Anchor]
+  def select[A] = eachNode[A] composePrism GenPrism[Node, html.Select]
+  def button[A] = eachNode[A] composePrism GenPrism[Node, html.Button]
 }

@@ -21,20 +21,6 @@ trait ParallelInstances {
       def parallel = Lambda[Owlet ~> Par](x => Par(x.nodes, x.signal))
     }
 }
-object $ {
-  import org.scalajs.dom._
-  import monocle._
-  import monocle.macros.GenPrism
-
-  def nodes[A] =
-    Lens[Owlet[A], List[Node]](_.nodes.value)(
-      n => a => Owlet(Later(n), a.signal)
-    )
-  def eachNode[A] = nodes[A] composeTraversal Traversal.fromTraverse[List, Node]
-  def input[A] = eachNode[A] composePrism GenPrism[Node, html.Input]
-  def div[A] = eachNode[A] composePrism GenPrism[Node, html.Div]
-  def a[A] = eachNode[A] composePrism GenPrism[Node, html.Anchor]
-}
 
 object Owlet extends ParallelInstances {
   val emptyNode = Later(List[Node]())
