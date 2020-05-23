@@ -86,3 +86,10 @@ typings/
 # End of https://www.gitignore.io/api/node
 docs/src/main/tut/api/
 docs/src/main/tut/demo/
+
+# IDE files
+.idea/
+.metals/
+.bloop/
+.metals/
+project/metals.sbt
