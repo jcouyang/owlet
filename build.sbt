@@ -1,7 +1,6 @@
 organization in ThisBuild := "us.oyanglul"
 
-scalaVersion in ThisBuild := "2.12.8"
-lazy val monocleVersion = "1.5.0-cats"
+scalaVersion in ThisBuild := "2.12.11"
 scalacOptions in ThisBuild ++= Seq(
   "-encoding", "UTF-8",   // source files are in UTF-8
   "-deprecation",         // warn about use of deprecated APIs
@@ -13,8 +12,9 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ypartial-unification" // allow the compiler to unify type constructors of different arities
 )
 
-lazy val owletVersion = "0.3.1"
+lazy val owletVersion = "0.4.0"
 
+lazy val monocleVersion = "2.0.4"
 lazy val owlet = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
@@ -37,14 +37,15 @@ lazy val owlet = project.in(file("."))
     licenses := List("MIT" -> new URL("https://opensource.org/licenses/MIT")),
     homepage := Some(url("https://oyanglul.us/owlet")),
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "1.6.0",
+      "org.typelevel" %%% "cats-core" % "2.2.0-M1",
       "com.github.julien-truffaut"  %%%  "monocle-core"    % monocleVersion,
-            "com.github.julien-truffaut"  %%%  "monocle-macro"    % monocleVersion,
-      "org.scala-js" %%% "scalajs-dom" % "0.9.2",
-      "io.monix" %%% "monix-reactive" % "3.0.0-RC2",
-      "org.scalatest" %%% "scalatest" % "3.0.3" % Test,
-      "org.typelevel" %%% "cats-laws" % "1.0.1" % Test,
-      "org.typelevel" %%% "cats-testkit" % "1.0.1"% Test
+      "com.github.julien-truffaut"  %%%  "monocle-macro"    % monocleVersion,
+      "org.scala-js" %%% "scalajs-dom" % "1.0.0",
+      "io.monix" %%% "monix-reactive" % "3.2.1",
+      "org.scalatest" %%% "scalatest" % "3.3.0-SNAP2" % Test,
+      "org.typelevel" %%% "cats-laws" % "2.2.0-M1" % Test,
+      "org.typelevel" %%% "cats-testkit" % "2.2.0-M1" % Test,
+      "org.typelevel" %%% "cats-testkit-scalatest" % "1.0.1" % Test
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
     publishTo := {
@@ -60,7 +61,7 @@ lazy val owlet = project.in(file("."))
 lazy val example = project.enablePlugins(ScalaJSPlugin).settings(
   scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % "0.6.7"
+      "com.lihaoyi" %%% "scalatags" % "0.9.1"
     )
 ).dependsOn(owlet)
 

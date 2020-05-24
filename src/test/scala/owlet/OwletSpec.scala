@@ -3,13 +3,9 @@ package us.oyanglul.owlet
 import cats._
 import cats.tests.CatsSuite
 import cats.laws.discipline.FunctorTests
-import monix.eval.Task
 import org.scalacheck._
 import Arbitrary.arbitrary
 import DOM._
-import monix.execution.Scheduler.Implicits.global
-import scala.concurrent.Await
-import scala.concurrent.duration._
 
 class OwletSpec extends CatsSuite {
 

@@ -13,8 +13,9 @@ case class Owlet[+A](nodes: Eval[List[Node]], signal: Observable[A]) {
 }
 
 trait ParallelInstances {
-  implicit val parallelForOwlet: Parallel[Owlet, Par] =
-    new Parallel[Owlet, Par] {
+  implicit val parallelForOwlet: Parallel[Owlet] =
+    new Parallel[Owlet] {
+      type F[A] = Par[A]
       def applicative: Applicative[Par] = Par.applicativePowlet
       def monad: Monad[Owlet] = Owlet.monadOwlet
       def sequential = Lambda[Par ~> Owlet](x => Owlet(x.nodes, x.signal))
