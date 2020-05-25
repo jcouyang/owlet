@@ -48,14 +48,9 @@ lazy val owlet = project.in(file("."))
       "org.typelevel" %%% "cats-testkit-scalatest" % "1.0.1" % Test
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
-      if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-    },
-    publishMavenStyle := true
+    pgpPublicRing := file(".") / ".gnupg" / "pubring.asc",
+    pgpSecretRing := file(".") / ".gnupg" / "secring.asc",
+    releaseEarlyWith := SonatypePublisher,
   )
 
 lazy val example = project.enablePlugins(ScalaJSPlugin).settings(
