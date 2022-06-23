@@ -8,7 +8,7 @@
     "example": "example"
   },
   "dependencies": {
-    "jsdom": "^11.11.0"
+    "jsdom": "^16.5.0"
   },
   "devDependencies": {},
   "scripts": {
